@@ -73,8 +73,18 @@ public sealed class XUiModule : GameUiModule<XModule>
 ```
 
 Strony są rozwiązywane z DI (rejestrowane automatycznie na podstawie `Routes`). Do dyspozycji:
-`ActiveSessionViewModel` + `SessionHeaderView` (nagłówek gry), `IDialogService`, `INavigationService`,
-style `BigButton`, `Card`, kolory warstw mapy (`Map*`) z `TransitGames.UI/Themes`.
+`ActiveSessionViewModel` + `SessionHeaderView` (nagłówek gry, a także `Area` i `Stations` bieżącej sesji),
+`GameMapView` (mapa z obszarem, stacjami i własną pozycją), `IMapLayerProvider` (własne warstwy:
+`CreatePolygonLayer`/`CreatePointLayer` + `SetPolygon`/`SetPoints`, dodawane przez `GameMapView.AddLayer`),
+`IDialogService`, `INavigationService`, style `BigButton`, `Card`, `ToolButton`, kolory warstw mapy (`Map*`).
+
+```xml
+<controls:GameMapView x:Name="Map" Area="{Binding Header.Area}" Stations="{Binding Header.Stations}" />
+```
+
+Obszar gry i stacje wybiera wspólny kreator (rola → obszar → stacje) — trafiają do `GameSettings.Area`
+i `GameSettings.Stations`. Obliczenia geometrii rób w metrach: `GameArea.FromDefinition(settings.Area)`
+daje `LocalGeometry` i `Projection` (TransitGames.Geo).
 
 ## 3. Rejestracja
 

@@ -26,9 +26,33 @@ Plik służy jako podsumowanie do kontynuacji pracy (także w nowej sesji). Spec
 Tag: goniący widzą uciekających; nigdy odwrotnie. Etapy 4/5/7 muszą z tego korzystać przy pingach i mapach.
 Testy: 24/24.
 
-**Następny krok — Etap 2: Mapa + obszar + stacje**
-- Mapsui w `TransitGames.UI` (kontrolka mapy, `IMapLayerProvider`, OSM tiles z User-Agent i cache).
-- `TransitGames.Geo`: parsowanie GeoJSON (NTS), projekcja AEQD wokół środka obszaru (ProjNet), klucz obszaru,
-  klient Overpass (stacje z filtrami trybów, granice miast), deduplikacja stacji ~150 m, import GeoJSON.
-- Kreator: krok „obszar gry” (rysowanie poligonu / miasto z OSM / import) i „stacje” (włącz/wyłącz, dodaj własną).
-- Uprawnienia Android/iOS do lokalizacji i internetu.
+## ✅ Etap 2 — Mapa + obszar + stacje (2026-09-29)
+
+**Działa:**
+- `TransitGames.Geo`: `LocalProjection` (metry, ProjNet), `GameArea` (WGS84 + lokalna geometria, klucz,
+  `Contains`, uproszczenie), `GeoJson` (odczyt Feature/FeatureCollection/geometrii, suma poligonów),
+  `OverpassClient` (User-Agent, fallback serwerów, ponowienie), parsery stacji i granic,
+  `StationDeduplicator` (nazwa + 150 m, numery peronów), `GeoJsonStationImporter`, `StationCatalog`
+  (pobranie → filtr obszaru → deduplikacja → cache SQLite; offline z cache), `BoundaryService`.
+- Core: `GameSettings.Stations` (kopia stacji w sesji), `IGameAreaRepository` (zapisane obszary).
+- UI: `IMapLayerProvider`/`MapLayerProvider` (kafelki OSM z cache, warstwy poligonów/punktów/stacji),
+  `GameMapView`, `IDeviceLocationService`, `ITextFilePicker`, style `ToolButton`/`HintBanner`.
+- Kreator: rola → **obszar** (rysowanie / miasto z OSM przez dotknięcie mapy / GeoJSON / zapisane) →
+  **stacje** (tryby, pobranie, włącz/wyłącz na mapie i liście, własne stacje, import GeoJSON) → start.
+  Ekrany gier pokazują mapę z obszarem i stacjami.
+- Uprawnienia: lokalizacja (Android + iOS `NSLocationWhenInUseUsageDescription`), internet.
+- Zweryfikowano na emulatorze z prawdziwymi danymi: Śródmieście (granica OSM, 15,6 km²) → 50 stacji
+  (91 elementów, 41 scalonych) → wyłączenie stacji tapnięciem → start gry Tag → po `force-stop` gra wraca
+  z mapą, obszarem i 49 stacjami. Rysowanie poligonu („Mój obszar · 6,4 km²”).
+- Porządek: usunięty zbędny `SQLitePCLRaw.bundle_green` (duplikat natywnego SQLite w APK).
+- Testy: 86/86 (Core 19, Geo 61, HideAndSeek 3, Tag 3).
+
+**Następny krok — Etap 3: Nagrywanie GPS + eksport**
+- `TransitGames.Tracking`: zapis punktów do SQLite na bieżąco (interwał, min. dystans, odrzucanie słabej
+  dokładności, tryb oszczędzania baterii), segmenty przy przerwach.
+- Eksport GPX 1.1 (track per urządzenie, segmenty, waypointy ze zdarzeń gry) i GeoJSON (LineString + Pointy);
+  testy walidujące strukturę plików.
+- Android: foreground service z powiadomieniem (`FOREGROUND_SERVICE_LOCATION`, `ACCESS_BACKGROUND_LOCATION`,
+  `POST_NOTIFICATIONS`); iOS: `UIBackgroundModes: location`, `AllowsBackgroundLocationUpdates`.
+- `ILocationTracker` (MAUI) → własna pozycja na `GameMapView`; lista tras (zakładka „Trasy GPS”), Share,
+  prosty podgląd trasy.

@@ -18,7 +18,7 @@ public enum TransitModes
 /// <summary>A transit stop usable as a hiding spot / target.</summary>
 public sealed record Station
 {
-    /// <summary>Stable id: "osm:node/123" for OSM data, "custom:{guid}" for user-added stations.</summary>
+    /// <summary>Stable id: "osm:node/123" for OSM data, "custom:{hash}" for user-added/imported ones.</summary>
     public required string Id { get; init; }
 
     public required string Name { get; init; }

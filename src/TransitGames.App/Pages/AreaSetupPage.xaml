@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.App.ViewModels"
+             xmlns:controls="clr-namespace:TransitGames.UI.Controls;assembly=TransitGames.UI"
+             xmlns:res="clr-namespace:TransitGames.UI.Resources;assembly=TransitGames.UI"
+             x:Class="TransitGames.App.Pages.AreaSetupPage"
+             x:DataType="vm:AreaSetupViewModel"
+             Title="{x:Static res:UiStrings.AreaStepTitle}"
+             Style="{StaticResource PageBackground}">
+    <Grid RowDefinitions="*,Auto,Auto">
+        <controls:GameMapView x:Name="Map"
+                              Area="{Binding Area}"
+                              DraftPolygon="{Binding DraftVertices}"
+                              TapCommand="{Binding MapTappedCommand}" />
+
+        <Label Grid.Row="1" Text="{Binding Hint}" IsVisible="{Binding HasHint}" Style="{StaticResource HintBanner}" />
+
+        <VerticalStackLayout Grid.Row="2" Padding="16,12" Spacing="10">
+            <Label Text="{Binding Summary}" FontSize="16" FontAttributes="Bold" />
+
+            <!-- Area sources -->
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="8" RowSpacing="8"
+                  IsVisible="{Binding IsIdle}">
+                <Button Text="{x:Static res:UiStrings.AreaDraw}" Style="{StaticResource ToolButton}"
+                        Command="{Binding StartDrawingCommand}" />
+                <Button Grid.Column="1" Text="{x:Static res:UiStrings.AreaCity}" Style="{StaticResource ToolButton}"
+                        Command="{Binding PickCityCommand}" />
+                <Button Grid.Row="1" Text="{x:Static res:UiStrings.AreaImport}" Style="{StaticResource ToolButton}"
+                        Command="{Binding ImportCommand}" />
+                <Button Grid.Row="1" Grid.Column="1" Text="{x:Static res:UiStrings.AreaSaved}" Style="{StaticResource ToolButton}"
+                        Command="{Binding UseSavedCommand}" />
+            </Grid>
+
+            <!-- Drawing tools -->
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8" IsVisible="{Binding IsDrawing}">
+                <Button Text="{x:Static res:UiStrings.AreaDrawUndo}" Style="{StaticResource ToolButton}"
+                        Command="{Binding UndoVertexCommand}" />
+                <Button Grid.Column="1" Text="{x:Static res:UiStrings.Cancel}" Style="{StaticResource ToolButton}"
+                        Command="{Binding CancelToolCommand}" />
+                <Button Grid.Column="2" Text="{x:Static res:UiStrings.AreaDrawFinish}" Style="{StaticResource ToolButton}"
+                        Command="{Binding FinishDrawingCommand}" />
+            </Grid>
+
+            <Button Text="{x:Static res:UiStrings.Cancel}" Style="{StaticResource ToolButton}"
+                    Command="{Binding CancelToolCommand}" IsVisible="{Binding IsPickingCity}" />
+
+            <Button Text="{x:Static res:UiStrings.Next}" Style="{StaticResource BigButton}"
+                    Command="{Binding NextCommand}" IsVisible="{Binding IsIdle}" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

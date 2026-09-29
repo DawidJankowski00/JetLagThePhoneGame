@@ -12,18 +12,17 @@
     <Grid RowDefinitions="Auto,*,Auto">
         <controls:SessionHeaderView BindingContext="{Binding Header}" />
 
-        <VerticalStackLayout Grid.Row="1" Padding="24" Spacing="12" VerticalOptions="Center">
-            <Label Text="{x:Static res:HideAndSeekStrings.RoleSeekerDescription}" IsVisible="{Binding IsSeeker}"
-                   HorizontalTextAlignment="Center" FontSize="18" />
-            <Label Text="{x:Static res:HideAndSeekStrings.RoleHiderDescription}" IsVisible="{Binding IsHider}"
-                   HorizontalTextAlignment="Center" FontSize="18" />
-        </VerticalStackLayout>
+        <controls:GameMapView Grid.Row="1" Area="{Binding Header.Area}" Stations="{Binding Header.Stations}" />
 
-        <VerticalStackLayout Grid.Row="2" Padding="16" Spacing="8">
-            <Button Text="{x:Static ui:UiStrings.FinishGame}" Style="{StaticResource BigButton}"
-                    Command="{Binding Header.FinishCommand}" />
-            <Button Text="{x:Static ui:UiStrings.LeaveGame}" Style="{StaticResource BigSecondaryButton}"
-                    Command="{Binding Header.LeaveCommand}" />
+        <VerticalStackLayout Grid.Row="2" Padding="16,10" Spacing="8">
+            <Label Text="{x:Static res:HideAndSeekStrings.RoleSeekerDescription}" IsVisible="{Binding IsSeeker}" Style="{StaticResource Caption}" />
+            <Label Text="{x:Static res:HideAndSeekStrings.RoleHiderDescription}" IsVisible="{Binding IsHider}" Style="{StaticResource Caption}" />
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                <Button Text="{x:Static ui:UiStrings.LeaveGame}" Style="{StaticResource BigSecondaryButton}" FontSize="15" Padding="4,0"
+                        Command="{Binding Header.LeaveCommand}" />
+                <Button Grid.Column="1" Text="{x:Static ui:UiStrings.FinishGame}" Style="{StaticResource BigButton}" FontSize="15" Padding="4,0"
+                        Command="{Binding Header.FinishCommand}" />
+            </Grid>
         </VerticalStackLayout>
     </Grid>
 </ContentPage>

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TransitGames.UI.Games;
+using TransitGames.UI.Maps;
 using TransitGames.UI.Services;
 using TransitGames.UI.Settings;
 using TransitGames.UI.ViewModels;
@@ -17,6 +18,12 @@ public static class UiServiceCollectionExtensions
         services.TryAddSingleton<GameUiRegistry>();
         services.TryAddSingleton(Preferences.Default);
         services.TryAddSingleton<AppPreferences>();
+        services.TryAddSingleton(Geolocation.Default);
+        services.TryAddSingleton<IDeviceLocationService, DeviceLocationService>();
+        services.TryAddSingleton(FilePicker.Default);
+        services.TryAddSingleton<ITextFilePicker, TextFilePicker>();
+        services.TryAddSingleton<IMapLayerProvider>(
+            _ => new MapLayerProvider(Path.Combine(FileSystem.CacheDirectory, "tiles", "osm")));
         services.AddTransient<ActiveSessionViewModel>();
         return services;
     }

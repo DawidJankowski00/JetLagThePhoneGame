@@ -5,8 +5,29 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="AppTitle" xml:space="preserve"><value>Transit Games</value></data>
+  <data name="AreaCity" xml:space="preserve"><value>🏙️ Miasto</value></data>
+  <data name="AreaCityChoose" xml:space="preserve"><value>Wybierz granicę</value></data>
+  <data name="AreaCityHint" xml:space="preserve"><value>Dotknij mapy w wybranym mieście lub dzielnicy.</value></data>
+  <data name="AreaCityLevelFormat" xml:space="preserve"><value>{0} (poziom {1})</value></data>
+  <data name="AreaCityNone" xml:space="preserve"><value>W tym miejscu nie znaleziono granic administracyjnych.</value></data>
+  <data name="AreaDefaultName" xml:space="preserve"><value>Mój obszar</value></data>
+  <data name="AreaDraw" xml:space="preserve"><value>✏️ Rysuj</value></data>
+  <data name="AreaDrawFinish" xml:space="preserve"><value>Gotowe</value></data>
+  <data name="AreaDrawHint" xml:space="preserve"><value>Dotykaj mapy, aby dodać kolejne wierzchołki obszaru.</value></data>
+  <data name="AreaDrawUndo" xml:space="preserve"><value>Cofnij</value></data>
+  <data name="AreaImport" xml:space="preserve"><value>📄 GeoJSON</value></data>
+  <data name="AreaInvalid" xml:space="preserve"><value>Z tych punktów nie da się utworzyć obszaru.</value></data>
+  <data name="AreaNamePrompt" xml:space="preserve"><value>Nazwa obszaru</value></data>
+  <data name="AreaNoSaved" xml:space="preserve"><value>Brak zapisanych obszarów.</value></data>
+  <data name="AreaNone" xml:space="preserve"><value>Nie wybrano obszaru. Narysuj go, wybierz miasto z OSM albo wczytaj plik GeoJSON.</value></data>
+  <data name="AreaSaved" xml:space="preserve"><value>🕘 Zapisane</value></data>
+  <data name="AreaStepTitle" xml:space="preserve"><value>Obszar gry</value></data>
+  <data name="AreaSummaryFormat" xml:space="preserve"><value>{0} · {1:0.#} km²</value></data>
+  <data name="AreaTooFewPoints" xml:space="preserve"><value>Obszar potrzebuje co najmniej 3 punktów.</value></data>
   <data name="Cancel" xml:space="preserve"><value>Anuluj</value></data>
   <data name="ChooseRole" xml:space="preserve"><value>Twoja rola</value></data>
+  <data name="Delete" xml:space="preserve"><value>Usuń</value></data>
+  <data name="Downloading" xml:space="preserve"><value>Pobieranie…</value></data>
   <data name="ElapsedLabel" xml:space="preserve"><value>Czas gry</value></data>
   <data name="Error" xml:space="preserve"><value>Błąd</value></data>
   <data name="FinishGame" xml:space="preserve"><value>Zakończ grę</value></data>
@@ -14,15 +35,26 @@
   <data name="FinishGameTitle" xml:space="preserve"><value>Zakończyć grę?</value></data>
   <data name="HistoryEmpty" xml:space="preserve"><value>Nie rozegrano jeszcze żadnej gry.</value></data>
   <data name="HistoryTitle" xml:space="preserve"><value>Historia gier</value></data>
+  <data name="InvalidGeoJsonFormat" xml:space="preserve"><value>Nieprawidłowy plik GeoJSON: {0}</value></data>
   <data name="LanguageSystem" xml:space="preserve"><value>Systemowy</value></data>
   <data name="LeaveGame" xml:space="preserve"><value>Wyjdź (gra zostanie zapisana)</value></data>
+  <data name="MapCenterOnMe" xml:space="preserve"><value>Pokaż moją pozycję</value></data>
   <data name="MinPlayersFormat" xml:space="preserve"><value>Min. drużyn: {0}</value></data>
+  <data name="ModeBus" xml:space="preserve"><value>Autobus</value></data>
+  <data name="ModeRail" xml:space="preserve"><value>Kolej</value></data>
+  <data name="ModeSubway" xml:space="preserve"><value>Metro</value></data>
+  <data name="ModeTram" xml:space="preserve"><value>Tramwaj</value></data>
+  <data name="NetworkErrorFormat" xml:space="preserve"><value>Nie udało się pobrać danych z OpenStreetMap. Sprawdź połączenie z internetem i spróbuj ponownie.
+
+{0}</value></data>
   <data name="NewGameTitle" xml:space="preserve"><value>Nowa gra</value></data>
+  <data name="Next" xml:space="preserve"><value>Dalej</value></data>
   <data name="No" xml:space="preserve"><value>Nie</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="RestartRequired" xml:space="preserve"><value>Zmiana języka zostanie zastosowana po ponownym uruchomieniu aplikacji.</value></data>
   <data name="ResumeGameFormat" xml:space="preserve"><value>Wznów: {0}</value></data>
   <data name="RoleLabel" xml:space="preserve"><value>Rola</value></data>
+  <data name="Searching" xml:space="preserve"><value>Szukam…</value></data>
   <data name="SelectRoleFirst" xml:space="preserve"><value>Wybierz rolę.</value></data>
   <data name="SettingsLanguage" xml:space="preserve"><value>Język</value></data>
   <data name="SettingsTheme" xml:space="preserve"><value>Motyw</value></data>
@@ -30,6 +62,21 @@
   <data name="StartGame" xml:space="preserve"><value>Rozpocznij grę</value></data>
   <data name="StartSubtitle" xml:space="preserve"><value>Terenowe gry komunikacyjne</value></data>
   <data name="StartTitle" xml:space="preserve"><value>Wybierz grę</value></data>
+  <data name="StationCustom" xml:space="preserve"><value>własna</value></data>
+  <data name="StationNamePrompt" xml:space="preserve"><value>Nazwa stacji</value></data>
+  <data name="StationOutsideArea" xml:space="preserve"><value>Stacja musi leżeć w obszarze gry.</value></data>
+  <data name="StationsAddCustom" xml:space="preserve"><value>➕ Własna</value></data>
+  <data name="StationsAddHint" xml:space="preserve"><value>Dotknij mapy w miejscu nowej stacji.</value></data>
+  <data name="StationsCountFormat" xml:space="preserve"><value>Aktywne stacje: {0} z {1}</value></data>
+  <data name="StationsDownload" xml:space="preserve"><value>⬇️ Pobierz</value></data>
+  <data name="StationsDownloadedFormat" xml:space="preserve"><value>Pobrano stacje: {0} (scalone duplikaty: {1}).</value></data>
+  <data name="StationsEmpty" xml:space="preserve"><value>Brak stacji. Pobierz je z OpenStreetMap albo dodaj własne.</value></data>
+  <data name="StationsImport" xml:space="preserve"><value>📄 GeoJSON</value></data>
+  <data name="StationsImportedFormat" xml:space="preserve"><value>Zaimportowano stacje: {0}. Pominięto poza obszarem: {1}, bez nazwy: {2}.</value></data>
+  <data name="StationsNoneEnabled" xml:space="preserve"><value>Włącz co najmniej jedną stację.</value></data>
+  <data name="StationsSelectMode" xml:space="preserve"><value>Wybierz co najmniej jeden rodzaj transportu.</value></data>
+  <data name="StationsStepTitle" xml:space="preserve"><value>Stacje</value></data>
+  <data name="StationsTapHint" xml:space="preserve"><value>Dotknij stacji na mapie lub na liście, aby ją włączyć lub wyłączyć.</value></data>
   <data name="StatusFinished" xml:space="preserve"><value>Zakończona</value></data>
   <data name="StatusRunning" xml:space="preserve"><value>W trakcie</value></data>
   <data name="StatusSetup" xml:space="preserve"><value>Przygotowanie</value></data>

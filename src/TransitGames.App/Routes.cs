@@ -5,4 +5,6 @@ public static class Routes
 {
     public const string Start = "start";
     public const string NewGame = "newgame";
+    public const string NewGameArea = "newgame-area";
+    public const string NewGameStations = "newgame-stations";
 }

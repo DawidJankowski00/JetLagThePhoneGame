@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.App.ViewModels"
+             xmlns:controls="clr-namespace:TransitGames.UI.Controls;assembly=TransitGames.UI"
+             xmlns:res="clr-namespace:TransitGames.UI.Resources;assembly=TransitGames.UI"
+             x:Class="TransitGames.App.Pages.StationsSetupPage"
+             x:DataType="vm:StationsSetupViewModel"
+             Title="{x:Static res:UiStrings.StationsStepTitle}"
+             Style="{StaticResource PageBackground}">
+    <Grid RowDefinitions="2*,Auto,3*,Auto">
+        <controls:GameMapView Area="{Binding Area}"
+                              Stations="{Binding MapStations}"
+                              TapCommand="{Binding MapTappedCommand}"
+                              StationTapCommand="{Binding StationTappedCommand}" />
+
+        <Label Grid.Row="1" Text="{Binding Hint}" IsVisible="{Binding HasHint}" Style="{StaticResource HintBanner}" />
+
+        <Grid Grid.Row="2" RowDefinitions="Auto,Auto,Auto,*" Padding="16,8,16,0" RowSpacing="6">
+            <FlexLayout Wrap="Wrap" JustifyContent="SpaceBetween">
+                <HorizontalStackLayout>
+                    <CheckBox IsChecked="{Binding UseRail}" />
+                    <Label Text="{x:Static res:UiStrings.ModeRail}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout>
+                    <CheckBox IsChecked="{Binding UseSubway}" />
+                    <Label Text="{x:Static res:UiStrings.ModeSubway}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout>
+                    <CheckBox IsChecked="{Binding UseTram}" />
+                    <Label Text="{x:Static res:UiStrings.ModeTram}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+                <HorizontalStackLayout>
+                    <CheckBox IsChecked="{Binding UseBus}" />
+                    <Label Text="{x:Static res:UiStrings.ModeBus}" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </FlexLayout>
+
+            <Grid Grid.Row="1" ColumnDefinitions="3*,2*,2*" ColumnSpacing="8">
+                <Button Text="{x:Static res:UiStrings.StationsDownload}" Style="{StaticResource ToolButton}"
+                        Command="{Binding DownloadCommand}" />
+                <Button Grid.Column="1" Text="{x:Static res:UiStrings.StationsAddCustom}" Style="{StaticResource ToolButton}"
+                        Command="{Binding ToggleAddCustomCommand}" IsEnabled="{Binding IsIdle}" />
+                <Button Grid.Column="2" Text="{x:Static res:UiStrings.StationsImport}" Style="{StaticResource ToolButton}"
+                        Command="{Binding ImportCommand}" IsEnabled="{Binding IsIdle}" />
+            </Grid>
+
+            <VerticalStackLayout Grid.Row="2" Spacing="2">
+                <Label Text="{Binding CountText}" FontAttributes="Bold" />
+                <Label Text="{Binding Message}" Style="{StaticResource Caption}" />
+                <Label Text="{x:Static res:UiStrings.StationsTapHint}" Style="{StaticResource Caption}" FontSize="12" />
+            </VerticalStackLayout>
+
+            <CollectionView Grid.Row="3" ItemsSource="{Binding Items}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:StationItem">
+                        <Grid ColumnDefinitions="*,Auto,Auto" Padding="0,6" ColumnSpacing="8">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer
+                                    Command="{Binding ToggleCommand, Source={RelativeSource AncestorType={x:Type vm:StationsSetupViewModel}}, x:DataType=vm:StationsSetupViewModel}"
+                                    CommandParameter="{Binding .}" />
+                            </Grid.GestureRecognizers>
+                            <VerticalStackLayout VerticalOptions="Center">
+                                <Label Text="{Binding Name}" FontSize="16" />
+                                <Label Text="{Binding Details}" Style="{StaticResource Caption}" FontSize="12" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="🗑" IsVisible="{Binding IsCustom}" Padding="0" WidthRequest="44"
+                                    BackgroundColor="Transparent" TextColor="{StaticResource Gray500}"
+                                    SemanticProperties.Description="{x:Static res:UiStrings.Delete}"
+                                    Command="{Binding DeleteCustomCommand, Source={RelativeSource AncestorType={x:Type vm:StationsSetupViewModel}}, x:DataType=vm:StationsSetupViewModel}"
+                                    CommandParameter="{Binding .}" />
+                            <Switch Grid.Column="2" IsToggled="{Binding IsEnabled, Mode=OneWay}" InputTransparent="True" />
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+        <Button Grid.Row="3" Margin="16,8,16,16" Text="{x:Static res:UiStrings.StartGame}"
+                Style="{StaticResource BigButton}" Command="{Binding StartCommand}" />
+    </Grid>
+</ContentPage>

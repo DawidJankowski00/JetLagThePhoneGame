@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TransitGames.Core.Events;
 using TransitGames.Core.Games;
+using TransitGames.Core.Geography;
 using TransitGames.Core.Persistence;
 using TransitGames.Core.Sessions;
 using TransitGames.Core.Stations;
@@ -21,6 +22,7 @@ public static class CoreServiceCollectionExtensions
         services.TryAddSingleton<IGameSessionStore, SqliteGameSessionStore>();
         services.TryAddSingleton<IGameEventLog, SqliteGameEventLog>();
         services.TryAddSingleton<IStationRepository, SqliteStationRepository>();
+        services.TryAddSingleton<IGameAreaRepository, SqliteGameAreaRepository>();
         services.TryAddSingleton<IGameSyncService, LocalGameSyncService>();
         services.TryAddSingleton<GameRegistry>();
         services.TryAddSingleton<GameSessionManager>();

@@ -11,7 +11,7 @@ TransitGames.sln
 TransitGames.Libraries.slnf          # filtr: tylko biblioteki bez MAUI + testy (szybki build/CI na Linuksie)
 src/
   TransitGames.Core/                 # kontrakty gier, rejestr, sesja, zdarzenia, timery, SQLite, sync
-  TransitGames.Geo/                  # NTS, projekcje, Overpass, strefy (etap 2+)
+  TransitGames.Geo/                  # NTS, projekcja metryczna, GeoJSON, Overpass, stacje, granice OSM
   TransitGames.Tracking/             # nagrywanie GPS, eksport GPX/GeoJSON (etap 3)
   TransitGames.Games.HideAndSeek/    # logika gry (net10.0, bez MAUI)
   TransitGames.Games.Tag/            # logika gry (net10.0, bez MAUI)

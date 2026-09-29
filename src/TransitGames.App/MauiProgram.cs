@@ -1,8 +1,11 @@
 using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 using TransitGames.App.Pages;
+using TransitGames.App.Services;
 using TransitGames.App.ViewModels;
 using TransitGames.Core;
+using TransitGames.Geo;
 using TransitGames.Games.HideAndSeek.Maui;
 using TransitGames.Games.Tag.Maui;
 using TransitGames.UI;
@@ -22,6 +25,7 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
+            .UseSkiaSharp() // Mapsui renders with SkiaSharp
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -30,6 +34,7 @@ public static class MauiProgram
 
         var services = builder.Services;
         services.AddTransitGamesCore(Path.Combine(FileSystem.AppDataDirectory, "transitgames.db3"));
+        services.AddTransitGamesGeo();
         services.AddTransitGamesUi();
 
         // Games: one line per game.
@@ -38,7 +43,10 @@ public static class MauiProgram
 
         services.AddSingleton<AppShell>();
         services.AddTransient<StartPage>().AddTransient<StartViewModel>();
+        services.AddSingleton<NewGameWizard>();
         services.AddTransient<NewGamePage>().AddTransient<NewGameViewModel>();
+        services.AddTransient<AreaSetupPage>().AddTransient<AreaSetupViewModel>();
+        services.AddTransient<StationsSetupPage>().AddTransient<StationsSetupViewModel>();
         services.AddTransient<HistoryPage>().AddTransient<HistoryViewModel>();
         services.AddTransient<TracksPage>();
         services.AddTransient<SettingsPage>().AddTransient<SettingsViewModel>();

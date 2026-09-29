@@ -457,6 +457,21 @@
         <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
     </Style>
 
+    <!-- Compact secondary action (map tools, wizard options) -->
+    <Style x:Key="ToolButton" TargetType="Button" BasedOn="{StaticResource BigSecondaryButton}">
+        <Setter Property="MinimumHeightRequest" Value="48" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Padding" Value="8,0" />
+    </Style>
+
+    <!-- Instruction shown over the bottom panel while a map tool is active -->
+    <Style x:Key="HintBanner" TargetType="Label">
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="TextColor" Value="White" />
+        <Setter Property="BackgroundColor" Value="{StaticResource Tertiary}" />
+    </Style>
+
     <Style x:Key="PageBackground" TargetType="ContentPage">
         <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray950}}" />
     </Style>

@@ -23,13 +23,53 @@
 - **`LocalGameSyncService`**: tryb offline; każda publikowana wiadomość wraca lokalnie i trafia do `Outbox`
   (UI może pokazać, co przekazać drugiej drużynie komunikatorem).
 
+## Geo (etap 2)
+
+- **Projekcja lokalna = Transverse Mercator (WGS84) ze środkiem w centroidzie obszaru**, nie AEQD: ProjNet 2.1
+  nie ma projekcji azymutalnej równoodległej. Specyfikacja podaje AEQD jako przykład; TM ze współczynnikiem 1
+  w promieniu 50 km ma błąd skali < 0,004 % (< 2 m na 50 km), co testy porównują z łukiem południka i równoleżnika.
+  Wszystkie obliczenia (odległości, bufory, deduplikacja) idą w metrach przez `LocalProjection`.
+- **Stacje z Overpass pobierane w bbox obszaru** (`out center`), filtrowane dokładnym poligonem lokalnie
+  (szybsze i pewniejsze niż filtr `poly:` z tysiącami wierzchołków).
+- **Deduplikacja**: ta sama nazwa (bez rozróżniania wielkości liter i białych znaków) + łańcuch odległości ≤ 150 m
+  (single linkage). Scalona stacja ma najmniejsze leksykograficznie id (stabilne między pobraniami — flagi
+  włączenia przeżywają ponowne pobranie), sumę trybów i średnią pozycję.
+- **Numery peronów**: przystanki typu „Centrum 07” (Warszawa i inne miasta z numeracją ZTM) — sufiks liczbowy
+  jest usuwany, gdy powtarza koniec `ref`/`local_ref`; bez tego każdy peron byłby osobną stacją (na danych
+  Śródmieścia: 91 → 50 stacji). Stacje kolejowe/metra (`railway=station|halt`, `public_transport=station`)
+  zachowują pełną nazwę.
+- **Elementy bez nazwy są pomijane** — graczom trzeba móc powiedzieć, o którą stację chodzi.
+- **Granice administracyjne**: wybór przez dotknięcie mapy (`is_in` → lista granic od najmniejszej), bez
+  wyszukiwania po nazwie (globalne zapytania po nazwie są wolne i niejednoznaczne). Geometria z relacji
+  (`out geom`): outer − inner przez `Polygonizer`, upraszczana do 10 m (inaczej granica miasta to setki kB
+  w każdym zapisie sesji).
+- **Overpass**: dwa publiczne serwery (overpass-api.de, maps.mail.ru), identyfikujący User-Agent, 2 rundy
+  prób z przerwą 4 s przy 429/5xx/timeout (publiczne instancje często chwilowo zwracają 504).
+- **Klucz obszaru** = SHA-256 znormalizowanej geometrii zaokrąglonej do 1e-6° → cache stacji per obszar,
+  ten sam plik zaimportowany dwa razy trafia w ten sam cache.
+- **Sesja ma własną kopię obszaru i włączonych stacji** (`GameSettings.Area`, `GameSettings.Stations`),
+  więc wznowiona gra nie zależy od późniejszych zmian w cache stacji. Obszary są też zapamiętywane
+  (`IGameAreaRepository`) do ponownego użycia offline.
+
+## Mapa
+
+- **Kafelki OSM** (`tile.openstreetmap.org`) przez `HttpTileSource` z User-Agent aplikacji i trwałym cache
+  plikowym (14 dni, `FileSystem.CacheDirectory/tiles/osm`), atrybucja wyświetlana przez Mapsui.
+  Przy większym ruchu (publiczne wydanie) trzeba przejść na dostawcę kafelków z umową — polityka OSM
+  nie pozwala na intensywne użycie.
+- **`GameMapView`** (TransitGames.UI) to jedna kontrolka mapy dla wszystkich ekranów: warstwy obszaru, stacji,
+  rysowanego poligonu i własnej pozycji jako bindowalne właściwości; gry dokładają własne warstwy
+  przez `AddLayer` i `IMapLayerProvider`. Kafelki są jasne także w trybie ciemnym.
+
 ## Build
 
 - **TFM-y MAUI** ustawiane centralnie (`MauiTargetFrameworks` w `Directory.Build.props`): Android zawsze,
   iOS na macOS albo z `-p:EnableIos=true`. Windows/MacCatalyst usunięte (nie są celem projektu).
   iOS weryfikowany w CI (`macos-latest`, build bez podpisu na symulator).
-- **Central Package Management** + transitive pinning: przypięty natywny `SQLitePCLRaw.lib.e_sqlite3(.android)`
-  2.1.13 z powodu podatności GHSA-2m69-gcr7-jv3q w 2.1.11 (zależność `sqlite-net-pcl`).
+- **Central Package Management** + transitive pinning. SQLite: `sqlite-net-pcl` 1.11 sam dostarcza
+  SQLitePCLRaw 3.x i natywną bibliotekę (`SourceGear.sqlite3` 3.53); dodatkowy `SQLitePCLRaw.bundle_green` 2.1.x
+  z etapu 1 był zbędny, dublował `libe_sqlite3.so` w APK i wnosił podatną wersję (GHSA-2m69-gcr7-jv3q) — usunięty
+  w etapie 2.
 - **Silnie typowane zasoby bez plików Designer**: `Directory.Build.targets` generuje klasy z `Resources/*.resx`
   przy buildzie. Kultury inne niż `en` trzeba dopisać w tym pliku.
 - `Microsoft.Maui.Controls` przypięty jawnie (10.0.110) w `Directory.Packages.props`.

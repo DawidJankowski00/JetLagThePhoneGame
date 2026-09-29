@@ -5,8 +5,29 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="AppTitle" xml:space="preserve"><value>Transit Games</value></data>
+  <data name="AreaCity" xml:space="preserve"><value>🏙️ City</value></data>
+  <data name="AreaCityChoose" xml:space="preserve"><value>Choose a boundary</value></data>
+  <data name="AreaCityHint" xml:space="preserve"><value>Tap the map inside the chosen city or district.</value></data>
+  <data name="AreaCityLevelFormat" xml:space="preserve"><value>{0} (level {1})</value></data>
+  <data name="AreaCityNone" xml:space="preserve"><value>No administrative boundaries found here.</value></data>
+  <data name="AreaDefaultName" xml:space="preserve"><value>My area</value></data>
+  <data name="AreaDraw" xml:space="preserve"><value>✏️ Draw</value></data>
+  <data name="AreaDrawFinish" xml:space="preserve"><value>Done</value></data>
+  <data name="AreaDrawHint" xml:space="preserve"><value>Tap the map to add the area's corners.</value></data>
+  <data name="AreaDrawUndo" xml:space="preserve"><value>Undo</value></data>
+  <data name="AreaImport" xml:space="preserve"><value>📄 GeoJSON</value></data>
+  <data name="AreaInvalid" xml:space="preserve"><value>These points do not form an area.</value></data>
+  <data name="AreaNamePrompt" xml:space="preserve"><value>Area name</value></data>
+  <data name="AreaNoSaved" xml:space="preserve"><value>No saved areas yet.</value></data>
+  <data name="AreaNone" xml:space="preserve"><value>No area selected. Draw one, pick a city from OSM or import a GeoJSON file.</value></data>
+  <data name="AreaSaved" xml:space="preserve"><value>🕘 Saved</value></data>
+  <data name="AreaStepTitle" xml:space="preserve"><value>Game area</value></data>
+  <data name="AreaSummaryFormat" xml:space="preserve"><value>{0} · {1:0.#} km²</value></data>
+  <data name="AreaTooFewPoints" xml:space="preserve"><value>An area needs at least 3 points.</value></data>
   <data name="Cancel" xml:space="preserve"><value>Cancel</value></data>
   <data name="ChooseRole" xml:space="preserve"><value>Your role</value></data>
+  <data name="Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Downloading" xml:space="preserve"><value>Downloading…</value></data>
   <data name="ElapsedLabel" xml:space="preserve"><value>Game time</value></data>
   <data name="Error" xml:space="preserve"><value>Error</value></data>
   <data name="FinishGame" xml:space="preserve"><value>Finish game</value></data>
@@ -14,15 +35,26 @@
   <data name="FinishGameTitle" xml:space="preserve"><value>Finish the game?</value></data>
   <data name="HistoryEmpty" xml:space="preserve"><value>No games played yet.</value></data>
   <data name="HistoryTitle" xml:space="preserve"><value>Game history</value></data>
+  <data name="InvalidGeoJsonFormat" xml:space="preserve"><value>Invalid GeoJSON file: {0}</value></data>
   <data name="LanguageSystem" xml:space="preserve"><value>System</value></data>
   <data name="LeaveGame" xml:space="preserve"><value>Leave (game stays saved)</value></data>
+  <data name="MapCenterOnMe" xml:space="preserve"><value>Show my location</value></data>
   <data name="MinPlayersFormat" xml:space="preserve"><value>Min. teams: {0}</value></data>
+  <data name="ModeBus" xml:space="preserve"><value>Bus</value></data>
+  <data name="ModeRail" xml:space="preserve"><value>Rail</value></data>
+  <data name="ModeSubway" xml:space="preserve"><value>Subway</value></data>
+  <data name="ModeTram" xml:space="preserve"><value>Tram</value></data>
+  <data name="NetworkErrorFormat" xml:space="preserve"><value>Could not download data from OpenStreetMap. Check your internet connection and try again.
+
+{0}</value></data>
   <data name="NewGameTitle" xml:space="preserve"><value>New game</value></data>
+  <data name="Next" xml:space="preserve"><value>Next</value></data>
   <data name="No" xml:space="preserve"><value>No</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="RestartRequired" xml:space="preserve"><value>The language change applies after restarting the app.</value></data>
   <data name="ResumeGameFormat" xml:space="preserve"><value>Resume: {0}</value></data>
   <data name="RoleLabel" xml:space="preserve"><value>Role</value></data>
+  <data name="Searching" xml:space="preserve"><value>Searching…</value></data>
   <data name="SelectRoleFirst" xml:space="preserve"><value>Choose a role.</value></data>
   <data name="SettingsLanguage" xml:space="preserve"><value>Language</value></data>
   <data name="SettingsTheme" xml:space="preserve"><value>Theme</value></data>
@@ -30,6 +62,21 @@
   <data name="StartGame" xml:space="preserve"><value>Start game</value></data>
   <data name="StartSubtitle" xml:space="preserve"><value>Real-world transit games</value></data>
   <data name="StartTitle" xml:space="preserve"><value>Choose a game</value></data>
+  <data name="StationCustom" xml:space="preserve"><value>custom</value></data>
+  <data name="StationNamePrompt" xml:space="preserve"><value>Station name</value></data>
+  <data name="StationOutsideArea" xml:space="preserve"><value>The station must be inside the game area.</value></data>
+  <data name="StationsAddCustom" xml:space="preserve"><value>➕ Custom</value></data>
+  <data name="StationsAddHint" xml:space="preserve"><value>Tap the map where the new station is.</value></data>
+  <data name="StationsCountFormat" xml:space="preserve"><value>Active stations: {0} of {1}</value></data>
+  <data name="StationsDownload" xml:space="preserve"><value>⬇️ Download</value></data>
+  <data name="StationsDownloadedFormat" xml:space="preserve"><value>Stations downloaded: {0} ({1} duplicates merged).</value></data>
+  <data name="StationsEmpty" xml:space="preserve"><value>No stations yet. Download them from OpenStreetMap or add your own.</value></data>
+  <data name="StationsImport" xml:space="preserve"><value>📄 GeoJSON</value></data>
+  <data name="StationsImportedFormat" xml:space="preserve"><value>Imported stations: {0}. Skipped outside the area: {1}, without a name: {2}.</value></data>
+  <data name="StationsNoneEnabled" xml:space="preserve"><value>Enable at least one station.</value></data>
+  <data name="StationsSelectMode" xml:space="preserve"><value>Select at least one transit mode.</value></data>
+  <data name="StationsStepTitle" xml:space="preserve"><value>Stations</value></data>
+  <data name="StationsTapHint" xml:space="preserve"><value>Tap a station on the map or in the list to enable or disable it.</value></data>
   <data name="StatusFinished" xml:space="preserve"><value>Finished</value></data>
   <data name="StatusRunning" xml:space="preserve"><value>In progress</value></data>
   <data name="StatusSetup" xml:space="preserve"><value>Setup</value></data>

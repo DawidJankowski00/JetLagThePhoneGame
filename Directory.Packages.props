@@ -18,10 +18,6 @@
     <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.0" />
     <PackageVersion Include="sqlite-net-pcl" Version="1.11.285" />
-    <PackageVersion Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
-    <!-- Patched native SQLite (GHSA-2m69-gcr7-jv3q); keep in the 2.1.x line used by bundle_green. -->
-    <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.13" />
-    <PackageVersion Include="SQLitePCLRaw.lib.e_sqlite3.android" Version="2.1.13" />
     <PackageVersion Include="NetTopologySuite" Version="2.6.0" />
     <PackageVersion Include="NetTopologySuite.IO.GeoJSON4STJ" Version="4.0.0" />
     <PackageVersion Include="ProjNET" Version="2.1.0" />

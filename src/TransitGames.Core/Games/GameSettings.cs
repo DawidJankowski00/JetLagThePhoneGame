@@ -1,4 +1,5 @@
 using TransitGames.Core.Geography;
+using TransitGames.Core.Stations;
 
 namespace TransitGames.Core.Games;
 
@@ -10,6 +11,9 @@ public abstract class GameSettings
 {
     public GameAreaDefinition? Area { get; set; }
 
-    /// <summary>Ids of stations selected for this game (empty = all enabled stations in the area).</summary>
-    public List<string> StationIds { get; set; } = [];
+    /// <summary>
+    /// Enabled stations of the area, copied when the game starts. The session keeps its own copy so a resumed game
+    /// is unaffected by later edits or re-downloads of the station cache.
+    /// </summary>
+    public List<Station> Stations { get; set; } = [];
 }
