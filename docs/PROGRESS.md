@@ -22,6 +22,10 @@ Plik służy jako podsumowanie do kontynuacji pracy (także w nowej sesji). Spec
   aplikacja wraca do trwającej gry.
 - Testy: 16/16 (Core 12, HideAndSeek 2, Tag 2).
 
+**Po etapie 1 (ustalenie):** `LocationSharingPolicy` — Hide and Seek: ukrywający widzą szukających;
+Tag: goniący widzą uciekających; nigdy odwrotnie. Etapy 4/5/7 muszą z tego korzystać przy pingach i mapach.
+Testy: 24/24.
+
 **Następny krok — Etap 2: Mapa + obszar + stacje**
 - Mapsui w `TransitGames.UI` (kontrolka mapy, `IMapLayerProvider`, OSM tiles z User-Agent i cache).
 - `TransitGames.Geo`: parsowanie GeoJSON (NTS), projekcja AEQD wokół środka obszaru (ProjNet), klucz obszaru,

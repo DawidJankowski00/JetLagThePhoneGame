@@ -14,6 +14,15 @@ public sealed class GameRegistry
             {
                 throw new InvalidOperationException($"Game module id '{module.Id}' is registered more than once.");
             }
+
+            var roleIds = module.Roles.Select(r => r.Id).ToHashSet(StringComparer.Ordinal);
+            var badRule = module.LocationSharing.Rules
+                .FirstOrDefault(r => !roleIds.Contains(r.ViewerRoleId) || !roleIds.Contains(r.SubjectRoleId));
+            if (badRule is not null)
+            {
+                throw new InvalidOperationException(
+                    $"Game module '{module.Id}' has a location sharing rule for an unknown role: {badRule}.");
+            }
         }
 
         Modules = _modules.Values.ToList();

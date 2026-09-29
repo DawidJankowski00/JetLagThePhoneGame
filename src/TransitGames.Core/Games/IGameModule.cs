@@ -23,6 +23,9 @@ public interface IGameModule
 
     IReadOnlyList<GameRole> Roles { get; }
 
+    /// <summary>Which role may see whose location. Anything not listed stays private.</summary>
+    LocationSharingPolicy LocationSharing { get; }
+
     GameSettings CreateDefaultSettings();
 
     IGameSession CreateSession(GameSettings settings, string localRoleId);

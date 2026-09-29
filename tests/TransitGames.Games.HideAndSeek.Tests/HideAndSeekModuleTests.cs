@@ -35,4 +35,15 @@ public class HideAndSeekModuleTests
         Assert.Equal(TimeSpan.FromMinutes(30), restored.Settings.HidingTime);
         Assert.Equal(HideAndSeekRoles.Seeker, restored.LocalRoleId);
     }
+
+    [Fact]
+    public void HiderSeesSeekers_SeekersNeverSeeHider()
+    {
+        var sharing = new HideAndSeekModule().LocationSharing;
+
+        Assert.True(sharing.CanSee(HideAndSeekRoles.Hider, HideAndSeekRoles.Seeker));
+        Assert.False(sharing.CanSee(HideAndSeekRoles.Seeker, HideAndSeekRoles.Hider));
+        Assert.False(sharing.IsShared(HideAndSeekRoles.Hider));
+        Assert.Throws<LocationPrivacyException>(() => sharing.EnsureMayShare(HideAndSeekRoles.Hider));
+    }
 }

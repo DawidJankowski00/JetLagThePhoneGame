@@ -27,4 +27,15 @@ public class TagModuleTests
         Assert.Equal(80, restored.Settings.CatchRadiusMeters);
         Assert.Equal(TimeSpan.FromMinutes(10), restored.Settings.RevealInterval);
     }
+
+    [Fact]
+    public void ChaserSeesRunners_RunnersNeverSeeChaser()
+    {
+        var sharing = new TagModule().LocationSharing;
+
+        Assert.True(sharing.CanSee(TagRoles.Chaser, TagRoles.Runner));
+        Assert.False(sharing.CanSee(TagRoles.Runner, TagRoles.Chaser));
+        Assert.False(sharing.IsShared(TagRoles.Chaser));
+        Assert.Throws<LocationPrivacyException>(() => sharing.EnsureMayShare(TagRoles.Chaser));
+    }
 }

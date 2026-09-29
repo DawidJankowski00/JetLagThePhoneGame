@@ -41,6 +41,9 @@ public sealed class XModule : GameModule<XSettings, XSession>
     public override int MinPlayers => 2;
     public override IReadOnlyList<GameRole> Roles { get; } = [ new("a", "...", "..."), new("b", "...", "...") ];
 
+    // Kto widzi czyją lokalizację (jednokierunkowo). Domyślnie: nikt nikogo.
+    public override LocationSharingPolicy LocationSharing { get; } = new([new LocationSharingRule("a", "b")]);
+
     protected override XSession CreateSession(XSettings s, string role) => new(s, role);
     protected override XSession RestoreSession(GameSessionSnapshot snap, XSettings s) => new(snap, s);
 

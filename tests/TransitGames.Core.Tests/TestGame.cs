@@ -42,6 +42,10 @@ internal sealed class TestModule : GameModule<TestSettings, TestSession>
     public override int MinPlayers => 2;
     public override IReadOnlyList<GameRole> Roles { get; } = [new("a", "A", ""), new("b", "B", "")];
 
+    public LocationSharingPolicy Sharing { get; init; } = LocationSharingPolicy.None;
+
+    public override LocationSharingPolicy LocationSharing => Sharing;
+
     protected override TestSession CreateSession(TestSettings settings, string localRoleId) => new(settings, localRoleId);
 
     protected override TestSession RestoreSession(GameSessionSnapshot snapshot, TestSettings settings) =>

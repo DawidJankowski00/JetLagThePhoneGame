@@ -20,6 +20,10 @@ public sealed class HideAndSeekModule : GameModule<HideAndSeekSettings, HideAndS
         new(HideAndSeekRoles.Seeker, HideAndSeekStrings.RoleSeeker, HideAndSeekStrings.RoleSeekerDescription),
     ];
 
+    /// <summary>Hiders may see the seekers; the hiders' location is never shared.</summary>
+    public override LocationSharingPolicy LocationSharing { get; } =
+        new([new LocationSharingRule(HideAndSeekRoles.Hider, HideAndSeekRoles.Seeker)]);
+
     protected override HideAndSeekSession CreateSession(HideAndSeekSettings settings, string localRoleId) =>
         new(settings, localRoleId);
 

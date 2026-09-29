@@ -15,6 +15,11 @@
   automatycznie przechodzi do ekranu gry.
 - **Obszar gry w Core jako GeoJSON (tekst)** — `GameAreaDefinition`; parsowanie geometrii w `TransitGames.Geo`.
 - **Timery jako znaczniki czasu** (`RoundTimer`), nie jako działający licznik — przeżywają restart aplikacji.
+- **Prywatność lokalizacji (ustalenie z właścicielem projektu, poza specyfikacją dla Hide and Seek)**:
+  udostępnianie jest jednokierunkowe i zadeklarowane w module (`IGameModule.LocationSharing`,
+  `LocationSharingPolicy`). Hide and Seek: ukrywający widzą szukających, nigdy odwrotnie. Tag: goniący widzą
+  uciekających, nigdy odwrotnie (przy zamianie ról reguła podąża za rolą). Domyślnie wszystko jest prywatne;
+  każde wysłanie/pokazanie pozycji innej roli musi przejść przez `CanSee`/`EnsureMayShare`.
 - **`LocalGameSyncService`**: tryb offline; każda publikowana wiadomość wraca lokalnie i trafia do `Outbox`
   (UI może pokazać, co przekazać drugiej drużynie komunikatorem).
 

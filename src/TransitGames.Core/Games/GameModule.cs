@@ -16,6 +16,9 @@ public abstract class GameModule<TSettings, TSession> : IGameModule
     public abstract int MinPlayers { get; }
     public abstract IReadOnlyList<GameRole> Roles { get; }
 
+    /// <summary>Default: every role's location is private.</summary>
+    public virtual LocationSharingPolicy LocationSharing => LocationSharingPolicy.None;
+
     public virtual TSettings CreateDefaultSettings() => new();
 
     GameSettings IGameModule.CreateDefaultSettings() => CreateDefaultSettings();
