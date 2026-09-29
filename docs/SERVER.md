@@ -59,7 +59,7 @@ Każda drużyna może mieć kilka telefonów (każdy dołącza kodem z tą samą
   gry (Hide and Seek: ukrywający widzą szukających; Tag: goniący widzą uciekających), niezależnie od tego, o co
   prosi klient.
 
-## Protokół (wersja 2)
+## Protokół (wersja 3)
 
 REST:
 - `GET /api/info` → `ServerInfo` (nazwa, wersja, wersja protokołu)
@@ -72,8 +72,11 @@ SignalR `/hubs/game` (token w `access_token` lub nagłówku `Authorization: Bear
 - `Sync(afterSequence)` → wiadomości przegapione od danego numeru
 - `LatestLocations()` → ostatnie pozycje widocznych urządzeń
 - serwer → klient: `Receive(SequencedMessage)`, `Peers(SyncPeer[])`
-- zmiana ról: wiadomość z polem `roleChange` (`fromVersion` + mapowanie ról) przestawia role wszystkich urządzeń
-  gry, jeśli `fromVersion` jest aktualna, mapowanie jest permutacją ról, a wiadomość jest do wszystkich; w innym
-  wypadku pole jest usuwane. Widoczność wiadomości liczy się wg roli urządzenia w wersji z chwili wysłania.
+- zmiana ról: wiadomość z polem `roleChange` (`fromVersion` + mapowanie ról i/lub `devices`: id urządzenia →
+  rola) przestawia role urządzeń gry, jeśli `fromVersion` jest aktualna, mapowanie jest permutacją ról, role w
+  `devices` istnieją, a wiadomość jest do wszystkich; w innym wypadku pole jest usuwane. `devices` (wersja 3)
+  pozwala zmienić rolę pojedynczych graczy (Tag: złapany → goniący, wylosowany → uciekinier). Po aktualizacji
+  aplikacji trzeba przebudować kontener (`docker compose up -d --build`) — aplikacja i serwer muszą mieć tę samą
+  wersję protokołu. Widoczność wiadomości liczy się wg roli urządzenia w wersji z chwili wysłania.
 
 Kontrakty: `src/TransitGames.Core/Sync/OnlineContracts.cs`.

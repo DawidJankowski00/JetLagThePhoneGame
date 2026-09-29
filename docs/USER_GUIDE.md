@@ -50,21 +50,22 @@ a aplikacja na ich podstawie zaciemnia na mapie miejsca, w których ukrywającyc
 
 ## Berek (Tag)
 
-Gra w rundach. **Uciekający** zdobywają cele na mapie i unikają złapania, **goniący** śledzą ich pingi. Po każdej
-rundzie drużyny zamieniają się rolami.
+Tylko online — każdy gracz potrzebuje telefonu z aplikacją. Zasady: [README](../README.md#berek-tag--zasady).
 
-- Runda zaczyna się **przewagą** — goniący czekają (przyjdzie powiadomienie „Koniec przewagi”). Potem runda trwa do
-  złapania, dotarcia uciekających do mety albo końca czasu rundy.
-- **Cele** (lista „Cele”): uciekający zdobywają je na miejscu. Cel bez wyzwania zdobywa się sam, gdy GPS znajdzie się
-  w jego zasięgu; cel z wyzwaniem — po wykonaniu wyzwania i potwierdzeniu. W trybie monet nagrody to monety na
-  przejazdy („Wydaj monety”).
-- **Pingi:** online pozycja uciekających trafia do goniących automatycznie co ustawiony czas (goniący dostają
-  powiadomienie „Nowy ping”). Offline przypomnienie mówi, kiedy wysłać pozycję („Wyślij pozycję” → link do mapy przez komunikator),
-  a goniący wpisują ją dotknięciem mapy.
-- **Złapanie:** gdy goniący są w zasięgu złapania (zasada dla graczy — aplikacja nie zna pozycji goniących), jedna
-  z drużyn naciska „Złapany!” (goniący) albo „Złapali nas” (uciekający). Role się zamieniają, zaczyna się następna runda.
-- **Wynik rundy:** przetrwane minuty + punkty z celów + premia za metę. Tabela wyników jest pod „Wyniki”.
-- **Prywatność:** goniący widzą uciekających tylko w pingach, uciekający nigdy nie widzą goniących.
+1. **Host:** Gry → Berek → (rola „Goniący” jest ustawiona) → obszar → stacje → ustawienia → „Rozpocznij grę”.
+   Podaj innym kod gry.
+2. **Pozostali:** „Dołącz do gry online” → kod → „Dołącz jako: Goniący”.
+3. **Cele:** „🎯 Mój cel” → dotknij mapy (przy stacji wybiera się stacja) → „Zatwierdź”. W trybie „host ustawia”
+   host używa „🎯 Cele graczy”; w trybie losowania cele pojawią się po starcie.
+4. **Start (host):** „🚦 Start” → punkt startowy z GPS albo z mapy → potwierdź. Aplikacja losuje uciekiniera.
+5. **Uciekinier:** „🚌 Przejazd” (wybór środka transportu z ceną; 🚫 = zakazany przez klątwę) i „🛑 Koniec
+   przejazdu”; „🃏 Losuj kartę”, przy wyzwaniu „✅ Wyzwanie wykonane” / „✖️ Rezygnuję”; aktywne klątwy są na liście
+   z czasem wygaśnięcia. Przy celu aplikacja sama zapyta „Jesteś na miejscu?”. Złapany naciska „🙌 Złapany” i
+   wybiera, kto złapał.
+6. **Goniący:** po przewadze „✋ Złapałem!” wysyła prośbę do uciekiniera. Host ma „⚠️ Wymuś złapanie”,
+   „🪙 Korekta monet” i — gdy po czasie gry telefon uciekiniera milczy — „📍 Wg ostatniego pingu” / „🗺️ Zaznacz na
+   mapie”.
+7. **Wyniki** („🏆 Wyniki”): zwycięzca, ranking celów, tury, salda i twoja historia monet.
 
 ## Historia gier
 

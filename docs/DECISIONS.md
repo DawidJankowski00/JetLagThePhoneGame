@@ -181,7 +181,10 @@
   (`IGameUiModule.CreateSettingsView`); przełącznik „Graj online” przeniesiony tutaj.
 - Powiadomienia systemowe (koniec czasu ukrycia, nowe pytanie) — w etapie dopracowania.
 
-## Tag (etap 6)
+## Tag (etap 6) — zasady zastąpione przebudową niżej
+
+Opis pierwszej wersji (drużyny, rundy, cele); stare gry są w historii tylko do odczytu.
+
 
 - **Rundy w jednej sesji, zamiana ról przez `RoleChange`.** Wiadomość kończąca rundę (`tag.round.end`) niesie
   `RoleChange` (zamiana runner↔chaser) dla konkretnej „wersji ról”. Stosują ją wszyscy tak samo: sesja
@@ -256,6 +259,57 @@
 - **Tryb ciemny:** przejrzane ekrany; poprawione przełączniki (włączony był szary) i akcent natywnych okien wyboru
   (`values-night/colors.xml`). Legenda stref ukrycia ma własny kolor `MapHidingZoneLegend` (kafelki mapy są zawsze
   jasne). Własna ikona i ekran startowy zamiast domyślnych „.NET”.
+
+## Tag — przebudowa zasad (jeden uciekinier, monety, karty)
+
+- **Tylko online.** Salda, cele i losowania każdego gracza muszą być identyczne na wszystkich telefonach, a
+  przepisywanie ich ręcznie przez komunikator by się rozjeżdżało — decyzja użytkownika: Tag bez trybu offline
+  (`IGameModule.RequiresOnline`, przełącznik w kreatorze zablokowany).
+- **Stan = wiadomości.** Każdy telefon buduje ten sam stan z tych samych wiadomości `tag.*` (wszystkie „do
+  wszystkich”), stosowanych idempotentnie (klucze: numer tury, id przejazdu/karty/transakcji). Losowania (pierwszy
+  uciekinier, następny, karta, cele ze stacji) wykonuje telefon wysyłający i wysyła wynik. Źródłem prawdy dla
+  tury jest telefon uciekiniera (przejazdy, karty, złapanie, dotarcie, pozycja na koniec), dla gry — host (start,
+  korekty, awaryjne złapanie i rozstrzygnięcie).
+- **Gracze = urządzenia.** Gracz to urządzenie w grze online (`SyncPeer.DeviceId`); sesja zna swoje
+  `LocalDeviceId` i `IsHost` (nowe kolumny w `sessions`). Wszyscy dołączają jako goniący (`InitialRoleId`), skład
+  ustala się przy starcie — kto dołączy później, tylko ogląda.
+- **Role pojedynczych graczy — protokół 3.** `RoleChange.Devices` (id urządzenia → rola): start robi wylosowanego
+  uciekinierem, złapanie zamienia dwie osoby. Serwer przenosi tylko te urządzenia między grupami ról, więc
+  prywatność (goniący widzą pingi uciekiniera, nigdy odwrotnie) nadal egzekwuje serwer. Wersja zmiany ról wynika z
+  numeru tury (start = 0, złapanie w turze k = k + 1), więc spóźnione drugie potwierdzenie tego samego złapania nie
+  zmieni ról drugi raz.
+- **Kto potwierdza złapanie.** Telefony stosują własne wiadomości od razu (przed serwerem), więc dwa zgłoszenia naraz
+  mogłyby wylosować różnych następców. Dlatego złapanie potwierdza tylko uciekinier (goniący wysyła prośbę), a host
+  może je wymusić, gdy telefon uciekiniera milczy. Uproszczenie: jednoczesne wymuszenie przez hosta i potwierdzenie
+  przez uciekiniera to jedyny pozostały wyścig — UI ostrzega, by wymuszać tylko przy milczącym telefonie.
+- **Pozycja uciekiniera nie trafia do wiadomości** poza miejscem złapania (goniący tam są) i końcem gry (rozstrzyga
+  wynik). Zdarzenia z miejscem na telefonie uciekiniera (przejazdy, karty) biorą je z lokalnego GPS i nie są
+  wysyłane — u innych te wpisy są bez miejsca.
+- **Opłaty.** Stawka za km: pierwszy km z góry (zaliczka, zaokrąglenie w górę), po przejeździe koszt z długości
+  trasy GPS między początkiem a końcem przejazdu (min. 1 moneta; nadpłata wraca), dopłata może dać saldo ujemne.
+  Brak trasy → minimum. Mnożniki klątw liczą się z chwili rozpoczęcia przejazdu i mnożą się między sobą. Przejazd
+  otwarty w chwili złapania kończy się bez dopłaty. Goniący nie płacą, pieszo nic nie kosztuje.
+- **Klątwy.** Utrudnienie trwa tyle, co klątwa: `untilEndOfTurn` do złapania, `wholeGame` do końca gry (także w
+  kolejnych turach tego gracza jako uciekiniera), `minutes:N` od wylosowania. Egzekwowane: `banTransport`,
+  `onlyTransport`, `fareMultiplier`, `noDraw`; bez `restriction` — honorowe. Losowanie preferuje karty jeszcze
+  niewylosowane; wyzwanie po limicie czasu przepada i liczy się jak rezygnacja (przerwa w losowaniu).
+- **Talia JSON** (`Cards/cards.json`, własne teksty pl/en): pola `type`, `title`, `description`, `reward`,
+  `timeLimitMinutes`, `duration`, `restriction`; tekst może być też zwykłym stringiem. Lista wyzwań z pierwszej
+  wersji (`{"challenges": [...]}`) wczytuje się jako karty Challenge (miejsca są pomijane).
+- **Koniec po czasie.** Gra kończy się na granicy czasu (nawet gdy wiadomość przyszła później). Pozycję wysyła
+  telefon uciekiniera sam; gdy milczy, host rozstrzyga wg ostatniego pingu albo punktu na mapie (źródło zapisane
+  i pokazane w wynikach). Odległość geodezyjna, porównywana w pełnych metrach — równe odległości = remis.
+- **Cele jawne / ukryte.** „Ukryte” to zasada wyświetlania: dane celów są w wiadomościach dla wszystkich (jak inne
+  dane gry między znajomymi), aplikacja pokazuje cudze dopiero na koniec.
+- **Stare gry.** Migracja `tag.v2-rules` (tabela `schema_migrations`, uruchamiana raz przez magazyn sesji)
+  przelicza wynik starej gry starym sposobem, zapisuje go w stanie i zamyka niezakończone gry; ustawienia (obszar,
+  stacje) zostają, więc historia pokazuje mapę. Wiadomości do takiej gry są ignorowane.
+- **Eksport.** Punkty zdarzeń z miejscem jak dotąd; odcinki trasy dzielą się tam, gdzie zdarzenie niesie
+  `GameEventData.LocalRole` (tury Tag) — GPX: `tg:role` w `extensions` segmentu (zgodne z XSD GPX 1.1), GeoJSON:
+  osobny obiekt na okres roli.
+- **Uproszczenia:** brak powiadomienia o prośbie o złapanie, gdy aplikacja uciekiniera jest zamknięta dłużej niż
+  pozwala system (powiadomienie przychodzi, gdy wiadomość dotrze); geofencing celu działa, gdy gra jest otwarta
+  (także przy zgaszonym ekranie).
 
 ## Build
 

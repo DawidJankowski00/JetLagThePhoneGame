@@ -220,3 +220,32 @@ Tryb online powstał przed grami, żeby Hide and Seek i Tag od razu z niego korz
 
 **Wszystkie etapy specyfikacji są zrobione.** Możliwe dalsze kroki: test na fizycznym telefonie i iPhonie
 (powiadomienia iOS są sprawdzone tylko kompilacją w CI), wdrożenie serwera na prywatny serwer z VPN, kolejne gry.
+
+## ✅ Przebudowa Tag — nowe zasady (2026-09-29)
+
+Specyfikacja: `prompt-tag-zmiany.md` (jeden uciekinier, własne cele i monety, karty Challenge/Curse, opłaty).
+Decyzje użytkownika: Tag tylko online; protokół v3 (role per urządzenie); złapanie potwierdza uciekinier (host może
+wymusić); dołączanie tylko przed startem.
+
+**Działa:**
+- Logika (`TransitGames.Games.Tag`): gracze = urządzenia, losowanie uciekiniera i następcy (losowo / kto złapał),
+  tury z przewagą od miejsca złapania, salda z historią transakcji, bonus tury (stały / dopełnienie), opłaty (za km z
+  trasy GPS z zaliczką i saldem ujemnym, stała, ręczna), karty z talii JSON (klątwy z czasem trwania i
+  egzekwowanymi ograniczeniami), koniec przez dotarcie do celu lub po czasie (ranking odległości, remis), korekty
+  hosta, migracja starych gier do historii (tylko odczyt).
+- Core: `RoleChange.Devices`, `IGameSession.LocalDeviceId/IsHost`, `IGameModule.RequiresOnline/InitialRoleId`,
+  `IGameSessionMigration` + tabela `schema_migrations`, `GameEventData.LocalRole`.
+- Serwer/klient: protokół 3 (przypisania ról pojedynczym urządzeniom).
+- UI: przygotowanie (cele, punkt startowy, start), panele uciekiniera / goniących / hosta, wybór punktu na mapie,
+  wyniki, nowe ustawienia w kreatorze.
+- Eksport: odcinki trasy według roli (GPX `tg:role`, GeoJSON osobne obiekty), waypointy zdarzeń Tag.
+- Zweryfikowano na emulatorze (serwer v3 w Dockerze, dwa boty na bibliotece Tag):
+  kreator bez wyboru roli i z wymuszonym online → 3 graczy w przygotowaniu, cel z mapy przyciągnięty do stacji,
+  start z punktem z mapy → wylosowana Celina (bot); u goniącego blokada pościgu z odliczaniem, saldo, klątwa
+  „Podwójne ceny” z czasem wygaśnięcia; po przewadze „Złapałem!” → bot potwierdził → emulator uciekinierem
+  (30 monet = 20 + bonus), ping od razu u goniących; przejazd tramwajem rozliczony z trasy GPS (1,3 km → 2 monety);
+  wejście w promień celu → pytanie „Jesteś na miejscu?” → wygrana u wszystkich; wyniki (ranking, tury, salda,
+  historia monet); stare gry Tag w historii ze starym wynikiem.
+- Testy: 264/264 (Core 44, Geo 62, Tracking 29, Sync 27, HideAndSeek 31, Tag 71); build Androida bez ostrzeżeń.
+
+**Do zrobienia przy wdrożeniu:** przebudować kontener serwera (`docker compose up -d --build`) — protokół 3.

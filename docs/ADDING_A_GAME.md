@@ -87,8 +87,16 @@ Ustawienia gry w kreatorze: nadpisz `CreateSettingsView(GameSettings, IServicePr
 widok, który edytuje obiekt ustawień w miejscu (obszar i stacje są już ustawione; przykłady: `HideAndSeekSettingsView`,
 `TagSettingsView`).
 
-Zamiana ról w trakcie gry: dołącz do wiadomości `RoleChange` (np. `RoleChange.Swap(session.RolesVersion, a, b)`).
-Aplikacja i serwer zmienią role wszystkich telefonów razem z tą wiadomością (przykład: `TagMessages.EndRound`).
+Zamiana ról w trakcie gry: dołącz do wiadomości `RoleChange` — `RoleChange.Swap(session.RolesVersion, a, b)` zamienia
+role wszystkich telefonów, `RoleChange.Assign(version, {idUrządzenia: rola})` zmienia rolę pojedynczych graczy
+(przykład: `TagMessages.ConfirmCatch`). Aplikacja i serwer zmienią role razem z tą wiadomością. Id urządzenia
+lokalnego gracza: `IGameSession.LocalDeviceId`; czy telefon założył grę: `IsHost`.
+Gra, w której role przydziela sama gra, ustawia `InitialRoleId` (kreator i dołączanie pomijają wybór roli);
+gra wymagająca wspólnego stanu wszystkich graczy ustawia `RequiresOnline`.
+Zdarzenia z `Data[GameEventData.LocalRole]` mówią, jaką rolę ma ten telefon od tej chwili — eksport trasy dzieli
+wtedy trasę na odcinki według roli.
+Zmiana formatu ustawień/stanu gry, której stare zapisy nie wczytają: zarejestruj `IGameSessionMigration`
+(`RegisterServices`); magazyn sesji uruchamia ją raz na bazę (przykład: `Legacy/LegacyTagMigration.cs`).
 Miejsca z OSM do gry: `TransitGames.Geo.Places.PlaceCatalog`.
 
 Komunikacja między telefonami: wstrzyknij `IGameSyncService` i publikuj `SyncMessage` z własnym `Type`

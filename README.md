@@ -60,6 +60,36 @@ dotnet build src/TransitGames.App/TransitGames.App.csproj -f net10.0-android -t:
 | iOS | `NSLocationWhenInUseUsageDescription`, `NSLocationAlwaysAndWhenInUseUsageDescription`, `UIBackgroundModes: location` | jw. |
 | iOS | `NSAppTransportSecurity/NSAllowsArbitraryLoads` | serwer gry przez VPN pod adresem http |
 
+## Berek (Tag) — zasady
+
+Gra tylko online (każdy gracz ma własny telefon). Jeden gracz **ucieka** do swojego celu, pozostali **gonią**.
+
+- **Przygotowanie:** host zakłada grę, pozostali dołączają kodem (wszyscy jako goniący). Każdy ma **własny cel** —
+  wybiera go sam na mapie, ustawia host albo cele losują się ze stacji przy starcie (z min./maks. odległością od
+  startu i min. odstępem). Host wybiera **punkt startowy** (GPS lub mapa) i naciska Start: aplikacja **losuje
+  uciekiniera**, każdy dostaje **X monet** na start.
+- **Tura:** uciekinier rusza od razu, goniący czekają **przewagę** (domyślnie 30 min; odliczanie, pościg
+  zablokowany). Pozycja uciekiniera trafia do goniących w pingach co ustawiony czas; goniących nie widzi nikt.
+- **Monety:** uciekinier **płaci za przejazdy** (goniący i piesi — nie). Model opłat: stawka za km z trasy GPS
+  (pierwszy km z góry jako zaliczka, reszta po przejeździe; saldo może zejść poniżej zera), stała opłata za przejazd
+  albo kwota wpisywana ręcznie. Bez monet na zaliczkę nie da się zacząć płatnego przejazdu. Każda zmiana salda to
+  wpis w historii (start, bonus tury, przejazd, wyzwanie, klątwa, korekta hosta z powodem).
+- **Karty:** uciekinier losuje z talii (JSON). **Wyzwanie** daje monety po wykonaniu (jedno naraz; rezygnacja lub
+  przekroczony limit czasu = przerwa w losowaniu). **Klątwa** daje monety od razu i nakłada utrudnienie na czas
+  `untilEndOfTurn` / `wholeGame` / `minutes:N`; zakaz środka transportu, mnożnik opłat i zakaz losowania aplikacja
+  egzekwuje, pozostałe utrudnienia są honorowe. Format talii: `src/TransitGames.Games.Tag/Cards/cards.json`.
+- **Złapanie:** goniący zgłasza „Złapałem!”, uciekinier potwierdza „Złapany” i wybiera, kto złapał (host może
+  wymusić złapanie, gdy telefon uciekiniera milczy). **Nowy uciekinier** to losowy goniący albo ten, kto złapał
+  (ustawienie); tura startuje z miejsca złapania, goniący znów czekają przewagę. Monety zostają, nowy uciekinier
+  dostaje **bonus tury** (stały albo dopełnienie do minimum).
+- **Koniec:** uciekinier, który dotrze do swojego celu (promień, domyślnie 100 m, + potwierdzenie), wygrywa. Po
+  upływie czasu gry wygrywa gracz, którego cel jest **najbliżej obecnego uciekiniera** (linia prosta; remis
+  możliwy); pozycję wysyła telefon uciekiniera, a gdy milczy — host podaje ostatni ping albo punkt na mapie.
+- **Wyniki:** zwycięzca, ranking odległości celów, historia tur (kto uciekał, jak długo, wydane i zarobione
+  monety, kto złapał), salda. Eksport trasy zawiera punkty zdarzeń (start, tury, złapania, przejazdy, karty,
+  dotarcie, koniec) i odcinki oznaczone rolą.
+- Gry Tag zapisane przed przebudową zasad otwierają się w historii tylko do odczytu (ze starym wynikiem drużyn).
+
 ## Gra online
 
 Serwer działa w kontenerze Docker na prywatnym serwerze, telefony łączą się z nim przez VPN:
