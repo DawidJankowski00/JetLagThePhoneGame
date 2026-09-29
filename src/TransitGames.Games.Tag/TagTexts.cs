@@ -27,6 +27,12 @@ public static class TagTexts
             ? string.Format(CultureInfo.CurrentCulture, "{0:0.0} km", meters / 1000)
             : string.Format(CultureInfo.CurrentCulture, "{0:0} m", meters);
 
+    /// <summary>"45 min", "2 h", "1 h 30 min".</summary>
+    public static string Minutes(int minutes) =>
+        minutes < 60 ? string.Format(TagStrings.MinutesFormat, minutes)
+        : minutes % 60 == 0 ? string.Format(TagStrings.HoursFormat, minutes / 60)
+        : string.Format(TagStrings.HoursMinutesFormat, minutes / 60, minutes % 60);
+
     public static string Coins(int amount) => string.Format(TagStrings.CoinsFormat, amount);
 
     /// <summary>"+5" / "−3" coins.</summary>

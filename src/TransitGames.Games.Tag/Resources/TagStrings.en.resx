@@ -4,13 +4,59 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="ActionAdjustCoins" xml:space="preserve"><value>🪙 Adjust coins</value></data>
+  <data name="ActionArrived" xml:space="preserve"><value>🏁 I'm there</value></data>
+  <data name="ActionCaught" xml:space="preserve"><value>🙌 Caught</value></data>
+  <data name="ActionChallengeDone" xml:space="preserve"><value>✅ Challenge done</value></data>
+  <data name="ActionChallengeGiveUp" xml:space="preserve"><value>✖️ Give up</value></data>
+  <data name="ActionDraw" xml:space="preserve"><value>🃏 Draw a card</value></data>
+  <data name="ActionDrawCooldown" xml:space="preserve"><value>🃏 Draw cooldown</value></data>
+  <data name="ActionDrawCursed" xml:space="preserve"><value>🃏 Curse: no drawing</value></data>
+  <data name="ActionEndRide" xml:space="preserve"><value>🛑 End ride</value></data>
+  <data name="ActionForceCatch" xml:space="preserve"><value>⚠️ Force catch</value></data>
+  <data name="ActionPickDestination" xml:space="preserve"><value>🎯 My destination</value></data>
+  <data name="ActionRequestCatch" xml:space="preserve"><value>✋ Got them!</value></data>
+  <data name="ActionResults" xml:space="preserve"><value>🏆 Results</value></data>
+  <data name="ActionRide" xml:space="preserve"><value>🚌 Ride</value></data>
+  <data name="ActionSetDestinations" xml:space="preserve"><value>🎯 Players' destinations</value></data>
+  <data name="ActionSettleLastPing" xml:space="preserve"><value>📍 By last ping</value></data>
+  <data name="ActionSettleOnMap" xml:space="preserve"><value>🗺️ Mark on map</value></data>
+  <data name="ActionStart" xml:space="preserve"><value>🚦 Start</value></data>
+  <data name="AdjustAmountPrompt" xml:space="preserve"><value>How many coins to add (e.g. 5) or take (e.g. -5)?</value></data>
+  <data name="AdjustReasonPrompt" xml:space="preserve"><value>Reason (visible to everybody):</value></data>
+  <data name="AdjustReasonRequired" xml:space="preserve"><value>Give a reason for the correction.</value></data>
+  <data name="AdjustTitle" xml:space="preserve"><value>Coin correction</value></data>
+  <data name="ArrivedLater" xml:space="preserve"><value>Not yet</value></data>
+  <data name="ArrivedQuestion" xml:space="preserve"><value>Are you there? Confirming ends the game with your win.</value></data>
+  <data name="ArrivedTitle" xml:space="preserve"><value>Your destination!</value></data>
+  <data name="ArrivedYes" xml:space="preserve"><value>Yes, I'm here!</value></data>
+  <data name="ButtonFinish" xml:space="preserve"><value>End game</value></data>
+  <data name="ButtonLeave" xml:space="preserve"><value>Leave</value></data>
   <data name="CardTypeChallenge" xml:space="preserve"><value>Challenge</value></data>
   <data name="CardTypeCurse" xml:space="preserve"><value>Curse</value></data>
+  <data name="CatcherUnknown" xml:space="preserve"><value>Not sure</value></data>
+  <data name="CaughtWhoTitle" xml:space="preserve"><value>Who caught you?</value></data>
+  <data name="ChallengeDoneConfirmFormat" xml:space="preserve"><value>Challenge done? You get {0} coins; it goes to the game log.</value></data>
+  <data name="ChallengeDrawnFormat" xml:space="preserve"><value>{0}
+
+Reward: {1} coins · {2}</value></data>
+  <data name="ChallengeGiveUpConfirmFormat" xml:space="preserve"><value>Give up? You cannot draw another card for {0}.</value></data>
+  <data name="ChoosePlayerTitle" xml:space="preserve"><value>Choose a player</value></data>
   <data name="CoinsFormat" xml:space="preserve"><value>{0} coins</value></data>
   <data name="CoinsGainedFormat" xml:space="preserve"><value>+{0} coins</value></data>
+  <data name="CurseDrawnFormat" xml:space="preserve"><value>{0}
+
++{1} coins now · {2}
+{3}</value></data>
+  <data name="DestinationDefaultName" xml:space="preserve"><value>Destination</value></data>
+  <data name="DestinationDrawnAtStart" xml:space="preserve"><value>destination drawn at the start</value></data>
+  <data name="DestinationHidden" xml:space="preserve"><value>destination hidden</value></data>
+  <data name="DestinationMissing" xml:space="preserve"><value>no destination</value></data>
   <data name="DestinationModeHost" xml:space="preserve"><value>The host sets all</value></data>
   <data name="DestinationModeRandom" xml:space="preserve"><value>Drawn from stations</value></data>
   <data name="DestinationModeSelf" xml:space="preserve"><value>Every player picks on the map</value></data>
+  <data name="DestinationNamePrompt" xml:space="preserve"><value>What is this place called?</value></data>
+  <data name="DestinationNameTitle" xml:space="preserve"><value>Destination name</value></data>
   <data name="DurationMinutesFormat" xml:space="preserve"><value>for {0} min</value></data>
   <data name="DurationUntilEndOfTurn" xml:space="preserve"><value>until the end of the turn</value></data>
   <data name="DurationWholeGame" xml:space="preserve"><value>for the whole game</value></data>
@@ -32,8 +78,22 @@
   <data name="FareModelFixed" xml:space="preserve"><value>Fixed fare per ride</value></data>
   <data name="FareModelManual" xml:space="preserve"><value>Amount typed by hand</value></data>
   <data name="FareModelPerKm" xml:space="preserve"><value>Rate per km (GPS track)</value></data>
+  <data name="ForceCatchTitleFormat" xml:space="preserve"><value>Who caught {0}?</value></data>
+  <data name="ForceCatchWarning" xml:space="preserve"><value>Only when the runner's phone does not answer — otherwise the runner confirms the catch.</value></data>
   <data name="GameDescription" xml:space="preserve"><value>One player runs to their destination, paying coins for rides; the others chase. Whoever is caught becomes a chaser.</value></data>
   <data name="GameName" xml:space="preserve"><value>Tag</value></data>
+  <data name="HeadStartLeftFormat" xml:space="preserve"><value>Head start {0} · game ends in {1}</value></data>
+  <data name="HonourRule" xml:space="preserve"><value>honour rule</value></data>
+  <data name="HoursFormat" xml:space="preserve"><value>{0} h</value></data>
+  <data name="HoursMinutesFormat" xml:space="preserve"><value>{0} h {1} min</value></data>
+  <data name="InfoBalance" xml:space="preserve"><value>Your coins</value></data>
+  <data name="InfoCooldown" xml:space="preserve"><value>Drawing blocked</value></data>
+  <data name="InfoLastPing" xml:space="preserve"><value>Last ping</value></data>
+  <data name="InfoOwnDestination" xml:space="preserve"><value>Your destination</value></data>
+  <data name="InfoRideDetailFormat" xml:space="preserve"><value>since {0:HH:mm} · advance {1} coins</value></data>
+  <data name="InfoRideFormat" xml:space="preserve"><value>Riding: {0}</value></data>
+  <data name="InfoRunnerFormat" xml:space="preserve"><value>Runner: {0}</value></data>
+  <data name="InfoRunnerRiding" xml:space="preserve"><value>The runner is on a ride</value></data>
   <data name="LegacyDrawFormat" xml:space="preserve"><value>Draw {0} : {1}</value></data>
   <data name="LegacyNote" xml:space="preserve"><value>Game under the previous rules (teams and targets) — read-only.</value></data>
   <data name="LegacyNoteTitle" xml:space="preserve"><value>Old rules</value></data>
@@ -44,8 +104,23 @@
   <data name="LegacyTeamSecond" xml:space="preserve"><value>Team 2</value></data>
   <data name="LegacyWinnerFormat" xml:space="preserve"><value>{0} wins {1} : {2}</value></data>
   <data name="LegacyYou" xml:space="preserve"><value>(you)</value></data>
+  <data name="LegendDestination" xml:space="preserve"><value>player's destination</value></data>
+  <data name="LegendOwnDestination" xml:space="preserve"><value>your destination</value></data>
+  <data name="LegendRunner" xml:space="preserve"><value>runner / their destination</value></data>
+  <data name="LegendStart" xml:space="preserve"><value>turn start</value></data>
+  <data name="MapCatchPoint" xml:space="preserve"><value>Catch point</value></data>
+  <data name="MapDestinationFormat" xml:space="preserve"><value>{0}: {1}</value></data>
+  <data name="MapStart" xml:space="preserve"><value>Start</value></data>
+  <data name="MinutesFormat" xml:space="preserve"><value>{0} min</value></data>
+  <data name="NewTurnChaserFormat" xml:space="preserve"><value>{0} runs. The chase starts in {1}.</value></data>
+  <data name="NewTurnRunnerFormat" xml:space="preserve"><value>You are the runner now! You have {0}. The chasers wait for the head start.</value></data>
+  <data name="NewTurnTitleFormat" xml:space="preserve"><value>Turn {0}</value></data>
   <data name="NextRunnerCatcher" xml:space="preserve"><value>Whoever made the catch</value></data>
   <data name="NextRunnerRandom" xml:space="preserve"><value>A random chaser</value></data>
+  <data name="NoLocation" xml:space="preserve"><value>No GPS position — mark the point on the map.</value></data>
+  <data name="NoticeCatchRequestFormat" xml:space="preserve"><value>{0} reports a catch — if true, press “Caught”.</value></data>
+  <data name="NoticeHostSettle" xml:space="preserve"><value>The runner's phone did not send its position — settle the game.</value></data>
+  <data name="NoticeWaitingForPlayers" xml:space="preserve"><value>At least 2 players are needed — share the game code.</value></data>
   <data name="NotifyCardTitle" xml:space="preserve"><value>The runner drew a card</value></data>
   <data name="NotifyCatchRequestTitle" xml:space="preserve"><value>Catch reported</value></data>
   <data name="NotifyCaughtTitle" xml:space="preserve"><value>Caught!</value></data>
@@ -58,11 +133,32 @@
   <data name="NotifyTimeUpBody" xml:space="preserve"><value>The destination nearest to the runner wins — open the game.</value></data>
   <data name="NotifyTimeUpTitle" xml:space="preserve"><value>Game time is up</value></data>
   <data name="NotifyTurnTitle" xml:space="preserve"><value>New turn</value></data>
+  <data name="NoTimeLimit" xml:space="preserve"><value>no time limit</value></data>
+  <data name="PhaseChase" xml:space="preserve"><value>Chase!</value></data>
+  <data name="PhaseChaseLockedFormat" xml:space="preserve"><value>Chase locked: {0}</value></data>
+  <data name="PhaseGameOver" xml:space="preserve"><value>Game over</value></data>
+  <data name="PhaseRunnerChase" xml:space="preserve"><value>You run — the chase is on</value></data>
+  <data name="PhaseRunnerHeadStart" xml:space="preserve"><value>You run — the chasers are still waiting</value></data>
+  <data name="PhaseSetup" xml:space="preserve"><value>Setup</value></data>
+  <data name="PhaseTimeUp" xml:space="preserve"><value>Time is up</value></data>
+  <data name="PickCancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="PickConfirm" xml:space="preserve"><value>Confirm</value></data>
+  <data name="PickDestinationForFormat" xml:space="preserve"><value>Pick {0}'s destination</value></data>
+  <data name="PickDestinationHint" xml:space="preserve"><value>Pick your destination — a tap near a station picks the station.</value></data>
+  <data name="PickHere" xml:space="preserve"><value>Here</value></data>
+  <data name="PickMyPosition" xml:space="preserve"><value>📍 My position</value></data>
+  <data name="PickNothing" xml:space="preserve"><value>Tap the map to pick a point.</value></data>
+  <data name="PickRunnerEndHint" xml:space="preserve"><value>Where was the runner when the game ended?</value></data>
+  <data name="PickStartHint" xml:space="preserve"><value>Pick the start point of all players.</value></data>
+  <data name="PickTitle" xml:space="preserve"><value>Pick a point</value></data>
   <data name="PointSourceGps" xml:space="preserve"><value>the runner's GPS position</value></data>
   <data name="PointSourceLastKnown" xml:space="preserve"><value>the runner's last known position</value></data>
   <data name="PointSourceManual" xml:space="preserve"><value>position marked by the host</value></data>
+  <data name="PricePerKmFormat" xml:space="preserve"><value>{0:0.#} coins/km</value></data>
   <data name="RankDistanceFormat" xml:space="preserve"><value>{0} · {1}</value></data>
   <data name="RankRowFormat" xml:space="preserve"><value>{0}. {1}</value></data>
+  <data name="RequestCatchConfirmFormat" xml:space="preserve"><value>Did you catch {0}? The runner gets a request to confirm.</value></data>
+  <data name="RequestCatchSent" xml:space="preserve"><value>Sent. The catch counts once the runner confirms it.</value></data>
   <data name="RestrictionBanFormat" xml:space="preserve"><value>Forbidden: {0}</value></data>
   <data name="RestrictionMultiplierFormat" xml:space="preserve"><value>Fares ×{0}</value></data>
   <data name="RestrictionNoDraw" xml:space="preserve"><value>No drawing cards</value></data>
@@ -73,11 +169,77 @@
   <data name="ResultNotStarted" xml:space="preserve"><value>The game has not started yet</value></data>
   <data name="ResultNoWinner" xml:space="preserve"><value>Game over without a winner</value></data>
   <data name="ResultRunningFormat" xml:space="preserve"><value>Turn {0} · {1} runs</value></data>
+  <data name="ResultsBalances" xml:space="preserve"><value>Players' coins</value></data>
+  <data name="ResultsPointSourceFormat" xml:space="preserve"><value>Distances measured from: {0}</value></data>
+  <data name="ResultsRanking" xml:space="preserve"><value>Destinations nearest to the runner first</value></data>
+  <data name="ResultsRunningHint" xml:space="preserve"><value>The game is on — the ranking appears at the end.</value></data>
+  <data name="ResultsTitle" xml:space="preserve"><value>Results</value></data>
+  <data name="ResultsTransactions" xml:space="preserve"><value>Your coins — history</value></data>
+  <data name="ResultsTurns" xml:space="preserve"><value>Turns</value></data>
+  <data name="RideChooseFormat" xml:space="preserve"><value>How are you travelling? (you have {0})</value></data>
+  <data name="RideDeniedBanned" xml:space="preserve"><value>A curse forbids this means of transport.</value></data>
+  <data name="RideDeniedCoinsFormat" xml:space="preserve"><value>Starting needs {0} coins, you have {1}. Walk or earn coins.</value></data>
+  <data name="RideDeniedTitle" xml:space="preserve"><value>You cannot ride</value></data>
+  <data name="RideEndedFixedFormat" xml:space="preserve"><value>Fare: {0} coins. Balance: {1}.</value></data>
+  <data name="RideEndedFormat" xml:space="preserve"><value>Ride: {0}, {1} coins in total. Balance: {2}.</value></data>
+  <data name="RideEndedNoTrackFormat" xml:space="preserve"><value>No GPS track — minimum charged: {0} coins. Balance: {1}.</value></data>
+  <data name="RideEndedTitle" xml:space="preserve"><value>Ride ended</value></data>
+  <data name="RideManualPrompt" xml:space="preserve"><value>How many coins does the ride cost?</value></data>
+  <data name="RideManualTitle" xml:space="preserve"><value>Fare</value></data>
   <data name="RideSummaryFormat" xml:space="preserve"><value>{0} · total {1} coins</value></data>
   <data name="RoleChaser" xml:space="preserve"><value>Chaser</value></data>
   <data name="RoleChaserDescription" xml:space="preserve"><value>Chases the runner; rides for free.</value></data>
   <data name="RoleRunner" xml:space="preserve"><value>Runner</value></data>
   <data name="RoleRunnerDescription" xml:space="preserve"><value>Runs to their destination, pays for rides, draws cards.</value></data>
+  <data name="RunnerIsFormat" xml:space="preserve"><value>{0} runs · game ends in {1}</value></data>
+  <data name="SettingsCatchRadius" xml:space="preserve"><value>Catch distance</value></data>
+  <data name="SettingsCatchRadiusHint" xml:space="preserve"><value>A rule for the players — chasers' positions are never sent.</value></data>
+  <data name="SettingsDeck" xml:space="preserve"><value>Cards</value></data>
+  <data name="SettingsDeckBuiltInFormat" xml:space="preserve"><value>Built-in deck: {0}</value></data>
+  <data name="SettingsDeckCustomFormat" xml:space="preserve"><value>Custom deck ({0}): {1}</value></data>
+  <data name="SettingsDeckInvalidFormat" xml:space="preserve"><value>The deck could not be loaded: {0}</value></data>
+  <data name="SettingsDeckLoad" xml:space="preserve"><value>Load JSON</value></data>
+  <data name="SettingsDeckReset" xml:space="preserve"><value>Built-in</value></data>
+  <data name="SettingsDeckSummaryFormat" xml:space="preserve"><value>{0} challenges, {1} curses</value></data>
+  <data name="SettingsDestinationRadius" xml:space="preserve"><value>Destination reached within</value></data>
+  <data name="SettingsDestinations" xml:space="preserve"><value>Players' destinations</value></data>
+  <data name="SettingsDestinationsVisible" xml:space="preserve"><value>Destinations visible</value></data>
+  <data name="SettingsDestinationsVisibleHint" xml:space="preserve"><value>Off: everybody sees only their own until the end.</value></data>
+  <data name="SettingsDrawCooldown" xml:space="preserve"><value>Draw cooldown after giving up</value></data>
+  <data name="SettingsEditFares" xml:space="preserve"><value>Change rates</value></data>
+  <data name="SettingsFareModel" xml:space="preserve"><value>Fares (runner only)</value></data>
+  <data name="SettingsFarePrompt" xml:space="preserve"><value>Coins per ride:</value></data>
+  <data name="SettingsFares" xml:space="preserve"><value>Rates</value></data>
+  <data name="SettingsFaresHint" xml:space="preserve"><value>Per km: the first km up front, the rest after the ride from the GPS track (the balance may go below zero). Walking is free.</value></data>
+  <data name="SettingsFaresManual" xml:space="preserve"><value>The runner types the fare for every ride.</value></data>
+  <data name="SettingsGameDuration" xml:space="preserve"><value>Game duration</value></data>
+  <data name="SettingsHeadStart" xml:space="preserve"><value>Runner's head start every turn</value></data>
+  <data name="SettingsMaxDistance" xml:space="preserve"><value>Max. distance from the start</value></data>
+  <data name="SettingsMinDistance" xml:space="preserve"><value>Min. distance from the start</value></data>
+  <data name="SettingsNextRunner" xml:space="preserve"><value>Next runner after a catch</value></data>
+  <data name="SettingsNoLimit" xml:space="preserve"><value>no limit</value></data>
+  <data name="SettingsOnlineOnly" xml:space="preserve"><value>Tag is online only: every player has their own phone, coins and destination. The game draws the roles.</value></data>
+  <data name="SettingsRatePrompt" xml:space="preserve"><value>Coins per km:</value></data>
+  <data name="SettingsRevealInterval" xml:space="preserve"><value>Runner's position revealed every</value></data>
+  <data name="SettingsSpacing" xml:space="preserve"><value>Min. spacing between destinations</value></data>
+  <data name="SettingsStartingCoins" xml:space="preserve"><value>Starting coins (every player)</value></data>
+  <data name="SettingsTurnBonus" xml:space="preserve"><value>Bonus for the new runner</value></data>
+  <data name="SettingsTurnBonusHint" xml:space="preserve"><value>Coins are kept — every player keeps their balance between turns.</value></data>
+  <data name="SettleLastPingConfirmFormat" xml:space="preserve"><value>Settle by the runner's last position from {0:HH:mm}?</value></data>
+  <data name="SetupGuestPick" xml:space="preserve"><value>Pick your destination on the map and wait for the start.</value></data>
+  <data name="SetupGuestWait" xml:space="preserve"><value>Waiting for the host to start the game.</value></data>
+  <data name="SetupHost" xml:space="preserve"><value>Players join with the code and pick destinations. When everybody is ready — Start.</value></data>
+  <data name="SetupHostRandom" xml:space="preserve"><value>Players join with the code; destinations are drawn at the start.</value></data>
+  <data name="SetupNotInGame" xml:space="preserve"><value>The game started without you — you can only watch.</value></data>
+  <data name="StartConfirmFormat" xml:space="preserve"><value>Start the game? Players: {0}. The runner will be drawn.</value></data>
+  <data name="StartDrawFailed" xml:space="preserve"><value>Destinations cannot be drawn with these distances — change the start point or the settings.</value></data>
+  <data name="StartMissingDestinations" xml:space="preserve"><value>Not every player has a destination.</value></data>
+  <data name="StartPointGps" xml:space="preserve"><value>📍 My position (GPS)</value></data>
+  <data name="StartPointMap" xml:space="preserve"><value>🗺️ Mark on the map</value></data>
+  <data name="StartPointTitle" xml:space="preserve"><value>Start point</value></data>
+  <data name="TimeLimitFormat" xml:space="preserve"><value>{0} min limit</value></data>
+  <data name="TimeUpRunnerDetail" xml:space="preserve"><value>Sending your position — the destination nearest to you wins.</value></data>
+  <data name="TimeUpWaitDetail" xml:space="preserve"><value>Waiting for the runner's position.</value></data>
   <data name="TransactionChallenge" xml:space="preserve"><value>Challenge</value></data>
   <data name="TransactionCurse" xml:space="preserve"><value>Curse</value></data>
   <data name="TransactionHost" xml:space="preserve"><value>Host correction</value></data>
@@ -90,15 +252,20 @@
   <data name="Transport_Other" xml:space="preserve"><value>Other</value></data>
   <data name="Transport_Train" xml:space="preserve"><value>Train</value></data>
   <data name="Transport_Tram" xml:space="preserve"><value>Tram</value></data>
+  <data name="TurnBonusDetailFormat" xml:space="preserve"><value>bonus {0}</value></data>
   <data name="TurnBonusFixed" xml:space="preserve"><value>Fixed bonus</value></data>
   <data name="TurnBonusTopUp" xml:space="preserve"><value>Top up to a minimum</value></data>
   <data name="TurnCaught" xml:space="preserve"><value>caught</value></data>
   <data name="TurnCaughtByFormat" xml:space="preserve"><value>caught by {0}</value></data>
+  <data name="TurnForced" xml:space="preserve"><value>confirmed by the host</value></data>
   <data name="TurnReachedDestination" xml:space="preserve"><value>reached the destination</value></data>
   <data name="TurnRowDetailsFormat" xml:space="preserve"><value>{0} · {1} · spent {2} · earned {3}</value></data>
   <data name="TurnRowTitleFormat" xml:space="preserve"><value>Turn {0}: {1}</value></data>
   <data name="TurnRunning" xml:space="preserve"><value>running</value></data>
   <data name="TurnStopped" xml:space="preserve"><value>stopped</value></data>
+  <data name="TurnTimeFormat" xml:space="preserve"><value>Running for {0} · game ends in {1}</value></data>
   <data name="TurnTimeUp" xml:space="preserve"><value>time up</value></data>
   <data name="UnknownPlayer" xml:space="preserve"><value>?</value></data>
+  <data name="UntilFormat" xml:space="preserve"><value>until {0:HH:mm}</value></data>
+  <data name="YouFormat" xml:space="preserve"><value>{0} (you)</value></data>
 </root>

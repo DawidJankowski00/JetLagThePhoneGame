@@ -4,13 +4,59 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="ActionAdjustCoins" xml:space="preserve"><value>🪙 Korekta monet</value></data>
+  <data name="ActionArrived" xml:space="preserve"><value>🏁 Jestem u celu</value></data>
+  <data name="ActionCaught" xml:space="preserve"><value>🙌 Złapany</value></data>
+  <data name="ActionChallengeDone" xml:space="preserve"><value>✅ Wyzwanie wykonane</value></data>
+  <data name="ActionChallengeGiveUp" xml:space="preserve"><value>✖️ Rezygnuję</value></data>
+  <data name="ActionDraw" xml:space="preserve"><value>🃏 Losuj kartę</value></data>
+  <data name="ActionDrawCooldown" xml:space="preserve"><value>🃏 Przerwa w losowaniu</value></data>
+  <data name="ActionDrawCursed" xml:space="preserve"><value>🃏 Klątwa: bez losowania</value></data>
+  <data name="ActionEndRide" xml:space="preserve"><value>🛑 Koniec przejazdu</value></data>
+  <data name="ActionForceCatch" xml:space="preserve"><value>⚠️ Wymuś złapanie</value></data>
+  <data name="ActionPickDestination" xml:space="preserve"><value>🎯 Mój cel</value></data>
+  <data name="ActionRequestCatch" xml:space="preserve"><value>✋ Złapałem!</value></data>
+  <data name="ActionResults" xml:space="preserve"><value>🏆 Wyniki</value></data>
+  <data name="ActionRide" xml:space="preserve"><value>🚌 Przejazd</value></data>
+  <data name="ActionSetDestinations" xml:space="preserve"><value>🎯 Cele graczy</value></data>
+  <data name="ActionSettleLastPing" xml:space="preserve"><value>📍 Wg ostatniego pingu</value></data>
+  <data name="ActionSettleOnMap" xml:space="preserve"><value>🗺️ Zaznacz na mapie</value></data>
+  <data name="ActionStart" xml:space="preserve"><value>🚦 Start</value></data>
+  <data name="AdjustAmountPrompt" xml:space="preserve"><value>Ile monet dodać (np. 5) lub odjąć (np. -5)?</value></data>
+  <data name="AdjustReasonPrompt" xml:space="preserve"><value>Powód korekty (widoczny dla wszystkich):</value></data>
+  <data name="AdjustReasonRequired" xml:space="preserve"><value>Podaj powód korekty.</value></data>
+  <data name="AdjustTitle" xml:space="preserve"><value>Korekta monet</value></data>
+  <data name="ArrivedLater" xml:space="preserve"><value>Jeszcze nie</value></data>
+  <data name="ArrivedQuestion" xml:space="preserve"><value>Jesteś na miejscu? Potwierdzenie kończy grę twoją wygraną.</value></data>
+  <data name="ArrivedTitle" xml:space="preserve"><value>Twój cel!</value></data>
+  <data name="ArrivedYes" xml:space="preserve"><value>Tak, jestem!</value></data>
+  <data name="ButtonFinish" xml:space="preserve"><value>Zakończ grę</value></data>
+  <data name="ButtonLeave" xml:space="preserve"><value>Wyjdź</value></data>
   <data name="CardTypeChallenge" xml:space="preserve"><value>Wyzwanie</value></data>
   <data name="CardTypeCurse" xml:space="preserve"><value>Klątwa</value></data>
+  <data name="CatcherUnknown" xml:space="preserve"><value>Nie wiem</value></data>
+  <data name="CaughtWhoTitle" xml:space="preserve"><value>Kto cię złapał?</value></data>
+  <data name="ChallengeDoneConfirmFormat" xml:space="preserve"><value>Wyzwanie wykonane? Dostaniesz {0} mon.; wpis trafi do dziennika gry.</value></data>
+  <data name="ChallengeDrawnFormat" xml:space="preserve"><value>{0}
+
+Nagroda: {1} mon. · {2}</value></data>
+  <data name="ChallengeGiveUpConfirmFormat" xml:space="preserve"><value>Zrezygnować? Przez {0} nie wylosujesz kolejnej karty.</value></data>
+  <data name="ChoosePlayerTitle" xml:space="preserve"><value>Wybierz gracza</value></data>
   <data name="CoinsFormat" xml:space="preserve"><value>{0} mon.</value></data>
   <data name="CoinsGainedFormat" xml:space="preserve"><value>+{0} mon.</value></data>
+  <data name="CurseDrawnFormat" xml:space="preserve"><value>{0}
+
++{1} mon. od razu · {2}
+{3}</value></data>
+  <data name="DestinationDefaultName" xml:space="preserve"><value>Cel</value></data>
+  <data name="DestinationDrawnAtStart" xml:space="preserve"><value>cel wylosowany przy starcie</value></data>
+  <data name="DestinationHidden" xml:space="preserve"><value>cel ukryty</value></data>
+  <data name="DestinationMissing" xml:space="preserve"><value>brak celu</value></data>
   <data name="DestinationModeHost" xml:space="preserve"><value>Host ustawia wszystkie</value></data>
   <data name="DestinationModeRandom" xml:space="preserve"><value>Losowane ze stacji</value></data>
   <data name="DestinationModeSelf" xml:space="preserve"><value>Każdy wybiera sam na mapie</value></data>
+  <data name="DestinationNamePrompt" xml:space="preserve"><value>Jak nazwać to miejsce?</value></data>
+  <data name="DestinationNameTitle" xml:space="preserve"><value>Nazwa celu</value></data>
   <data name="DurationMinutesFormat" xml:space="preserve"><value>przez {0} min</value></data>
   <data name="DurationUntilEndOfTurn" xml:space="preserve"><value>do końca tury</value></data>
   <data name="DurationWholeGame" xml:space="preserve"><value>do końca gry</value></data>
@@ -32,8 +78,22 @@
   <data name="FareModelFixed" xml:space="preserve"><value>Stała opłata za przejazd</value></data>
   <data name="FareModelManual" xml:space="preserve"><value>Kwota wpisywana ręcznie</value></data>
   <data name="FareModelPerKm" xml:space="preserve"><value>Stawka za km (z trasy GPS)</value></data>
+  <data name="ForceCatchTitleFormat" xml:space="preserve"><value>Kto złapał gracza {0}?</value></data>
+  <data name="ForceCatchWarning" xml:space="preserve"><value>Używaj tylko, gdy telefon uciekiniera nie odpowiada — inaczej niech złapanie potwierdzi uciekinier.</value></data>
   <data name="GameDescription" xml:space="preserve"><value>Jeden ucieka do swojego celu i płaci monetami za przejazdy, reszta goni. Złapany zamienia się z goniącym.</value></data>
   <data name="GameName" xml:space="preserve"><value>Berek</value></data>
+  <data name="HeadStartLeftFormat" xml:space="preserve"><value>Przewaga jeszcze {0} · do końca gry {1}</value></data>
+  <data name="HonourRule" xml:space="preserve"><value>zasada honorowa</value></data>
+  <data name="HoursFormat" xml:space="preserve"><value>{0} h</value></data>
+  <data name="HoursMinutesFormat" xml:space="preserve"><value>{0} h {1} min</value></data>
+  <data name="InfoBalance" xml:space="preserve"><value>Twoje monety</value></data>
+  <data name="InfoCooldown" xml:space="preserve"><value>Losowanie zablokowane</value></data>
+  <data name="InfoLastPing" xml:space="preserve"><value>Ostatni ping</value></data>
+  <data name="InfoOwnDestination" xml:space="preserve"><value>Twój cel</value></data>
+  <data name="InfoRideDetailFormat" xml:space="preserve"><value>od {0:HH:mm} · zaliczka {1} mon.</value></data>
+  <data name="InfoRideFormat" xml:space="preserve"><value>Jedziesz: {0}</value></data>
+  <data name="InfoRunnerFormat" xml:space="preserve"><value>Ucieka: {0}</value></data>
+  <data name="InfoRunnerRiding" xml:space="preserve"><value>Uciekinier jest w trakcie przejazdu</value></data>
   <data name="LegacyDrawFormat" xml:space="preserve"><value>Remis {0} : {1}</value></data>
   <data name="LegacyNote" xml:space="preserve"><value>Gra według poprzednich zasad (drużyny i cele) — tylko do odczytu.</value></data>
   <data name="LegacyNoteTitle" xml:space="preserve"><value>Stare zasady</value></data>
@@ -44,8 +104,23 @@
   <data name="LegacyTeamSecond" xml:space="preserve"><value>Drużyna 2</value></data>
   <data name="LegacyWinnerFormat" xml:space="preserve"><value>{0} wygrywa {1} : {2}</value></data>
   <data name="LegacyYou" xml:space="preserve"><value>(wy)</value></data>
+  <data name="LegendDestination" xml:space="preserve"><value>cel gracza</value></data>
+  <data name="LegendOwnDestination" xml:space="preserve"><value>twój cel</value></data>
+  <data name="LegendRunner" xml:space="preserve"><value>uciekinier / jego cel</value></data>
+  <data name="LegendStart" xml:space="preserve"><value>start tury</value></data>
+  <data name="MapCatchPoint" xml:space="preserve"><value>Miejsce złapania</value></data>
+  <data name="MapDestinationFormat" xml:space="preserve"><value>{0}: {1}</value></data>
+  <data name="MapStart" xml:space="preserve"><value>Start</value></data>
+  <data name="MinutesFormat" xml:space="preserve"><value>{0} min</value></data>
+  <data name="NewTurnChaserFormat" xml:space="preserve"><value>Ucieka {0}. Pościg za {1}.</value></data>
+  <data name="NewTurnRunnerFormat" xml:space="preserve"><value>Teraz ty uciekasz! Masz {0}. Goniący czekają do końca przewagi.</value></data>
+  <data name="NewTurnTitleFormat" xml:space="preserve"><value>Tura {0}</value></data>
   <data name="NextRunnerCatcher" xml:space="preserve"><value>Osoba, która złapała</value></data>
   <data name="NextRunnerRandom" xml:space="preserve"><value>Losowo spośród goniących</value></data>
+  <data name="NoLocation" xml:space="preserve"><value>Brak pozycji GPS — zaznacz punkt na mapie.</value></data>
+  <data name="NoticeCatchRequestFormat" xml:space="preserve"><value>{0} zgłasza złapanie — jeśli to prawda, naciśnij „Złapany”.</value></data>
+  <data name="NoticeHostSettle" xml:space="preserve"><value>Telefon uciekiniera nie wysłał pozycji — rozstrzygnij grę.</value></data>
+  <data name="NoticeWaitingForPlayers" xml:space="preserve"><value>Potrzeba co najmniej 2 graczy — podaj innym kod gry.</value></data>
   <data name="NotifyCardTitle" xml:space="preserve"><value>Uciekinier wylosował kartę</value></data>
   <data name="NotifyCatchRequestTitle" xml:space="preserve"><value>Zgłoszenie złapania</value></data>
   <data name="NotifyCaughtTitle" xml:space="preserve"><value>Złapany!</value></data>
@@ -58,11 +133,32 @@
   <data name="NotifyTimeUpBody" xml:space="preserve"><value>Wygrywa cel najbliżej uciekiniera — otwórz grę.</value></data>
   <data name="NotifyTimeUpTitle" xml:space="preserve"><value>Koniec czasu gry</value></data>
   <data name="NotifyTurnTitle" xml:space="preserve"><value>Nowa tura</value></data>
+  <data name="NoTimeLimit" xml:space="preserve"><value>bez limitu czasu</value></data>
+  <data name="PhaseChase" xml:space="preserve"><value>Pościg!</value></data>
+  <data name="PhaseChaseLockedFormat" xml:space="preserve"><value>Pościg zablokowany: {0}</value></data>
+  <data name="PhaseGameOver" xml:space="preserve"><value>Koniec gry</value></data>
+  <data name="PhaseRunnerChase" xml:space="preserve"><value>Uciekasz — pościg trwa</value></data>
+  <data name="PhaseRunnerHeadStart" xml:space="preserve"><value>Uciekasz — goniący jeszcze czekają</value></data>
+  <data name="PhaseSetup" xml:space="preserve"><value>Przygotowanie</value></data>
+  <data name="PhaseTimeUp" xml:space="preserve"><value>Koniec czasu</value></data>
+  <data name="PickCancel" xml:space="preserve"><value>Anuluj</value></data>
+  <data name="PickConfirm" xml:space="preserve"><value>Zatwierdź</value></data>
+  <data name="PickDestinationForFormat" xml:space="preserve"><value>Wybierz cel gracza {0}</value></data>
+  <data name="PickDestinationHint" xml:space="preserve"><value>Wybierz swój cel — dotknięcie przy stacji wybiera stację.</value></data>
+  <data name="PickHere" xml:space="preserve"><value>Tutaj</value></data>
+  <data name="PickMyPosition" xml:space="preserve"><value>📍 Moja pozycja</value></data>
+  <data name="PickNothing" xml:space="preserve"><value>Dotknij mapy, aby wybrać punkt.</value></data>
+  <data name="PickRunnerEndHint" xml:space="preserve"><value>Gdzie był uciekinier w chwili końca gry?</value></data>
+  <data name="PickStartHint" xml:space="preserve"><value>Wybierz punkt startowy wszystkich graczy.</value></data>
+  <data name="PickTitle" xml:space="preserve"><value>Wybierz punkt</value></data>
   <data name="PointSourceGps" xml:space="preserve"><value>pozycja GPS uciekiniera</value></data>
   <data name="PointSourceLastKnown" xml:space="preserve"><value>ostatnia znana pozycja uciekiniera</value></data>
   <data name="PointSourceManual" xml:space="preserve"><value>pozycja zaznaczona przez hosta</value></data>
+  <data name="PricePerKmFormat" xml:space="preserve"><value>{0:0.#} mon./km</value></data>
   <data name="RankDistanceFormat" xml:space="preserve"><value>{0} · {1}</value></data>
   <data name="RankRowFormat" xml:space="preserve"><value>{0}. {1}</value></data>
+  <data name="RequestCatchConfirmFormat" xml:space="preserve"><value>Złapałeś gracza {0}? Uciekinier dostanie prośbę o potwierdzenie.</value></data>
+  <data name="RequestCatchSent" xml:space="preserve"><value>Wysłano. Złapanie liczy się, gdy potwierdzi je uciekinier.</value></data>
   <data name="RestrictionBanFormat" xml:space="preserve"><value>Zakaz: {0}</value></data>
   <data name="RestrictionMultiplierFormat" xml:space="preserve"><value>Przejazdy ×{0}</value></data>
   <data name="RestrictionNoDraw" xml:space="preserve"><value>Zakaz losowania kart</value></data>
@@ -73,11 +169,77 @@
   <data name="ResultNotStarted" xml:space="preserve"><value>Gra jeszcze się nie zaczęła</value></data>
   <data name="ResultNoWinner" xml:space="preserve"><value>Koniec gry bez zwycięzcy</value></data>
   <data name="ResultRunningFormat" xml:space="preserve"><value>Tura {0} · ucieka {1}</value></data>
+  <data name="ResultsBalances" xml:space="preserve"><value>Monety graczy</value></data>
+  <data name="ResultsPointSourceFormat" xml:space="preserve"><value>Odległości liczone od: {0}</value></data>
+  <data name="ResultsRanking" xml:space="preserve"><value>Cele od najbliższego uciekiniera</value></data>
+  <data name="ResultsRunningHint" xml:space="preserve"><value>Gra trwa — ranking pojawi się na końcu.</value></data>
+  <data name="ResultsTitle" xml:space="preserve"><value>Wyniki</value></data>
+  <data name="ResultsTransactions" xml:space="preserve"><value>Twoje monety — historia</value></data>
+  <data name="ResultsTurns" xml:space="preserve"><value>Tury</value></data>
+  <data name="RideChooseFormat" xml:space="preserve"><value>Czym jedziesz? (masz {0})</value></data>
+  <data name="RideDeniedBanned" xml:space="preserve"><value>Klątwa zabrania tego środka transportu.</value></data>
+  <data name="RideDeniedCoinsFormat" xml:space="preserve"><value>Na start potrzeba {0} mon., masz {1}. Idź pieszo albo zdobądź monety.</value></data>
+  <data name="RideDeniedTitle" xml:space="preserve"><value>Nie możesz jechać</value></data>
+  <data name="RideEndedFixedFormat" xml:space="preserve"><value>Opłata: {0} mon. Saldo: {1}.</value></data>
+  <data name="RideEndedFormat" xml:space="preserve"><value>Przejazd: {0}, razem {1} mon. Saldo: {2}.</value></data>
+  <data name="RideEndedNoTrackFormat" xml:space="preserve"><value>Brak trasy GPS — naliczono minimum: {0} mon. Saldo: {1}.</value></data>
+  <data name="RideEndedTitle" xml:space="preserve"><value>Koniec przejazdu</value></data>
+  <data name="RideManualPrompt" xml:space="preserve"><value>Ile monet kosztuje przejazd?</value></data>
+  <data name="RideManualTitle" xml:space="preserve"><value>Opłata</value></data>
   <data name="RideSummaryFormat" xml:space="preserve"><value>{0} · razem {1} mon.</value></data>
   <data name="RoleChaser" xml:space="preserve"><value>Goniący</value></data>
   <data name="RoleChaserDescription" xml:space="preserve"><value>Goni uciekiniera; jeździ za darmo.</value></data>
   <data name="RoleRunner" xml:space="preserve"><value>Uciekinier</value></data>
   <data name="RoleRunnerDescription" xml:space="preserve"><value>Ucieka do swojego celu, płaci za przejazdy, losuje karty.</value></data>
+  <data name="RunnerIsFormat" xml:space="preserve"><value>Ucieka {0} · do końca gry {1}</value></data>
+  <data name="SettingsCatchRadius" xml:space="preserve"><value>Złapanie z odległości</value></data>
+  <data name="SettingsCatchRadiusHint" xml:space="preserve"><value>Zasada dla graczy — pozycje goniących nie są nigdzie wysyłane.</value></data>
+  <data name="SettingsDeck" xml:space="preserve"><value>Karty</value></data>
+  <data name="SettingsDeckBuiltInFormat" xml:space="preserve"><value>Wbudowana talia: {0}</value></data>
+  <data name="SettingsDeckCustomFormat" xml:space="preserve"><value>Własna talia ({0}): {1}</value></data>
+  <data name="SettingsDeckInvalidFormat" xml:space="preserve"><value>Nie udało się wczytać talii: {0}</value></data>
+  <data name="SettingsDeckLoad" xml:space="preserve"><value>Wczytaj JSON</value></data>
+  <data name="SettingsDeckReset" xml:space="preserve"><value>Wbudowana</value></data>
+  <data name="SettingsDeckSummaryFormat" xml:space="preserve"><value>{0} wyzwań, {1} klątw</value></data>
+  <data name="SettingsDestinationRadius" xml:space="preserve"><value>Dotarcie do celu w promieniu</value></data>
+  <data name="SettingsDestinations" xml:space="preserve"><value>Cele graczy</value></data>
+  <data name="SettingsDestinationsVisible" xml:space="preserve"><value>Cele jawne</value></data>
+  <data name="SettingsDestinationsVisibleHint" xml:space="preserve"><value>Wyłączone: każdy widzi tylko swój cel do końca gry.</value></data>
+  <data name="SettingsDrawCooldown" xml:space="preserve"><value>Przerwa w losowaniu po rezygnacji</value></data>
+  <data name="SettingsEditFares" xml:space="preserve"><value>Zmień stawki</value></data>
+  <data name="SettingsFareModel" xml:space="preserve"><value>Opłaty za przejazdy (tylko uciekinier)</value></data>
+  <data name="SettingsFarePrompt" xml:space="preserve"><value>Monety za przejazd:</value></data>
+  <data name="SettingsFares" xml:space="preserve"><value>Stawki</value></data>
+  <data name="SettingsFaresHint" xml:space="preserve"><value>Za km: pierwszy km płatny z góry, reszta po przejeździe według trasy GPS (saldo może zejść poniżej zera). Pieszo za darmo.</value></data>
+  <data name="SettingsFaresManual" xml:space="preserve"><value>Uciekinier wpisuje kwotę przy każdym przejeździe.</value></data>
+  <data name="SettingsGameDuration" xml:space="preserve"><value>Czas gry</value></data>
+  <data name="SettingsHeadStart" xml:space="preserve"><value>Przewaga uciekiniera w każdej turze</value></data>
+  <data name="SettingsMaxDistance" xml:space="preserve"><value>Maks. odległość od startu</value></data>
+  <data name="SettingsMinDistance" xml:space="preserve"><value>Min. odległość od startu</value></data>
+  <data name="SettingsNextRunner" xml:space="preserve"><value>Kolejny uciekinier po złapaniu</value></data>
+  <data name="SettingsNoLimit" xml:space="preserve"><value>bez limitu</value></data>
+  <data name="SettingsOnlineOnly" xml:space="preserve"><value>Berek działa tylko online: każdy gracz ma własny telefon, monety i cel. Role losuje gra.</value></data>
+  <data name="SettingsRatePrompt" xml:space="preserve"><value>Monety za km:</value></data>
+  <data name="SettingsRevealInterval" xml:space="preserve"><value>Ping pozycji uciekiniera co</value></data>
+  <data name="SettingsSpacing" xml:space="preserve"><value>Min. odstęp między celami</value></data>
+  <data name="SettingsStartingCoins" xml:space="preserve"><value>Monety na start (każdy gracz)</value></data>
+  <data name="SettingsTurnBonus" xml:space="preserve"><value>Bonus dla nowego uciekiniera</value></data>
+  <data name="SettingsTurnBonusHint" xml:space="preserve"><value>Monety nie przepadają — każdy zachowuje saldo między turami.</value></data>
+  <data name="SettleLastPingConfirmFormat" xml:space="preserve"><value>Rozstrzygnąć według ostatniej pozycji uciekiniera z {0:HH:mm}?</value></data>
+  <data name="SetupGuestPick" xml:space="preserve"><value>Wybierz swój cel na mapie i poczekaj na start.</value></data>
+  <data name="SetupGuestWait" xml:space="preserve"><value>Czekamy, aż host wystartuje grę.</value></data>
+  <data name="SetupHost" xml:space="preserve"><value>Gracze dołączają kodem i wybierają cele. Gdy wszyscy są gotowi — Start.</value></data>
+  <data name="SetupHostRandom" xml:space="preserve"><value>Gracze dołączają kodem; cele zostaną wylosowane przy starcie.</value></data>
+  <data name="SetupNotInGame" xml:space="preserve"><value>Gra zaczęła się bez ciebie — możesz tylko oglądać.</value></data>
+  <data name="StartConfirmFormat" xml:space="preserve"><value>Zacząć grę? Gracze: {0}. Uciekinier zostanie wylosowany.</value></data>
+  <data name="StartDrawFailed" xml:space="preserve"><value>Nie da się wylosować celów przy tych odległościach — zmień punkt startowy lub ustawienia.</value></data>
+  <data name="StartMissingDestinations" xml:space="preserve"><value>Nie wszyscy gracze mają cel.</value></data>
+  <data name="StartPointGps" xml:space="preserve"><value>📍 Moja pozycja (GPS)</value></data>
+  <data name="StartPointMap" xml:space="preserve"><value>🗺️ Zaznacz na mapie</value></data>
+  <data name="StartPointTitle" xml:space="preserve"><value>Punkt startowy</value></data>
+  <data name="TimeLimitFormat" xml:space="preserve"><value>limit {0} min</value></data>
+  <data name="TimeUpRunnerDetail" xml:space="preserve"><value>Wysyłam twoją pozycję — wygrywa cel najbliżej ciebie.</value></data>
+  <data name="TimeUpWaitDetail" xml:space="preserve"><value>Czekamy na pozycję uciekiniera.</value></data>
   <data name="TransactionChallenge" xml:space="preserve"><value>Wyzwanie</value></data>
   <data name="TransactionCurse" xml:space="preserve"><value>Klątwa</value></data>
   <data name="TransactionHost" xml:space="preserve"><value>Korekta hosta</value></data>
@@ -90,15 +252,20 @@
   <data name="Transport_Other" xml:space="preserve"><value>Inne</value></data>
   <data name="Transport_Train" xml:space="preserve"><value>Pociąg</value></data>
   <data name="Transport_Tram" xml:space="preserve"><value>Tramwaj</value></data>
+  <data name="TurnBonusDetailFormat" xml:space="preserve"><value>bonus {0}</value></data>
   <data name="TurnBonusFixed" xml:space="preserve"><value>Stały bonus</value></data>
   <data name="TurnBonusTopUp" xml:space="preserve"><value>Dopełnienie salda do minimum</value></data>
   <data name="TurnCaught" xml:space="preserve"><value>złapany</value></data>
   <data name="TurnCaughtByFormat" xml:space="preserve"><value>złapany przez: {0}</value></data>
+  <data name="TurnForced" xml:space="preserve"><value>potwierdzone przez hosta</value></data>
   <data name="TurnReachedDestination" xml:space="preserve"><value>dotarł do celu</value></data>
   <data name="TurnRowDetailsFormat" xml:space="preserve"><value>{0} · {1} · wydane {2} · zarobione {3}</value></data>
   <data name="TurnRowTitleFormat" xml:space="preserve"><value>Tura {0}: {1}</value></data>
   <data name="TurnRunning" xml:space="preserve"><value>trwa</value></data>
   <data name="TurnStopped" xml:space="preserve"><value>przerwana</value></data>
+  <data name="TurnTimeFormat" xml:space="preserve"><value>Uciekasz od {0} · do końca gry {1}</value></data>
   <data name="TurnTimeUp" xml:space="preserve"><value>koniec czasu</value></data>
   <data name="UnknownPlayer" xml:space="preserve"><value>?</value></data>
+  <data name="UntilFormat" xml:space="preserve"><value>do {0:HH:mm}</value></data>
+  <data name="YouFormat" xml:space="preserve"><value>{0} (ty)</value></data>
 </root>

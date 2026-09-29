@@ -54,6 +54,15 @@ public sealed partial class GameSetupViewModel : ObservableObject
     [ObservableProperty]
     public partial bool PlayOnline { get; set; }
 
+    /// <summary>The game cannot be played offline (<see cref="Core.Games.IGameModule.RequiresOnline"/>): the switch is locked on.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CanChooseOnline), nameof(OnlineHint))]
+    public partial bool IsOnlineRequired { get; set; }
+
+    public bool CanChooseOnline => !IsOnlineRequired;
+
+    public string OnlineHint => IsOnlineRequired ? UiStrings.GameSetupOnlineRequired : UiStrings.StationsPlayOnlineHint;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsBusy))]
     [NotifyCanExecuteChangedFor(nameof(StartCommand))]
@@ -65,6 +74,8 @@ public sealed partial class GameSetupViewModel : ObservableObject
     public View? CreateSettingsView()
     {
         var module = _wizard.RequireModule();
+        IsOnlineRequired = module.RequiresOnline;
+        PlayOnline |= module.RequiresOnline;
         Summary = string.Format(UiStrings.GameSetupSummaryFormat, module.DisplayName, _wizard.Role?.DisplayName, _wizard.Stations.Count);
         var settings = _wizard.RequireSettings();
         settings.Area = _wizard.RequireArea().ToDefinition();
@@ -91,7 +102,7 @@ public sealed partial class GameSetupViewModel : ObservableObject
 
         string? code = null;
         IGameSession session;
-        if (PlayOnline)
+        if (PlayOnline || module.RequiresOnline)
         {
             if (!_onlinePreferences.IsConfigured)
             {

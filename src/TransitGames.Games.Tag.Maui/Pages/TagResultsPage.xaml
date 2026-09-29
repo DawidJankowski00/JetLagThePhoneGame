@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.Games.Tag.Maui.ViewModels"
+             xmlns:res="clr-namespace:TransitGames.Games.Tag.Resources;assembly=TransitGames.Games.Tag"
+             x:Class="TransitGames.Games.Tag.Maui.Pages.TagResultsPage"
+             x:DataType="vm:TagResultsViewModel"
+             Title="{x:Static res:TagStrings.ResultsTitle}"
+             Style="{StaticResource PageBackground}">
+    <ScrollView>
+        <VerticalStackLayout Padding="16,12" Spacing="10">
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="4">
+                    <Label Text="{Binding Headline}" FontAttributes="Bold" FontSize="18" />
+                    <Label Text="{Binding EndDetail}" Style="{StaticResource Caption}" FontSize="12" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="{x:Static res:TagStrings.ResultsRanking}" FontAttributes="Bold" Margin="0,6,0,0" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Ranking}" Spacing="6">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:RankRow">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Title}" FontAttributes="Bold" />
+                                <Label Text="{Binding Detail}" Style="{StaticResource Caption}" FontSize="12" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1" Text="🏆" FontSize="20" IsVisible="{Binding IsWinner}" VerticalOptions="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <Label Text="{x:Static res:TagStrings.ResultsTurns}" FontAttributes="Bold" Margin="0,6,0,0" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Turns}" Spacing="6">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ResultRow">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Title}" />
+                                <Label Text="{Binding Detail}" Style="{StaticResource Caption}" FontSize="12" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1" Text="{Binding Value}" Style="{StaticResource Caption}" VerticalOptions="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <Label Text="{x:Static res:TagStrings.ResultsBalances}" FontAttributes="Bold" Margin="0,6,0,0" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Balances}" Spacing="4">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ResultRow">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="{Binding Title}" />
+                            <Label Grid.Column="1" Text="{Binding Value}" FontAttributes="Bold" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <Label Text="{x:Static res:TagStrings.ResultsTransactions}" FontAttributes="Bold" Margin="0,6,0,0" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Transactions}" Spacing="4">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ResultRow">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Title}" />
+                                <Label Text="{Binding Detail}" Style="{StaticResource Caption}" FontSize="12" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1" Text="{Binding Value}" FontAttributes="Bold" VerticalOptions="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

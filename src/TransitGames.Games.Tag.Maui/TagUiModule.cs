@@ -5,7 +5,6 @@ using TransitGames.Games.Tag.Maui.Pages;
 using TransitGames.Games.Tag.Maui.Services;
 using TransitGames.Games.Tag.Maui.ViewModels;
 using TransitGames.Games.Tag.Maui.Views;
-using TransitGames.Geo.Places;
 using TransitGames.UI.Games;
 using TransitGames.UI.Services;
 
@@ -14,30 +13,35 @@ namespace TransitGames.Games.Tag.Maui;
 public sealed class TagUiModule : GameUiModule<TagModule>
 {
     public const string MainRoute = "tag-game";
-    public const string TargetsRoute = "tag-targets";
-    public const string ScoreboardRoute = "tag-scoreboard";
-    public const string TargetsEditorRoute = "tag-targets-editor";
+    public const string ResultsRoute = "tag-results";
+    public const string MapPickRoute = "tag-map-pick";
 
     public override string GameId => TagModule.GameId;
 
     public override IReadOnlyList<GameRoute> Routes { get; } =
     [
         new(MainRoute, typeof(TagGamePage)),
-        new(TargetsRoute, typeof(TagTargetsPage)),
-        new(ScoreboardRoute, typeof(TagScoreboardPage)),
-        new(TargetsEditorRoute, typeof(TargetsEditorPage)),
+        new(ResultsRoute, typeof(TagResultsPage)),
+        new(MapPickRoute, typeof(MapPickPage)),
     ];
 
     public override string GetGameRoute(string roleId) => MainRoute;
 
     public override string EventIcon(string eventType) => eventType switch
     {
-        TagEventTypes.TargetCaptured => "🎯",
+        TagEventTypes.GameStarted => "🚦",
+        TagEventTypes.TurnStarted => "🔄",
         TagEventTypes.Caught => "🙌",
+        TagEventTypes.CatchRequested => "✋",
+        TagEventTypes.RideStarted => "🚌",
+        TagEventTypes.RideEnded => "🛑",
+        TagEventTypes.CardDrawn => "🃏",
+        TagEventTypes.ChallengeCompleted => "✅",
+        TagEventTypes.ChallengeAbandoned => "✖️",
+        TagEventTypes.Arrived => "🏁",
         TagEventTypes.TimeUp => "⏱️",
-        TagEventTypes.ReachedFinal => "🏁",
-        TagEventTypes.RoundStarted => "🔄",
-        TagEventTypes.Ping => "📍",
+        TagEventTypes.GameEnded => "🏆",
+        TagEventTypes.CoinsAdjusted => "🪙",
         _ => base.EventIcon(eventType),
     };
 
@@ -45,9 +49,8 @@ public sealed class TagUiModule : GameUiModule<TagModule>
         settings is TagSettings typed
             ? new TagSettingsView(new TagSettingsViewModel(
                 typed,
-                services.GetRequiredService<PlaceCatalog>(),
                 services.GetRequiredService<IDialogService>(),
-                services.GetRequiredService<INavigationService>(),
+                services.GetRequiredService<ITextFilePicker>(),
                 services.GetRequiredService<ILogger<TagSettingsViewModel>>()))
             : null;
 
@@ -55,8 +58,7 @@ public sealed class TagUiModule : GameUiModule<TagModule>
     {
         services.AddSingleton<TagController>();
         services.AddTransient<TagGameViewModel>();
-        services.AddTransient<TagTargetsViewModel>();
-        services.AddTransient<TagScoreboardViewModel>();
-        services.AddTransient<TargetsEditorViewModel>();
+        services.AddTransient<TagResultsViewModel>();
+        services.AddTransient<MapPickViewModel>();
     }
 }

@@ -26,6 +26,12 @@ public interface IGameModule
     /// <summary>The game can only be played online (every player needs the shared state), e.g. Tag.</summary>
     bool RequiresOnline { get; }
 
+    /// <summary>
+    /// Every player starts in this role and the game assigns roles itself later (Tag: all chase until the start draws
+    /// the runner); creating and joining a game then skip choosing a role. Null: players choose.
+    /// </summary>
+    string? InitialRoleId { get; }
+
     IReadOnlyList<GameRole> Roles { get; }
 
     /// <summary>Which role may see whose location. Anything not listed stays private.</summary>

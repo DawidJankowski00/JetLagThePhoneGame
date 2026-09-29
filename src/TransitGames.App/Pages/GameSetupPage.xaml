@@ -17,9 +17,9 @@
                     <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
                         <VerticalStackLayout VerticalOptions="Center">
                             <Label Text="{x:Static res:UiStrings.StationsPlayOnline}" FontAttributes="Bold" />
-                            <Label Text="{x:Static res:UiStrings.StationsPlayOnlineHint}" Style="{StaticResource Caption}" FontSize="12" />
+                            <Label Text="{Binding OnlineHint}" Style="{StaticResource Caption}" FontSize="12" />
                         </VerticalStackLayout>
-                        <Switch Grid.Column="1" IsToggled="{Binding PlayOnline}" VerticalOptions="Center" />
+                        <Switch Grid.Column="1" IsToggled="{Binding PlayOnline}" IsEnabled="{Binding CanChooseOnline}" VerticalOptions="Center" />
                     </Grid>
                 </Border>
             </VerticalStackLayout>

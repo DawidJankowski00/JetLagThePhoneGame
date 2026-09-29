@@ -162,7 +162,7 @@ public sealed partial class JoinGameViewModel : ObservableObject
                 : string.Join(", ", lobby.Players.Select(p => $"{p.Name} ({roleNames.GetValueOrDefault(p.RoleId, p.RoleId)})")));
 
         Roles.Clear();
-        foreach (var role in lobby.Roles)
+        foreach (var role in lobby.Roles.Where(r => module?.InitialRoleId is null || r.Id == module.InitialRoleId))
         {
             var description = module?.Roles.FirstOrDefault(r => r.Id == role.Id)?.Description ?? string.Empty;
             Roles.Add(new JoinRoleChoice(role.Id, string.Format(UiStrings.JoinAsFormat, roleNames[role.Id]), description));

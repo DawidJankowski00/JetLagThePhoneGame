@@ -24,6 +24,9 @@ public sealed class TagModule : GameModule<TagSettings, TagSession>
     /// <summary>Every player has their own coins, destination and turns: all devices share one state online.</summary>
     public override bool RequiresOnline => true;
 
+    /// <summary>Everybody joins as a chaser; the start draws the runner.</summary>
+    public override string? InitialRoleId => TagRoles.Chaser;
+
     public override IReadOnlyList<GameRole> Roles { get; } =
     [
         new(TagRoles.Runner, TagStrings.RoleRunner, TagStrings.RoleRunnerDescription),

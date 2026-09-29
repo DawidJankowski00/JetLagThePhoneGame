@@ -6,12 +6,12 @@
              x:Class="TransitGames.Games.Tag.Maui.Views.TagSettingsView"
              x:DataType="vm:TagSettingsViewModel">
     <VerticalStackLayout Spacing="12">
+        <Label Text="{x:Static res:TagStrings.SettingsOnlineOnly}" Style="{StaticResource Caption}" />
+
         <Border Style="{StaticResource Card}">
             <VerticalStackLayout Spacing="4">
-                <Label Text="{x:Static res:TagStrings.SettingsRounds}" FontAttributes="Bold" />
-                <Picker ItemsSource="{Binding RoundCounts}" SelectedItem="{Binding SelectedRounds}" />
-                <Label Text="{x:Static res:TagStrings.SettingsRoundDuration}" FontAttributes="Bold" Margin="0,8,0,0" />
-                <Picker ItemsSource="{Binding RoundDurations}" SelectedItem="{Binding SelectedRoundDuration}" />
+                <Label Text="{x:Static res:TagStrings.SettingsGameDuration}" FontAttributes="Bold" />
+                <Picker ItemsSource="{Binding GameDurations}" SelectedItem="{Binding SelectedGameDuration}" />
                 <Label Text="{x:Static res:TagStrings.SettingsHeadStart}" FontAttributes="Bold" Margin="0,8,0,0" />
                 <Picker ItemsSource="{Binding HeadStarts}" SelectedItem="{Binding SelectedHeadStart}" />
                 <Label Text="{x:Static res:TagStrings.SettingsRevealInterval}" FontAttributes="Bold" Margin="0,8,0,0" />
@@ -19,44 +19,63 @@
                 <Label Text="{x:Static res:TagStrings.SettingsCatchRadius}" FontAttributes="Bold" Margin="0,8,0,0" />
                 <Picker ItemsSource="{Binding CatchRadii}" SelectedItem="{Binding SelectedCatchRadius}" />
                 <Label Text="{x:Static res:TagStrings.SettingsCatchRadiusHint}" Style="{StaticResource Caption}" FontSize="12" />
+                <Label Text="{x:Static res:TagStrings.SettingsNextRunner}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding NextRunnerModes}" SelectedItem="{Binding SelectedNextRunner}" />
             </VerticalStackLayout>
         </Border>
 
         <Border Style="{StaticResource Card}">
             <VerticalStackLayout Spacing="4">
-                <Label Text="{x:Static res:TagStrings.SettingsTargets}" FontAttributes="Bold" />
-                <Picker ItemsSource="{Binding Sources}" SelectedItem="{Binding SelectedSource}" />
-                <Picker ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" IsVisible="{Binding IsPlaces}" />
-                <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding CanDraw}">
-                    <Label Text="{x:Static res:TagStrings.SettingsTargetCount}" VerticalOptions="Center" />
-                    <Picker Grid.Column="1" ItemsSource="{Binding TargetCounts}" SelectedItem="{Binding SelectedTargetCount}" WidthRequest="80" />
-                </Grid>
-                <Label Text="{Binding TargetsSummary}" Style="{StaticResource Caption}" Margin="0,4,0,0" />
-                <Label Text="{Binding BusyText}" IsVisible="{Binding IsBusy}" Style="{StaticResource Caption}" />
-                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                    <Button Text="{x:Static res:TagStrings.SettingsDraw}" Style="{StaticResource ToolButton}" Command="{Binding DrawCommand}"
-                            IsVisible="{Binding CanDraw}" />
-                    <Button Grid.Column="1" Text="{x:Static res:TagStrings.SettingsEditOnMap}" Style="{StaticResource ToolButton}"
-                            Command="{Binding EditOnMapCommand}" />
-                </Grid>
-                <Label Text="{x:Static res:TagStrings.SettingsTargetRadius}" FontAttributes="Bold" Margin="0,8,0,0" />
-                <Picker ItemsSource="{Binding TargetRadii}" SelectedItem="{Binding SelectedTargetRadius}" />
+                <Label Text="{x:Static res:TagStrings.SettingsStartingCoins}" FontAttributes="Bold" />
+                <Picker ItemsSource="{Binding Coins}" SelectedItem="{Binding SelectedStartingCoins}" />
+                <Label Text="{x:Static res:TagStrings.SettingsTurnBonus}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding BonusModes}" SelectedItem="{Binding SelectedBonusMode}" />
+                <Picker ItemsSource="{Binding BonusAmounts}" SelectedItem="{Binding SelectedTurnBonus}" IsVisible="{Binding IsFixedBonus}" />
+                <Picker ItemsSource="{Binding Coins}" SelectedItem="{Binding SelectedTopUp}" IsVisible="{Binding IsTopUp}" />
+                <Label Text="{x:Static res:TagStrings.SettingsTurnBonusHint}" Style="{StaticResource Caption}" FontSize="12" />
+                <Label Text="{x:Static res:TagStrings.SettingsFareModel}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding FareModels}" SelectedItem="{Binding SelectedFareModel}" />
+                <Label Text="{Binding FaresText}" Style="{StaticResource Caption}" FontSize="12" />
+                <Button Text="{x:Static res:TagStrings.SettingsEditFares}" Style="{StaticResource ToolButton}" Command="{Binding EditFaresCommand}"
+                        IsVisible="{Binding HasRates}" />
+                <Label Text="{x:Static res:TagStrings.SettingsFaresHint}" Style="{StaticResource Caption}" FontSize="12" />
+            </VerticalStackLayout>
+        </Border>
+
+        <Border Style="{StaticResource Card}">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{x:Static res:TagStrings.SettingsDestinations}" FontAttributes="Bold" />
+                <Picker ItemsSource="{Binding DestinationModes}" SelectedItem="{Binding SelectedDestinationMode}" />
+                <VerticalStackLayout IsVisible="{Binding IsRandomDestinations}" Spacing="4">
+                    <Label Text="{x:Static res:TagStrings.SettingsMinDistance}" />
+                    <Picker ItemsSource="{Binding MinDistances}" SelectedItem="{Binding SelectedMinDistance}" />
+                    <Label Text="{x:Static res:TagStrings.SettingsMaxDistance}" />
+                    <Picker ItemsSource="{Binding MaxDistances}" SelectedItem="{Binding SelectedMaxDistance}" />
+                    <Label Text="{x:Static res:TagStrings.SettingsSpacing}" />
+                    <Picker ItemsSource="{Binding Spacings}" SelectedItem="{Binding SelectedSpacing}" />
+                </VerticalStackLayout>
+                <Label Text="{x:Static res:TagStrings.SettingsDestinationRadius}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding DestinationRadii}" SelectedItem="{Binding SelectedDestinationRadius}" />
                 <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
                     <VerticalStackLayout VerticalOptions="Center">
-                        <Label Text="{x:Static res:TagStrings.SettingsAutoCapture}" />
-                        <Label Text="{x:Static res:TagStrings.SettingsAutoCaptureHint}" Style="{StaticResource Caption}" FontSize="12" />
+                        <Label Text="{x:Static res:TagStrings.SettingsDestinationsVisible}" />
+                        <Label Text="{x:Static res:TagStrings.SettingsDestinationsVisibleHint}" Style="{StaticResource Caption}" FontSize="12" />
                     </VerticalStackLayout>
-                    <Switch Grid.Column="1" IsToggled="{Binding AutoCapture}" VerticalOptions="Center" />
+                    <Switch Grid.Column="1" IsToggled="{Binding DestinationsVisible}" VerticalOptions="Center" />
                 </Grid>
-                <Grid ColumnDefinitions="*,Auto">
-                    <VerticalStackLayout VerticalOptions="Center">
-                        <Label Text="{x:Static res:TagStrings.SettingsChallenges}" />
-                        <Label Text="{x:Static res:TagStrings.SettingsChallengesHint}" Style="{StaticResource Caption}" FontSize="12" />
-                    </VerticalStackLayout>
-                    <Switch Grid.Column="1" IsToggled="{Binding ChallengesEnabled}" VerticalOptions="Center" />
+            </VerticalStackLayout>
+        </Border>
+
+        <Border Style="{StaticResource Card}">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{x:Static res:TagStrings.SettingsDeck}" FontAttributes="Bold" />
+                <Label Text="{Binding DeckText}" Style="{StaticResource Caption}" />
+                <Label Text="{x:Static res:TagStrings.SettingsDrawCooldown}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding DrawCooldowns}" SelectedItem="{Binding SelectedDrawCooldown}" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <Button Text="{x:Static res:TagStrings.SettingsDeckLoad}" Style="{StaticResource ToolButton}" Command="{Binding LoadDeckCommand}" />
+                    <Button Grid.Column="1" Text="{x:Static res:TagStrings.SettingsDeckReset}" Style="{StaticResource ToolButton}" Command="{Binding ResetDeckCommand}" />
                 </Grid>
-                <Label Text="{x:Static res:TagStrings.SettingsRewardKind}" FontAttributes="Bold" Margin="0,8,0,0" />
-                <Picker ItemsSource="{Binding RewardKinds}" SelectedItem="{Binding SelectedRewardKind}" />
             </VerticalStackLayout>
         </Border>
     </VerticalStackLayout>

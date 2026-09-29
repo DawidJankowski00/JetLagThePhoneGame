@@ -13,58 +13,71 @@
 
         <Grid Grid.Row="1">
             <controls:GameMapView x:Name="Map" Area="{Binding Header.Area}"
-                                  OwnLocation="{Binding Header.OwnLocation}" Players="{Binding Header.Players}"
-                                  TapCommand="{Binding MapTappedCommand}" />
+                                  OwnLocation="{Binding Header.OwnLocation}" Players="{Binding Header.Players}" />
             <!-- Legend: what the colours mean. -->
             <Border VerticalOptions="Start" HorizontalOptions="Start" Margin="8" Padding="8,4"
                     BackgroundColor="{AppThemeBinding Light=#E6FFFFFF, Dark=#E6212121}" StrokeThickness="0"
                     StrokeShape="RoundRectangle 8">
                 <VerticalStackLayout Spacing="2">
                     <HorizontalStackLayout Spacing="6">
-                        <BoxView WidthRequest="12" HeightRequest="12" Color="{StaticResource MapTarget}" CornerRadius="6" />
-                        <Label Text="{x:Static res:TagStrings.LegendTarget}" FontSize="11" />
+                        <BoxView WidthRequest="12" HeightRequest="12" Color="{StaticResource MapFinalTarget}" CornerRadius="6" />
+                        <Label Text="{x:Static res:TagStrings.LegendOwnDestination}" FontSize="11" />
                     </HorizontalStackLayout>
                     <HorizontalStackLayout Spacing="6">
-                        <BoxView WidthRequest="12" HeightRequest="12" Color="{StaticResource MapTargetCaptured}" CornerRadius="6" />
-                        <Label Text="{x:Static res:TagStrings.LegendCaptured}" FontSize="11" />
+                        <BoxView WidthRequest="12" HeightRequest="12" Color="{StaticResource MapTarget}" CornerRadius="6" />
+                        <Label Text="{x:Static res:TagStrings.LegendDestination}" FontSize="11" />
                     </HorizontalStackLayout>
                     <HorizontalStackLayout Spacing="6">
                         <BoxView WidthRequest="12" HeightRequest="12" Color="{StaticResource MapOpponent}" CornerRadius="6" />
-                        <Label Text="{x:Static res:TagStrings.LegendRunners}" FontSize="11" />
+                        <Label Text="{x:Static res:TagStrings.LegendRunner}" FontSize="11" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="6">
+                        <BoxView WidthRequest="12" HeightRequest="12" Color="{StaticResource MapTeammate}" CornerRadius="6" />
+                        <Label Text="{x:Static res:TagStrings.LegendStart}" FontSize="11" />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
             </Border>
         </Grid>
 
-        <VerticalStackLayout Grid.Row="2" Padding="16,8,16,12" Spacing="8">
-            <Label Text="{Binding PhaseText}" FontSize="18" FontAttributes="Bold" />
-            <Label Text="{Binding RoundText}" Style="{StaticResource Caption}" />
-            <Label Text="{Binding StatusText}" Style="{StaticResource Caption}" FontSize="12" />
+        <VerticalStackLayout Grid.Row="2" Padding="16,8,16,12" Spacing="6">
+            <Label Text="{Binding PhaseTitle}" FontSize="18" FontAttributes="Bold" />
+            <Label Text="{Binding PhaseDetail}" Style="{StaticResource Caption}" />
             <Label Text="{Binding NoticeText}" IsVisible="{Binding HasNotice}" Style="{StaticResource HintBanner}" Margin="-16,0" />
 
-            <Button Text="{Binding NextRoundText}" IsVisible="{Binding IsTimeUp}" Style="{StaticResource BigButton}"
-                    Command="{Binding NextRoundCommand}" />
+            <!-- Coins, ride, challenge, curses, players: capped so the map stays visible. -->
+            <ScrollView MaximumHeightRequest="190">
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Info}" Spacing="4">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:InfoRow">
+                            <Grid ColumnDefinitions="28,*" ColumnSpacing="4">
+                                <Label Text="{Binding Icon}" FontSize="16" VerticalOptions="Start" />
+                                <VerticalStackLayout Grid.Column="1">
+                                    <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="14" />
+                                    <Label Text="{Binding Detail}" Style="{StaticResource Caption}" FontSize="12" />
+                                </VerticalStackLayout>
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </ScrollView>
 
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding IsPlaying}">
-                <Button Text="{Binding TargetsButtonText}" Style="{StaticResource BigSecondaryButton}" FontSize="15" Padding="4,0"
-                        Command="{Binding TargetsCommand}" />
-                <Button Grid.Column="1" Text="{Binding CatchButtonText}" Style="{StaticResource BigButton}" FontSize="15" Padding="4,0"
-                        Command="{Binding CaughtCommand}" IsEnabled="{Binding CanCatch}" />
-            </Grid>
+            <FlexLayout BindableLayout.ItemsSource="{Binding Actions}" Wrap="Wrap" JustifyContent="SpaceBetween">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:TagAction">
+                        <Grid FlexLayout.Basis="49%" Margin="0,3">
+                            <Button Text="{Binding Text}" Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" IsVisible="{Binding IsPrimary}"
+                                    Style="{StaticResource BigButton}" FontSize="14" Padding="4,0" />
+                            <Button Text="{Binding Text}" Command="{Binding Command}" IsEnabled="{Binding IsEnabled}" IsVisible="{Binding IsSecondary}"
+                                    Style="{StaticResource BigSecondaryButton}" FontSize="14" Padding="4,0" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </FlexLayout>
 
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding HasExtraRow}">
-                <Button Text="{Binding PingButtonText}" Style="{StaticResource BigSecondaryButton}" FontSize="15" Padding="4,0"
-                        Command="{Binding PingCommand}" IsVisible="{Binding ShowPing}" />
-                <Button Grid.Column="1" Text="{x:Static res:TagStrings.ButtonSpend}" Style="{StaticResource BigSecondaryButton}" FontSize="15" Padding="4,0"
-                        Command="{Binding SpendCommand}" IsVisible="{Binding ShowCoins}" />
-            </Grid>
-
-            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
-                <Button Text="{x:Static res:TagStrings.ButtonScoreboard}" Style="{StaticResource BigSecondaryButton}" FontSize="14" Padding="2,0"
-                        Command="{Binding ScoreboardCommand}" />
-                <Button Grid.Column="1" Text="{x:Static res:TagStrings.ButtonLeave}" Style="{StaticResource BigSecondaryButton}" FontSize="14" Padding="2,0"
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                <Button Text="{x:Static res:TagStrings.ButtonLeave}" Style="{StaticResource BigSecondaryButton}" FontSize="14" Padding="2,0"
                         Command="{Binding Header.LeaveCommand}" />
-                <Button Grid.Column="2" Text="{x:Static res:TagStrings.ButtonFinish}" Style="{StaticResource BigButton}" FontSize="14" Padding="2,0"
+                <Button Grid.Column="1" Text="{x:Static res:TagStrings.ButtonFinish}" Style="{StaticResource BigSecondaryButton}" FontSize="14" Padding="2,0"
                         Command="{Binding Header.FinishCommand}" />
             </Grid>
         </VerticalStackLayout>

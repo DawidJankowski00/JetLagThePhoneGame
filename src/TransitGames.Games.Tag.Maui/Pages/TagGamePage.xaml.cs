@@ -9,8 +9,7 @@ public partial class TagGamePage : ContentPage
 {
     private readonly TagGameViewModel _viewModel;
     private readonly IMapLayerProvider _layers;
-    private readonly MemoryLayer _zonesLayer;
-    private readonly MemoryLayer _targetsLayer;
+    private readonly MemoryLayer _markersLayer;
     private bool _zoomed;
 
     public TagGamePage(TagGameViewModel viewModel, IMapLayerProvider layers)
@@ -19,9 +18,8 @@ public partial class TagGamePage : ContentPage
         BindingContext = _viewModel = viewModel;
         _layers = layers;
 
-        // Game layers sit between the game area and the stations.
-        Map.AddLayer(_zonesLayer = layers.CreatePolygonLayer("tag-zones", MapPalette.TargetZone, MapPalette.Target, 1));
-        Map.AddLayer(_targetsLayer = layers.CreatePointLayer("tag-targets"));
+        // Start point and destinations sit between the game area and the stations.
+        Map.AddLayer(_markersLayer = layers.CreatePointLayer("tag-destinations"));
         viewModel.PropertyChanged += OnViewModelPropertyChanged;
     }
 
@@ -44,14 +42,9 @@ public partial class TagGamePage : ContentPage
 
     private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        switch (e.PropertyName)
+        if (e.PropertyName == nameof(TagGameViewModel.Markers))
         {
-            case nameof(TagGameViewModel.Markers):
-                _layers.SetMarkers(_targetsLayer, _viewModel.Markers);
-                break;
-            case nameof(TagGameViewModel.TargetZones):
-                _layers.SetPolygon(_zonesLayer, _viewModel.TargetZones);
-                break;
+            _layers.SetMarkers(_markersLayer, _viewModel.Markers);
         }
     }
 }

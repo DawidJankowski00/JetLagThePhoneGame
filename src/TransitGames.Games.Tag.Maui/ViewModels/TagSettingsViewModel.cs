@@ -1,12 +1,13 @@
+using System.Globalization;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using TransitGames.Core.Geography;
+using TransitGames.Games.Tag.Cards;
+using TransitGames.Games.Tag.Coins;
+using TransitGames.Games.Tag.Destinations;
+using TransitGames.Games.Tag.Players;
 using TransitGames.Games.Tag.Resources;
-using TransitGames.Games.Tag.Targets;
-using TransitGames.Geo.Areas;
-using TransitGames.Geo.Overpass;
-using TransitGames.Geo.Places;
 using TransitGames.UI.Services;
 
 namespace TransitGames.Games.Tag.Maui.ViewModels;
@@ -17,94 +18,78 @@ public sealed record SettingsChoice<T>(T Value, string Label)
 }
 
 /// <summary>
-/// Edits <see cref="TagSettings"/> in place (new-game wizard): rounds and times, rewards, and the targets — drawn
-/// from stations or OSM places, or placed by hand (<see cref="TargetsEditorViewModel"/>). Targets are kept without
-/// challenges in <see cref="BaseTargets"/>; the challenges are added on top, so switching them off and on is lossless.
+/// Edits <see cref="TagSettings"/> in place (new-game wizard): times, coins and the turn bonus, who runs next, how
+/// destinations are chosen, fares, and the card deck (built-in or loaded from a JSON file).
 /// </summary>
 public sealed partial class TagSettingsViewModel : ObservableObject
 {
-    private static readonly string[] PlaceCategoryIds = ["park", "museum", "library", "cinema", "theatre", "university", "hospital", "zoo"];
-
     private readonly TagSettings _settings;
-    private readonly PlaceCatalog _places;
     private readonly IDialogService _dialogs;
-    private readonly INavigationService _navigation;
+    private readonly ITextFilePicker _files;
     private readonly ILogger<TagSettingsViewModel> _logger;
-    private readonly GameArea? _area;
-    private int _seed = Random.Shared.Next();
 
-    public TagSettingsViewModel(
-        TagSettings settings,
-        PlaceCatalog places,
-        IDialogService dialogs,
-        INavigationService navigation,
-        ILogger<TagSettingsViewModel> logger)
+    public TagSettingsViewModel(TagSettings settings, IDialogService dialogs, ITextFilePicker files, ILogger<TagSettingsViewModel> logger)
     {
         _settings = settings;
-        _places = places;
         _dialogs = dialogs;
-        _navigation = navigation;
+        _files = files;
         _logger = logger;
-        _area = settings.Area is { } definition ? GameArea.FromDefinition(definition) : null;
 
-        BaseTargets = [.. settings.Targets.Select(t => t.Challenge is null ? t : t with { Challenge = null, Reward = t.Reward - t.Challenge.Reward })
-            .Where(t => !t.Id.StartsWith("challenge/", StringComparison.Ordinal))];
-
-        RoundCounts = [.. new[] { 1, 2, 3, 4, 6 }.Select(n => new SettingsChoice<int>(n, n.ToString(System.Globalization.CultureInfo.CurrentCulture)))];
-        RoundDurations = Minutes(30, 45, 60, 90, 120, 180);
-        HeadStarts = Minutes(0, 5, 10, 15, 20, 30);
+        GameDurations = Minutes(60, 90, 120, 180, 240, 300, 360);
+        HeadStarts = Minutes(5, 10, 15, 20, 30, 45, 60);
         RevealIntervals = Minutes(5, 10, 15, 20, 30);
-        TargetRadii = Meters(50, 100, 150, 250, 400);
+        DrawCooldowns = Minutes(0, 5, 10, 15, 20, 30);
         CatchRadii = Meters(10, 25, 50, 100);
-        RewardKinds = [new(RewardKind.Points, TagStrings.RewardKindPoints), new(RewardKind.Coins, TagStrings.RewardKindCoins)];
-        Sources = [.. Enum.GetValues<TargetSource>().Select(s => new SettingsChoice<TargetSource>(s, TagTexts.Source(s)))];
-        Categories = [.. PlaceCategoryIds.Select(id => new SettingsChoice<string>(id, TagTexts.PlaceCategory(id)))];
-        TargetCounts = [.. new[] { 3, 4, 5, 6, 8, 10, 12 }.Select(n => new SettingsChoice<int>(n, n.ToString(System.Globalization.CultureInfo.CurrentCulture)))];
+        DestinationRadii = Meters(50, 100, 150, 250);
+        Coins = Numbers(5, 10, 15, 20, 25, 30, 40, 50);
+        BonusAmounts = Numbers(3, 5, 10, 15, 20);
+        MinDistances = Meters(0, 500, 1000, 2000, 3000, 5000);
+        MaxDistances = [new(0, TagStrings.SettingsNoLimit), .. Meters(3000, 5000, 8000, 10000, 15000, 20000)];
+        Spacings = Meters(0, 300, 500, 1000, 2000, 3000);
+        BonusModes = [.. Enum.GetValues<TurnBonusMode>().Select(m => new SettingsChoice<TurnBonusMode>(m, TagTexts.TurnBonus(m)))];
+        NextRunnerModes = [.. Enum.GetValues<NextRunnerMode>().Select(m => new SettingsChoice<NextRunnerMode>(m, TagTexts.NextRunner(m)))];
+        DestinationModes = [.. Enum.GetValues<DestinationMode>().Select(m => new SettingsChoice<DestinationMode>(m, TagTexts.DestinationMode(m)))];
+        FareModels = [.. Enum.GetValues<FareModel>().Select(m => new SettingsChoice<FareModel>(m, TagTexts.FareModel(m)))];
 
-        SelectedRounds = Closest(RoundCounts, settings.Rounds, (a, b) => Math.Abs(a - b));
-        SelectedRoundDuration = Closest(RoundDurations, settings.RoundDuration, (a, b) => Math.Abs((a - b).TotalMinutes));
+        SelectedGameDuration = Closest(GameDurations, settings.GameDuration, (a, b) => Math.Abs((a - b).TotalMinutes));
         SelectedHeadStart = Closest(HeadStarts, settings.HeadStart, (a, b) => Math.Abs((a - b).TotalMinutes));
         SelectedRevealInterval = Closest(RevealIntervals, settings.RevealInterval, (a, b) => Math.Abs((a - b).TotalMinutes));
-        SelectedTargetRadius = Closest(TargetRadii, settings.TargetRadiusMeters, (a, b) => Math.Abs(a - b));
+        SelectedDrawCooldown = Closest(DrawCooldowns, settings.DrawCooldown, (a, b) => Math.Abs((a - b).TotalMinutes));
         SelectedCatchRadius = Closest(CatchRadii, settings.CatchRadiusMeters, (a, b) => Math.Abs(a - b));
-        SelectedRewardKind = RewardKinds.First(k => k.Value == settings.RewardKind);
-        SelectedSource = Sources.First(s => s.Value == settings.TargetSource);
-        SelectedCategory = Categories.FirstOrDefault(c => c.Value == settings.PlaceCategoryId) ?? Categories[0];
-        SelectedTargetCount = Closest(TargetCounts, settings.TargetCount, (a, b) => Math.Abs(a - b));
-        AutoCapture = settings.AutoCapture;
-        ChallengesEnabled = settings.ChallengesEnabled;
-
-        if (BaseTargets.Count == 0 && settings.TargetSource == TargetSource.Stations)
-        {
-            DrawFromStations();
-        }
-
-        UpdateSummary();
+        SelectedDestinationRadius = Closest(DestinationRadii, settings.DestinationRadiusMeters, (a, b) => Math.Abs(a - b));
+        SelectedStartingCoins = Closest(Coins, settings.StartingCoins, (a, b) => Math.Abs(a - b));
+        SelectedBonusMode = BonusModes.First(m => m.Value == settings.TurnBonusMode);
+        SelectedTurnBonus = Closest(BonusAmounts, settings.TurnBonus, (a, b) => Math.Abs(a - b));
+        SelectedTopUp = Closest(Coins, settings.TopUpMinimum, (a, b) => Math.Abs(a - b));
+        SelectedNextRunner = NextRunnerModes.First(m => m.Value == settings.NextRunner);
+        SelectedDestinationMode = DestinationModes.First(m => m.Value == settings.DestinationMode);
+        SelectedMinDistance = Closest(MinDistances, settings.DestinationMinDistanceMeters, (a, b) => Math.Abs(a - b));
+        SelectedMaxDistance = Closest(MaxDistances, settings.DestinationMaxDistanceMeters, (a, b) => Math.Abs(a - b));
+        SelectedSpacing = Closest(Spacings, settings.DestinationMinSpacingMeters, (a, b) => Math.Abs(a - b));
+        SelectedFareModel = FareModels.First(m => m.Value == settings.FareModel);
+        DestinationsVisible = settings.DestinationsVisible;
+        UpdateFares();
+        UpdateDeck();
     }
 
-    public TagSettings Settings => _settings;
-
-    public GameArea? Area => _area;
-
-    /// <summary>Targets without challenges; <see cref="TagSettings.Targets"/> = these plus challenges.</summary>
-    public List<TagTarget> BaseTargets { get; private set; }
-
-    public IReadOnlyList<SettingsChoice<int>> RoundCounts { get; }
-    public IReadOnlyList<SettingsChoice<TimeSpan>> RoundDurations { get; }
+    public IReadOnlyList<SettingsChoice<TimeSpan>> GameDurations { get; }
     public IReadOnlyList<SettingsChoice<TimeSpan>> HeadStarts { get; }
     public IReadOnlyList<SettingsChoice<TimeSpan>> RevealIntervals { get; }
-    public IReadOnlyList<SettingsChoice<double>> TargetRadii { get; }
+    public IReadOnlyList<SettingsChoice<TimeSpan>> DrawCooldowns { get; }
     public IReadOnlyList<SettingsChoice<double>> CatchRadii { get; }
-    public IReadOnlyList<SettingsChoice<RewardKind>> RewardKinds { get; }
-    public IReadOnlyList<SettingsChoice<TargetSource>> Sources { get; }
-    public IReadOnlyList<SettingsChoice<string>> Categories { get; }
-    public IReadOnlyList<SettingsChoice<int>> TargetCounts { get; }
+    public IReadOnlyList<SettingsChoice<double>> DestinationRadii { get; }
+    public IReadOnlyList<SettingsChoice<int>> Coins { get; }
+    public IReadOnlyList<SettingsChoice<int>> BonusAmounts { get; }
+    public IReadOnlyList<SettingsChoice<double>> MinDistances { get; }
+    public IReadOnlyList<SettingsChoice<double>> MaxDistances { get; }
+    public IReadOnlyList<SettingsChoice<double>> Spacings { get; }
+    public IReadOnlyList<SettingsChoice<TurnBonusMode>> BonusModes { get; }
+    public IReadOnlyList<SettingsChoice<NextRunnerMode>> NextRunnerModes { get; }
+    public IReadOnlyList<SettingsChoice<DestinationMode>> DestinationModes { get; }
+    public IReadOnlyList<SettingsChoice<FareModel>> FareModels { get; }
 
     [ObservableProperty]
-    public partial SettingsChoice<int> SelectedRounds { get; set; }
-
-    [ObservableProperty]
-    public partial SettingsChoice<TimeSpan> SelectedRoundDuration { get; set; }
+    public partial SettingsChoice<TimeSpan> SelectedGameDuration { get; set; }
 
     [ObservableProperty]
     public partial SettingsChoice<TimeSpan> SelectedHeadStart { get; set; }
@@ -113,170 +98,196 @@ public sealed partial class TagSettingsViewModel : ObservableObject
     public partial SettingsChoice<TimeSpan> SelectedRevealInterval { get; set; }
 
     [ObservableProperty]
-    public partial SettingsChoice<double> SelectedTargetRadius { get; set; }
+    public partial SettingsChoice<TimeSpan> SelectedDrawCooldown { get; set; }
 
     [ObservableProperty]
     public partial SettingsChoice<double> SelectedCatchRadius { get; set; }
 
     [ObservableProperty]
-    public partial SettingsChoice<RewardKind> SelectedRewardKind { get; set; }
+    public partial SettingsChoice<double> SelectedDestinationRadius { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsPlaces), nameof(CanDraw))]
-    public partial SettingsChoice<TargetSource> SelectedSource { get; set; }
+    public partial SettingsChoice<int> SelectedStartingCoins { get; set; }
 
     [ObservableProperty]
-    public partial SettingsChoice<string> SelectedCategory { get; set; }
+    [NotifyPropertyChangedFor(nameof(IsFixedBonus), nameof(IsTopUp))]
+    public partial SettingsChoice<TurnBonusMode> SelectedBonusMode { get; set; }
 
     [ObservableProperty]
-    public partial SettingsChoice<int> SelectedTargetCount { get; set; }
+    public partial SettingsChoice<int> SelectedTurnBonus { get; set; }
 
     [ObservableProperty]
-    public partial bool AutoCapture { get; set; }
+    public partial SettingsChoice<int> SelectedTopUp { get; set; }
 
     [ObservableProperty]
-    public partial bool ChallengesEnabled { get; set; }
+    public partial SettingsChoice<NextRunnerMode> SelectedNextRunner { get; set; }
 
     [ObservableProperty]
-    public partial string TargetsSummary { get; set; } = string.Empty;
+    [NotifyPropertyChangedFor(nameof(IsRandomDestinations))]
+    public partial SettingsChoice<DestinationMode> SelectedDestinationMode { get; set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsBusy))]
-    [NotifyCanExecuteChangedFor(nameof(DrawCommand))]
-    public partial string? BusyText { get; set; }
+    public partial SettingsChoice<double> SelectedMinDistance { get; set; }
 
-    public bool IsBusy => BusyText is not null;
+    [ObservableProperty]
+    public partial SettingsChoice<double> SelectedMaxDistance { get; set; }
 
-    public bool IsPlaces => SelectedSource.Value == TargetSource.Places;
+    [ObservableProperty]
+    public partial SettingsChoice<double> SelectedSpacing { get; set; }
 
-    public bool CanDraw => SelectedSource.Value != TargetSource.Manual;
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasRates))]
+    public partial SettingsChoice<FareModel> SelectedFareModel { get; set; }
 
-    partial void OnSelectedRoundsChanged(SettingsChoice<int> value) => _settings.Rounds = value.Value;
+    [ObservableProperty]
+    public partial bool DestinationsVisible { get; set; }
 
-    partial void OnSelectedRoundDurationChanged(SettingsChoice<TimeSpan> value) => _settings.RoundDuration = value.Value;
+    [ObservableProperty]
+    public partial string FaresText { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string DeckText { get; set; } = string.Empty;
+
+    public bool IsFixedBonus => SelectedBonusMode.Value == TurnBonusMode.Fixed;
+
+    public bool IsTopUp => SelectedBonusMode.Value == TurnBonusMode.TopUp;
+
+    public bool IsRandomDestinations => SelectedDestinationMode.Value == DestinationMode.RandomStations;
+
+    public bool HasRates => SelectedFareModel.Value != FareModel.Manual;
+
+    partial void OnSelectedGameDurationChanged(SettingsChoice<TimeSpan> value) => _settings.GameDuration = value.Value;
 
     partial void OnSelectedHeadStartChanged(SettingsChoice<TimeSpan> value) => _settings.HeadStart = value.Value;
 
     partial void OnSelectedRevealIntervalChanged(SettingsChoice<TimeSpan> value) => _settings.RevealInterval = value.Value;
 
-    partial void OnSelectedTargetRadiusChanged(SettingsChoice<double> value) => _settings.TargetRadiusMeters = value.Value;
+    partial void OnSelectedDrawCooldownChanged(SettingsChoice<TimeSpan> value) => _settings.DrawCooldown = value.Value;
 
     partial void OnSelectedCatchRadiusChanged(SettingsChoice<double> value) => _settings.CatchRadiusMeters = value.Value;
 
-    partial void OnSelectedRewardKindChanged(SettingsChoice<RewardKind> value)
+    partial void OnSelectedDestinationRadiusChanged(SettingsChoice<double> value) => _settings.DestinationRadiusMeters = value.Value;
+
+    partial void OnSelectedStartingCoinsChanged(SettingsChoice<int> value) => _settings.StartingCoins = value.Value;
+
+    partial void OnSelectedBonusModeChanged(SettingsChoice<TurnBonusMode> value) => _settings.TurnBonusMode = value.Value;
+
+    partial void OnSelectedTurnBonusChanged(SettingsChoice<int> value) => _settings.TurnBonus = value.Value;
+
+    partial void OnSelectedTopUpChanged(SettingsChoice<int> value) => _settings.TopUpMinimum = value.Value;
+
+    partial void OnSelectedNextRunnerChanged(SettingsChoice<NextRunnerMode> value) => _settings.NextRunner = value.Value;
+
+    partial void OnSelectedDestinationModeChanged(SettingsChoice<DestinationMode> value) => _settings.DestinationMode = value.Value;
+
+    partial void OnSelectedMinDistanceChanged(SettingsChoice<double> value) => _settings.DestinationMinDistanceMeters = value.Value;
+
+    partial void OnSelectedMaxDistanceChanged(SettingsChoice<double> value) => _settings.DestinationMaxDistanceMeters = value.Value;
+
+    partial void OnSelectedSpacingChanged(SettingsChoice<double> value) => _settings.DestinationMinSpacingMeters = value.Value;
+
+    partial void OnDestinationsVisibleChanged(bool value) => _settings.DestinationsVisible = value;
+
+    partial void OnSelectedFareModelChanged(SettingsChoice<FareModel> value)
     {
-        _settings.RewardKind = value.Value;
-        UpdateSummary();
+        _settings.FareModel = value.Value;
+        UpdateFares();
     }
 
-    partial void OnSelectedSourceChanged(SettingsChoice<TargetSource> value) => _settings.TargetSource = value.Value;
-
-    partial void OnSelectedCategoryChanged(SettingsChoice<string> value) => _settings.PlaceCategoryId = value.Value;
-
-    partial void OnSelectedTargetCountChanged(SettingsChoice<int> value) => _settings.TargetCount = value.Value;
-
-    partial void OnAutoCaptureChanged(bool value) => _settings.AutoCapture = value;
-
-    partial void OnChallengesEnabledChanged(bool value)
+    /// <summary>Changes the rate (per km) or fare (per ride) of one means of transport.</summary>
+    [RelayCommand]
+    private async Task EditFaresAsync()
     {
-        _settings.ChallengesEnabled = value;
-        ApplyTargets();
-    }
-
-    /// <summary>Replaces the targets (from the map editor) and re-applies the challenges.</summary>
-    public void SetBaseTargets(IEnumerable<TagTarget> targets)
-    {
-        BaseTargets = [.. targets];
-        ApplyTargets();
-    }
-
-    public void SetFinalTarget(GeoPoint? point)
-    {
-        _settings.FinalTarget = point is { } p ? new TagTarget("final", TagStrings.FinalTargetName, p, 0) : null;
-        UpdateSummary();
-    }
-
-    private bool CanDrawNow() => BusyText is null;
-
-    [RelayCommand(CanExecute = nameof(CanDrawNow))]
-    private async Task DrawAsync()
-    {
-        _seed = Random.Shared.Next();
-        if (SelectedSource.Value == TargetSource.Stations)
+        var modes = Enum.GetValues<TransportMode>();
+        var options = modes.Select(m => $"{TagTexts.Transport(m)}: {Price(m)}").ToList();
+        var choice = await _dialogs.ChooseAsync(TagStrings.SettingsFares, options);
+        if (choice is null)
         {
-            DrawFromStations();
             return;
         }
 
-        if (_area is null)
+        var mode = modes[options.IndexOf(choice)];
+        var perKm = _settings.FareModel == FareModel.PerKm;
+        var text = await _dialogs.PromptAsync(
+            TagTexts.Transport(mode),
+            perKm ? TagStrings.SettingsRatePrompt : TagStrings.SettingsFarePrompt,
+            perKm ? FareCalculator.PerKmRate(_settings, mode).ToString(CultureInfo.CurrentCulture) : FareCalculator.FixedFare(_settings, mode).ToString(CultureInfo.CurrentCulture),
+            Keyboard.Numeric);
+        if (!double.TryParse(text?.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var value) || value < 0 || value > 1000)
+        {
+            return;
+        }
+
+        if (perKm)
+        {
+            _settings.PerKmRates[mode] = value;
+        }
+        else
+        {
+            _settings.FixedFares[mode] = (int)Math.Round(value);
+        }
+
+        UpdateFares();
+    }
+
+    [RelayCommand]
+    private async Task LoadDeckAsync()
+    {
+        var file = await _files.PickAsync(TagStrings.SettingsDeckLoad);
+        if (file is null)
         {
             return;
         }
 
         try
         {
-            BusyText = TagStrings.SettingsDownloadingPlaces;
-            var places = await _places.GetAsync(_area, _settings.Stations, SelectedCategory.Value, TagTexts.PlaceCategory(SelectedCategory.Value));
-            var candidates = places.Select(p => new TargetCandidate(p.Id, p.Name, p.Location)).ToList();
-            if (candidates.Count == 0)
-            {
-                await _dialogs.AlertAsync(TagStrings.SettingsTargets, TagStrings.SettingsNoPlaces);
-                return;
-            }
-
-            SetBaseTargets(TargetGenerator.Generate(candidates, _area, _settings.TargetCount, _seed));
+            CardDeck.Parse(file.Content);
+            _settings.CardsJson = file.Content;
+            UpdateDeck(file.FileName);
         }
-        catch (OverpassException ex)
+        catch (JsonException ex)
         {
-            _logger.LogWarning(ex, "Downloading places for targets failed");
-            await _dialogs.AlertAsync(TagStrings.SettingsTargets, TagStrings.SettingsPlacesFailed);
-        }
-        finally
-        {
-            BusyText = null;
+            _logger.LogInformation(ex, "Invalid deck file {File}", file.FileName);
+            await _dialogs.AlertAsync(TagStrings.SettingsDeck, string.Format(TagStrings.SettingsDeckInvalidFormat, ex.Message));
         }
     }
 
     [RelayCommand]
-    private Task EditOnMapAsync() =>
-        _navigation.GoToAsync(TagUiModule.TargetsEditorRoute, new Dictionary<string, object> { [TargetsEditorViewModel.SettingsParameter] = this });
-
-    private void DrawFromStations()
+    private void ResetDeck()
     {
-        if (_area is null)
-        {
-            return;
-        }
-
-        var candidates = _settings.Stations.Where(s => s.IsEnabled).Select(s => new TargetCandidate(s.Id, s.Name, s.Location)).ToList();
-        SetBaseTargets(TargetGenerator.Generate(candidates, _area, _settings.TargetCount, _seed));
+        _settings.CardsJson = null;
+        UpdateDeck();
     }
 
-    private void ApplyTargets()
-    {
-        _settings.Targets = _settings.ChallengesEnabled && _area is not null
-            ? TargetGenerator.WithChallenges(BaseTargets, _area, _settings.LoadChallenges(), new Random(_seed))
-            : [.. BaseTargets];
-        UpdateSummary();
-    }
+    private string Price(TransportMode mode) => _settings.FareModel == FareModel.PerKm
+        ? string.Format(TagStrings.PricePerKmFormat, FareCalculator.PerKmRate(_settings, mode))
+        : TagTexts.Coins(FareCalculator.FixedFare(_settings, mode));
 
-    private void UpdateSummary()
+    private void UpdateFares() =>
+        FaresText = _settings.FareModel == FareModel.Manual
+            ? TagStrings.SettingsFaresManual
+            : string.Join(", ", Enum.GetValues<TransportMode>().Select(m => $"{TagTexts.Transport(m)} {Price(m)}"));
+
+    private void UpdateDeck(string? fileName = null)
     {
-        var targets = _settings.Targets;
-        var challenges = targets.Count(t => t.Challenge is not null);
-        TargetsSummary = string.Format(
-            TagStrings.SettingsTargetsSummaryFormat,
-            targets.Count,
-            challenges,
-            TagTexts.Reward(targets.Sum(t => t.Reward), _settings.RewardKind),
-            _settings.FinalTarget is null ? TagStrings.SettingsNoFinal : TagStrings.SettingsWithFinal);
+        var deck = _settings.LoadCards();
+        var summary = string.Format(
+            TagStrings.SettingsDeckSummaryFormat,
+            deck.Cards.Count(c => c.Type == CardType.Challenge),
+            deck.Cards.Count(c => c.Type == CardType.Curse));
+        DeckText = _settings.CardsJson is null
+            ? string.Format(TagStrings.SettingsDeckBuiltInFormat, summary)
+            : string.Format(TagStrings.SettingsDeckCustomFormat, fileName ?? "JSON", summary);
     }
 
     private static IReadOnlyList<SettingsChoice<TimeSpan>> Minutes(params int[] values) =>
-        [.. values.Select(m => new SettingsChoice<TimeSpan>(TimeSpan.FromMinutes(m), string.Format(TagStrings.MinutesFormat, m)))];
+        [.. values.Select(m => new SettingsChoice<TimeSpan>(TimeSpan.FromMinutes(m), TagTexts.Minutes(m)))];
 
     private static IReadOnlyList<SettingsChoice<double>> Meters(params int[] values) =>
         [.. values.Select(m => new SettingsChoice<double>(m, TagTexts.Distance(m)))];
+
+    private static IReadOnlyList<SettingsChoice<int>> Numbers(params int[] values) =>
+        [.. values.Select(n => new SettingsChoice<int>(n, TagTexts.Coins(n)))];
 
     private static SettingsChoice<T> Closest<T, TDistance>(IReadOnlyList<SettingsChoice<T>> choices, T value, Func<T, T, TDistance> distance)
         where TDistance : IComparable<TDistance> =>

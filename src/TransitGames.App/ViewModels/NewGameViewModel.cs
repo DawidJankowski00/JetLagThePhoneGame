@@ -52,12 +52,14 @@ public sealed partial class NewGameViewModel : ObservableObject, IQueryAttributa
             Title = $"{_module.Icon} {_module.DisplayName}";
             Description = _module.Description;
             Roles.Clear();
-            foreach (var role in _module.Roles)
+
+            // Games that assign roles themselves (Tag) start everybody in one role: nothing to choose.
+            foreach (var role in _module.Roles.Where(r => _module.InitialRoleId is null || r.Id == _module.InitialRoleId))
             {
                 Roles.Add(role);
             }
 
-            SelectedRole = null;
+            SelectedRole = _module.InitialRoleId is null ? null : Roles.FirstOrDefault();
         }
     }
 

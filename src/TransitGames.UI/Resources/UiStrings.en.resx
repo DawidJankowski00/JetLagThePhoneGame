@@ -34,6 +34,7 @@
   <data name="FinishGameMessage" xml:space="preserve"><value>The game will be saved to history and cannot be resumed.</value></data>
   <data name="FinishGameTitle" xml:space="preserve"><value>Finish the game?</value></data>
   <data name="GameSetupNoOptions" xml:space="preserve"><value>This game has no further settings.</value></data>
+  <data name="GameSetupOnlineRequired" xml:space="preserve"><value>This game is online only: players join with the game code.</value></data>
   <data name="GameSetupSummaryFormat" xml:space="preserve"><value>{0} · {1} · stations: {2}</value></data>
   <data name="GameSetupTitle" xml:space="preserve"><value>Game settings</value></data>
   <data name="HistoryDelete" xml:space="preserve"><value>Delete from history</value></data>
