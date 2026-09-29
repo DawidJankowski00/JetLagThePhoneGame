@@ -12,14 +12,14 @@ TransitGames.Libraries.slnf          # filtr: tylko biblioteki bez MAUI + testy 
 src/
   TransitGames.Core/                 # kontrakty gier, rejestr, sesja, zdarzenia, timery, SQLite, sync
   TransitGames.Geo/                  # NTS, projekcja metryczna, GeoJSON, Overpass, stacje, granice OSM
-  TransitGames.Tracking/             # nagrywanie GPS, eksport GPX/GeoJSON (etap 3)
+  TransitGames.Tracking/             # zapis tras GPS (filtr, SQLite), eksport GPX/GeoJSON, odtwarzanie
   TransitGames.Games.HideAndSeek/    # logika gry (net10.0, bez MAUI)
   TransitGames.Games.Tag/            # logika gry (net10.0, bez MAUI)
   TransitGames.UI/                   # wspólne UI (MAUI): IGameUiModule, motyw, kontrolki, usługi platformowe
   TransitGames.Games.HideAndSeek.Maui/  # strony i ViewModele gry
   TransitGames.Games.Tag.Maui/          # strony i ViewModele gry
   TransitGames.App/                  # aplikacja: Shell, ekrany wspólne, DI
-tests/                               # xUnit dla Core, Geo i logiki gier
+tests/                               # xUnit dla Core, Geo, Tracking i logiki gier
 docs/                                # decyzje, postęp, jak dodać grę
 tools/resx.py                        # dopisywanie kluczy do par resx pl/en
 ```

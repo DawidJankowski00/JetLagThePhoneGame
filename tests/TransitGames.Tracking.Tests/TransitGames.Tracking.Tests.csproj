@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Official GPX 1.1 schema (https://www.topografix.com/GPX/1/1/gpx.xsd) to validate exports. -->
+    <EmbeddedResource Include="Schemas\gpx.xsd" LogicalName="gpx.xsd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TransitGames.Tracking\TransitGames.Tracking.csproj" />
+    <!-- Used to read exported GeoJSON back with NetTopologySuite. -->
+    <ProjectReference Include="..\..\src\TransitGames.Geo\TransitGames.Geo.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -12,7 +12,8 @@
     <Grid RowDefinitions="Auto,*,Auto">
         <controls:SessionHeaderView BindingContext="{Binding Header}" />
 
-        <controls:GameMapView Grid.Row="1" Area="{Binding Header.Area}" Stations="{Binding Header.Stations}" />
+        <controls:GameMapView Grid.Row="1" Area="{Binding Header.Area}" Stations="{Binding Header.Stations}"
+                              OwnLocation="{Binding Header.OwnLocation}" />
 
         <VerticalStackLayout Grid.Row="2" Padding="16,10" Spacing="8">
             <Label Text="{x:Static res:TagStrings.RoleChaserDescription}" IsVisible="{Binding IsChaser}" Style="{StaticResource Caption}" />

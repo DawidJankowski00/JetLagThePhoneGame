@@ -21,6 +21,31 @@
                     <Picker ItemsSource="{Binding Themes}" SelectedItem="{Binding SelectedTheme}" />
                 </VerticalStackLayout>
             </Border>
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="{x:Static res:UiStrings.SettingsTracking}" FontAttributes="Bold" />
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="{x:Static res:UiStrings.SettingsAutoRecord}" VerticalOptions="Center" />
+                        <Switch Grid.Column="1" IsToggled="{Binding AutoRecord}" />
+                    </Grid>
+                    <Grid ColumnDefinitions="*,Auto">
+                        <VerticalStackLayout>
+                            <Label Text="{x:Static res:UiStrings.SettingsBatterySaver}" />
+                            <Label Text="{x:Static res:UiStrings.SettingsBatterySaverHint}" Style="{StaticResource Caption}" />
+                        </VerticalStackLayout>
+                        <Switch Grid.Column="1" IsToggled="{Binding BatterySaver}" VerticalOptions="Center" />
+                    </Grid>
+                    <VerticalStackLayout IsEnabled="{Binding CustomTracking}" Spacing="2">
+                        <Label Text="{x:Static res:UiStrings.SettingsInterval}" Style="{StaticResource Caption}" />
+                        <Picker ItemsSource="{Binding Intervals}" SelectedItem="{Binding SelectedInterval}" />
+                        <Label Text="{x:Static res:UiStrings.SettingsMinDistance}" Style="{StaticResource Caption}" />
+                        <Picker ItemsSource="{Binding MinDistances}" SelectedItem="{Binding SelectedMinDistance}" />
+                        <Label Text="{x:Static res:UiStrings.SettingsMaxAccuracy}" Style="{StaticResource Caption}" />
+                        <Picker ItemsSource="{Binding MaxAccuracies}" SelectedItem="{Binding SelectedMaxAccuracy}" />
+                    </VerticalStackLayout>
+                    <Label Text="{x:Static res:UiStrings.SettingsTrackingHint}" Style="{StaticResource Caption}" />
+                </VerticalStackLayout>
+            </Border>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

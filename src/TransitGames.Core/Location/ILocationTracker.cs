@@ -23,6 +23,9 @@ public sealed record TrackingOptions
     /// <summary>Lower accuracy / longer interval to save battery.</summary>
     public bool BatterySaver { get; init; }
 
+    /// <summary>No usable fix for this long (metro tunnel, GPS off) starts a new track segment.</summary>
+    public TimeSpan SegmentGap { get; init; } = TimeSpan.FromMinutes(2);
+
     public static TrackingOptions Default { get; } = new();
 
     public static TrackingOptions PowerSaving { get; } = new()
@@ -31,6 +34,7 @@ public sealed record TrackingOptions
         MinDistanceMeters = 30,
         MaxAccuracyMeters = 100,
         BatterySaver = true,
+        SegmentGap = TimeSpan.FromMinutes(3),
     };
 }
 

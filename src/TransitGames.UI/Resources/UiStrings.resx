@@ -18,8 +18,8 @@
   <data name="AreaImport" xml:space="preserve"><value>📄 GeoJSON</value></data>
   <data name="AreaInvalid" xml:space="preserve"><value>Z tych punktów nie da się utworzyć obszaru.</value></data>
   <data name="AreaNamePrompt" xml:space="preserve"><value>Nazwa obszaru</value></data>
-  <data name="AreaNoSaved" xml:space="preserve"><value>Brak zapisanych obszarów.</value></data>
   <data name="AreaNone" xml:space="preserve"><value>Nie wybrano obszaru. Narysuj go, wybierz miasto z OSM albo wczytaj plik GeoJSON.</value></data>
+  <data name="AreaNoSaved" xml:space="preserve"><value>Brak zapisanych obszarów.</value></data>
   <data name="AreaSaved" xml:space="preserve"><value>🕘 Zapisane</value></data>
   <data name="AreaStepTitle" xml:space="preserve"><value>Obszar gry</value></data>
   <data name="AreaSummaryFormat" xml:space="preserve"><value>{0} · {1:0.#} km²</value></data>
@@ -36,9 +36,11 @@
   <data name="HistoryEmpty" xml:space="preserve"><value>Nie rozegrano jeszcze żadnej gry.</value></data>
   <data name="HistoryTitle" xml:space="preserve"><value>Historia gier</value></data>
   <data name="InvalidGeoJsonFormat" xml:space="preserve"><value>Nieprawidłowy plik GeoJSON: {0}</value></data>
+  <data name="KilometersFormat" xml:space="preserve"><value>{0:0.0} km</value></data>
   <data name="LanguageSystem" xml:space="preserve"><value>Systemowy</value></data>
   <data name="LeaveGame" xml:space="preserve"><value>Wyjdź (gra zostanie zapisana)</value></data>
   <data name="MapCenterOnMe" xml:space="preserve"><value>Pokaż moją pozycję</value></data>
+  <data name="MetersFormat" xml:space="preserve"><value>{0} m</value></data>
   <data name="MinPlayersFormat" xml:space="preserve"><value>Min. drużyn: {0}</value></data>
   <data name="ModeBus" xml:space="preserve"><value>Autobus</value></data>
   <data name="ModeRail" xml:space="preserve"><value>Kolej</value></data>
@@ -51,14 +53,24 @@
   <data name="Next" xml:space="preserve"><value>Dalej</value></data>
   <data name="No" xml:space="preserve"><value>Nie</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="RecordingIndicator" xml:space="preserve"><value>● GPS</value></data>
   <data name="RestartRequired" xml:space="preserve"><value>Zmiana języka zostanie zastosowana po ponownym uruchomieniu aplikacji.</value></data>
   <data name="ResumeGameFormat" xml:space="preserve"><value>Wznów: {0}</value></data>
   <data name="RoleLabel" xml:space="preserve"><value>Rola</value></data>
   <data name="Searching" xml:space="preserve"><value>Szukam…</value></data>
+  <data name="SecondsFormat" xml:space="preserve"><value>{0} s</value></data>
   <data name="SelectRoleFirst" xml:space="preserve"><value>Wybierz rolę.</value></data>
+  <data name="SettingsAutoRecord" xml:space="preserve"><value>Nagrywaj trasę podczas gry</value></data>
+  <data name="SettingsBatterySaver" xml:space="preserve"><value>Oszczędzanie baterii</value></data>
+  <data name="SettingsBatterySaverHint" xml:space="preserve"><value>Rzadsze i mniej dokładne punkty (co 20 s, co 30 m).</value></data>
+  <data name="SettingsInterval" xml:space="preserve"><value>Interwał zapisu</value></data>
   <data name="SettingsLanguage" xml:space="preserve"><value>Język</value></data>
+  <data name="SettingsMaxAccuracy" xml:space="preserve"><value>Odrzucaj punkty o dokładności gorszej niż</value></data>
+  <data name="SettingsMinDistance" xml:space="preserve"><value>Minimalny dystans między punktami</value></data>
   <data name="SettingsTheme" xml:space="preserve"><value>Motyw</value></data>
   <data name="SettingsTitle" xml:space="preserve"><value>Ustawienia</value></data>
+  <data name="SettingsTracking" xml:space="preserve"><value>Nagrywanie trasy GPS</value></data>
+  <data name="SettingsTrackingHint" xml:space="preserve"><value>Zmiany obowiązują od następnego nagrania.</value></data>
   <data name="StartGame" xml:space="preserve"><value>Rozpocznij grę</value></data>
   <data name="StartSubtitle" xml:space="preserve"><value>Terenowe gry komunikacyjne</value></data>
   <data name="StartTitle" xml:space="preserve"><value>Wybierz grę</value></data>
@@ -87,7 +99,27 @@
   <data name="ThemeDark" xml:space="preserve"><value>Ciemny</value></data>
   <data name="ThemeLight" xml:space="preserve"><value>Jasny</value></data>
   <data name="ThemeSystem" xml:space="preserve"><value>Systemowy</value></data>
+  <data name="TrackDelete" xml:space="preserve"><value>🗑️ Usuń</value></data>
+  <data name="TrackDeleteConfirm" xml:space="preserve"><value>Usunąć trasę „{0}”? Tej operacji nie można cofnąć.</value></data>
+  <data name="TrackDeleteRecording" xml:space="preserve"><value>Nie można usunąć nagrywanej trasy. Najpierw zatrzymaj nagrywanie.</value></data>
+  <data name="TrackingFailedTitle" xml:space="preserve"><value>Nagrywanie trasy</value></data>
+  <data name="TrackingNotificationChannel" xml:space="preserve"><value>Nagrywanie trasy</value></data>
+  <data name="TrackingNotificationText" xml:space="preserve"><value>Transit Games zapisuje Twoją trasę, także przy wygaszonym ekranie.</value></data>
+  <data name="TrackingNotificationTitle" xml:space="preserve"><value>Nagrywanie trasy GPS</value></data>
+  <data name="TrackingPermissionDenied" xml:space="preserve"><value>Bez dostępu do lokalizacji trasa nie będzie nagrywana. Zezwól aplikacji na lokalizację w ustawieniach systemu.</value></data>
+  <data name="TrackingUnavailable" xml:space="preserve"><value>Nie udało się uruchomić GPS: {0}</value></data>
+  <data name="TrackNoPoints" xml:space="preserve"><value>Trasa nie ma jeszcze punktów.</value></data>
+  <data name="TrackOpenBadge" xml:space="preserve"><value>w toku</value></data>
+  <data name="TrackPreview" xml:space="preserve"><value>🗺️ Podgląd</value></data>
+  <data name="TrackPreviewTitle" xml:space="preserve"><value>Podgląd trasy</value></data>
   <data name="TracksEmpty" xml:space="preserve"><value>Brak nagranych tras.</value></data>
+  <data name="TrackShareGeoJson" xml:space="preserve"><value>📤 Udostępnij GeoJSON</value></data>
+  <data name="TrackShareGpx" xml:space="preserve"><value>📤 Udostępnij GPX</value></data>
+  <data name="TracksManualName" xml:space="preserve"><value>Własna trasa</value></data>
+  <data name="TracksRecordingFormat" xml:space="preserve"><value>● Nagrywanie: {0}</value></data>
+  <data name="TracksStartManual" xml:space="preserve"><value>▶ Nagrywaj trasę</value></data>
+  <data name="TracksStop" xml:space="preserve"><value>■ Zatrzymaj</value></data>
+  <data name="TrackStatsFormat" xml:space="preserve"><value>{0} · {1} · {2} pkt</value></data>
   <data name="TracksTitle" xml:space="preserve"><value>Trasy GPS</value></data>
   <data name="Yes" xml:space="preserve"><value>Tak</value></data>
 </root>

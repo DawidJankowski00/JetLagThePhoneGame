@@ -10,7 +10,8 @@
       "tests\\TransitGames.Core.Tests\\TransitGames.Core.Tests.csproj",
       "tests\\TransitGames.Geo.Tests\\TransitGames.Geo.Tests.csproj",
       "tests\\TransitGames.Games.HideAndSeek.Tests\\TransitGames.Games.HideAndSeek.Tests.csproj",
-      "tests\\TransitGames.Games.Tag.Tests\\TransitGames.Games.Tag.Tests.csproj"
+      "tests\\TransitGames.Games.Tag.Tests\\TransitGames.Games.Tag.Tests.csproj",
+      "tests\\TransitGames.Tracking.Tests\\TransitGames.Tracking.Tests.csproj"
     ]
   }
 }

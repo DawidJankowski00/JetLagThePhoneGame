@@ -74,12 +74,13 @@ public sealed class XUiModule : GameUiModule<XModule>
 
 Strony są rozwiązywane z DI (rejestrowane automatycznie na podstawie `Routes`). Do dyspozycji:
 `ActiveSessionViewModel` + `SessionHeaderView` (nagłówek gry, a także `Area` i `Stations` bieżącej sesji),
-`GameMapView` (mapa z obszarem, stacjami i własną pozycją), `IMapLayerProvider` (własne warstwy:
+`GameMapView` (mapa z obszarem, stacjami, własną pozycją `Header.OwnLocation`, trasą `Track` i punktami `Waypoints`), `IMapLayerProvider` (własne warstwy:
 `CreatePolygonLayer`/`CreatePointLayer` + `SetPolygon`/`SetPoints`, dodawane przez `GameMapView.AddLayer`),
 `IDialogService`, `INavigationService`, style `BigButton`, `Card`, `ToolButton`, kolory warstw mapy (`Map*`).
 
 ```xml
-<controls:GameMapView x:Name="Map" Area="{Binding Header.Area}" Stations="{Binding Header.Stations}" />
+<controls:GameMapView x:Name="Map" Area="{Binding Header.Area}" Stations="{Binding Header.Stations}"
+                      OwnLocation="{Binding Header.OwnLocation}" />
 ```
 
 Obszar gry i stacje wybiera wspólny kreator (rola → obszar → stacje) — trafiają do `GameSettings.Area`

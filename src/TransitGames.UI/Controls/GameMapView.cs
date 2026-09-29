@@ -35,6 +35,14 @@ public sealed class GameMapView : ContentView
         nameof(DraftPolygon), typeof(IEnumerable<GeoPoint>), typeof(GameMapView),
         propertyChanged: (b, o, n) => ((GameMapView)b).OnCollectionChanged(o, n, v => v.RefreshDraft()));
 
+    /// <summary>Polylines drawn under everything else, e.g. a recorded track (one list per segment).</summary>
+    public static readonly BindableProperty TrackProperty = BindableProperty.Create(
+        nameof(Track), typeof(IEnumerable<IReadOnlyList<GeoPoint>>), typeof(GameMapView), propertyChanged: (b, _, _) => ((GameMapView)b).OnTrackChanged());
+
+    /// <summary>Event markers (questions asked, catches...).</summary>
+    public static readonly BindableProperty WaypointsProperty = BindableProperty.Create(
+        nameof(Waypoints), typeof(IEnumerable<GeoPoint>), typeof(GameMapView), propertyChanged: (b, _, _) => ((GameMapView)b).RefreshWaypoints());
+
     public static readonly BindableProperty OwnLocationProperty = BindableProperty.Create(
         nameof(OwnLocation), typeof(GeoPoint?), typeof(GameMapView), propertyChanged: (b, _, _) => ((GameMapView)b).RefreshOwnLocation());
 
@@ -53,6 +61,8 @@ public sealed class GameMapView : ContentView
 
     private readonly IMapLayerProvider _layers;
     private readonly MemoryLayer _areaLayer;
+    private readonly MemoryLayer _trackLayer;
+    private readonly MemoryLayer _waypointLayer;
     private readonly MemoryLayer _draftLayer;
     private readonly MemoryLayer _draftVertexLayer;
     private readonly MemoryLayer _stationsLayer;
@@ -67,6 +77,8 @@ public sealed class GameMapView : ContentView
         Map = new Map();
         Map.Layers.Add(_layers.CreateBaseLayer());
         Map.Layers.Add(_areaLayer = _layers.CreatePolygonLayer("area", MapPalette.PossibleArea, MapPalette.GameAreaOutline));
+        Map.Layers.Add(_trackLayer = _layers.CreateLineLayer("track", MapPalette.Track));
+        Map.Layers.Add(_waypointLayer = _layers.CreatePointLayer("waypoints"));
         Map.Layers.Add(_draftLayer = _layers.CreatePolygonLayer("draft", MapPalette.HidingZone, MapPalette.OwnPosition));
         Map.Layers.Add(_draftVertexLayer = _layers.CreatePointLayer("draft-vertices"));
         Map.Layers.Add(_stationsLayer = _layers.CreatePointLayer("stations"));
@@ -113,6 +125,18 @@ public sealed class GameMapView : ContentView
         set => SetValue(DraftPolygonProperty, value);
     }
 
+    public IEnumerable<IReadOnlyList<GeoPoint>>? Track
+    {
+        get => (IEnumerable<IReadOnlyList<GeoPoint>>?)GetValue(TrackProperty);
+        set => SetValue(TrackProperty, value);
+    }
+
+    public IEnumerable<GeoPoint>? Waypoints
+    {
+        get => (IEnumerable<GeoPoint>?)GetValue(WaypointsProperty);
+        set => SetValue(WaypointsProperty, value);
+    }
+
     public GeoPoint? OwnLocation
     {
         get => (GeoPoint?)GetValue(OwnLocationProperty);
@@ -148,6 +172,21 @@ public sealed class GameMapView : ContentView
         _layers.SetPolygon(_areaLayer, Area?.Geometry);
         ZoomToArea();
     }
+
+    private void OnTrackChanged()
+    {
+        var lines = Track?.ToList() ?? [];
+        _layers.SetLines(_trackLayer, lines);
+        var points = lines.SelectMany(l => l).ToList();
+        if (Area is null && points.Count > 0)
+        {
+            var envelope = new NetTopologySuite.Geometries.Envelope(
+                points.Min(p => p.Longitude), points.Max(p => p.Longitude), points.Min(p => p.Latitude), points.Max(p => p.Latitude));
+            Map.Navigator.ZoomToBox(MapCoordinates.ToWorld(envelope).Grow(150), MBoxFit.Fit);
+        }
+    }
+
+    private void RefreshWaypoints() => _layers.SetPoints(_waypointLayer, Waypoints?.ToList() ?? [], MapPalette.Target, 0.5);
 
     private void RefreshStations() => _layers.SetStations(_stationsLayer, Stations?.ToList() ?? []);
 

@@ -61,6 +61,48 @@
   rysowanego poligonu i własnej pozycji jako bindowalne właściwości; gry dokładają własne warstwy
   przez `AddLayer` i `IMapLayerProvider`. Kafelki są jasne także w trybie ciemnym.
 
+## Nagrywanie GPS (etap 3)
+
+- **Jedna trasa na urządzenie i sesję gry.** Po wznowieniu gry (restart aplikacji, powrót do gry) nagrywanie
+  dopisuje się do otwartej trasy w **nowym segmencie**. Zakończenie gry zamyka trasę. „Wyjdź” z ekranu gry
+  **nie** zatrzymuje nagrywania, bo gra w terenie trwa dalej; można je zatrzymać ręcznie w zakładce „Trasy GPS”.
+- **Nagrywanie startuje po wejściu na ekran gry**, a nie gdy sesja staje się bieżąca. Ekran startowy też
+  wczytuje niedokończoną sesję, ale tylko po to, żeby pokazać przycisk „Wznów”, i to nie może włączać GPS.
+- **Filtrowanie w kodzie wspólnym** (`TrackPointFilter`), bo iOS nie ma interwału. Filtr:
+  - odrzuca punkty o dokładności gorszej niż próg oraz punkty spóźnione;
+  - przerzedza do zadanego interwału (z tolerancją 10%) i minimalnego dystansu;
+  - przy postoju zapisuje 1 punkt na minutę, żeby oś czasu przy odtwarzaniu była prawdziwa;
+  - brak dobrego sygnału dłużej niż `SegmentGap` (2 min, w oszczędzaniu baterii 3 min), np. w metrze,
+    rozpoczyna nowy segment.
+- **Dystans liczony wzorem haversine** i tylko wewnątrz segmentów. Przerw (metro) nie zgadujemy.
+  Geometria obszarów nadal korzysta z projekcji metrycznej w `TransitGames.Geo`.
+- **Każdy punkt jest zapisywany od razu** (insert punktu i aktualizacja statystyk trasy w jednej transakcji),
+  więc crash aplikacji nie gubi trasy.
+- **Android:**
+  - `LocationManager` (provider `fused` na Androidzie 12+ z jakością zależną od oszczędzania baterii,
+    wcześniej GPS) i usługa pierwszoplanowa typu `location` z powiadomieniem. Usługa nie korzysta z
+    Google Play Services, więc nie wymaga dodatkowych pakietów.
+  - Usługa jest `NotSticky`, bo nowsze Androidy nie pozwalają uruchomić usługi lokalizacji z tła. Jeśli system
+    zabije proces, nagrywanie wraca razem z grą po otwarciu aplikacji, w nowym segmencie.
+  - `ACCESS_BACKGROUND_LOCATION` jest zadeklarowane (zgodnie ze specyfikacją), ale aplikacja nie prosi o
+    „zezwalaj zawsze”: usługa pierwszoplanowa uruchomiona z aplikacji wystarcza do nagrywania przy
+    wygaszonym ekranie. Zweryfikowano to na emulatorze (API 36).
+- **iOS:** `CLLocationManager` z `AllowsBackgroundLocationUpdates`, `PausesLocationUpdatesAutomatically = false`
+  i niebieskim wskaźnikiem w tle, `UIBackgroundModes: location`. Wystarcza uprawnienie „podczas używania”.
+  Kod iOS jest kompilowany tylko w CI na macOS.
+- **Eksport:**
+  - GPX 1.1 ma waypointy ze zdarzeń gry z lokalizacją, `trk` na urządzenie i `trkseg` na segment. Test
+    sprawdza go oficjalnym XSD (`tests/.../Schemas/gpx.xsd`).
+  - GeoJSON (RFC 7946) ma `LineString`/`MultiLineString` oraz `Point` dla zdarzeń. Czasy punktów są w
+    `coordinateProperties.times` (konwencja togeojson i gpx.studio).
+  - Liczby są zapisywane w formacie niezależnym od kultury.
+- **Udostępnianie** przez systemowy Share (`FileSystem.CacheDirectory/exports`), bez własnego FileProvidera,
+  bo MAUI obsługuje to sam.
+- **Podgląd trasy:** suwak czasu i odtwarzanie całej trasy w 30 s. Pozycja jest interpolowana wewnątrz
+  segmentu, a w przerwie między segmentami stoi na ostatnim punkcie.
+- **Własna pozycja w grze** pochodzi z `ILocationTracker` tego urządzenia i jest pokazywana tylko lokalnie.
+  Udostępnianie pozycji innym rolom nadal przechodzi wyłącznie przez `LocationSharingPolicy`.
+
 ## Build
 
 - **TFM-y MAUI** ustawiane centralnie (`MauiTargetFrameworks` w `Directory.Build.props`): Android zawsze,

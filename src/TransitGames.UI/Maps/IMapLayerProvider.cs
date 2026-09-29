@@ -9,6 +9,7 @@ using NetTopologySuite.Geometries;
 using TransitGames.Core.Geography;
 using TransitGames.Core.Stations;
 using TransitGames.Geo;
+using TransitGames.Geo.Projection;
 using Brush = Mapsui.Styles.Brush;
 using Color = Mapsui.Styles.Color;
 using Font = Mapsui.Styles.Font;
@@ -30,11 +31,17 @@ public interface IMapLayerProvider
     /// <summary>Round markers; features can carry a label (station names...).</summary>
     MemoryLayer CreatePointLayer(string name);
 
+    /// <summary>Polylines (recorded tracks, movement trails).</summary>
+    MemoryLayer CreateLineLayer(string name, string colorKey, double width = 4);
+
     void SetPolygon(MemoryLayer layer, Geometry? wgs84);
 
     void SetStations(MemoryLayer layer, IEnumerable<Station> stations);
 
     void SetPoints(MemoryLayer layer, IEnumerable<GeoPoint> points, string colorKey, double scale = 0.45);
+
+    /// <summary>One polyline per list; lists with fewer than two points are skipped.</summary>
+    void SetLines(MemoryLayer layer, IEnumerable<IReadOnlyList<GeoPoint>> lines);
 }
 
 public sealed class MapLayerProvider : IMapLayerProvider
@@ -73,6 +80,9 @@ public sealed class MapLayerProvider : IMapLayerProvider
 
     public MemoryLayer CreatePointLayer(string name) => new(name) { Style = null };
 
+    public MemoryLayer CreateLineLayer(string name, string colorKey, double width = 4) =>
+        new(name) { Style = new VectorStyle { Line = new Pen(MapPalette.Get(colorKey), width) { PenStrokeCap = PenStrokeCap.Round } } };
+
     public void SetPolygon(MemoryLayer layer, Geometry? wgs84)
     {
         layer.Features = wgs84 is null || wgs84.IsEmpty ? [] : [new GeometryFeature(MapCoordinates.ToWorld(wgs84))];
@@ -105,6 +115,16 @@ public sealed class MapLayerProvider : IMapLayerProvider
             feature.Styles.Add(style);
             return feature;
         }).ToList();
+        layer.DataHasChanged();
+    }
+
+    public void SetLines(MemoryLayer layer, IEnumerable<IReadOnlyList<GeoPoint>> lines)
+    {
+        layer.Features = lines
+            .Where(l => l.Count >= 2)
+            .Select(l => new GeometryFeature(MapCoordinates.ToWorld(
+                GeometryFactories.Wgs84.CreateLineString(l.Select(p => new Coordinate(p.Longitude, p.Latitude)).ToArray()))))
+            .ToList();
         layer.DataHasChanged();
     }
 

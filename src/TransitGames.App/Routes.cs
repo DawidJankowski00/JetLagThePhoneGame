@@ -7,4 +7,5 @@ public static class Routes
     public const string NewGame = "newgame";
     public const string NewGameArea = "newgame-area";
     public const string NewGameStations = "newgame-stations";
+    public const string TrackPreview = "track-preview";
 }

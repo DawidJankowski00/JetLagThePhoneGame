@@ -14,6 +14,7 @@ public static class MapPalette
     public const string OwnPosition = "MapOwnPosition";
     public const string Target = "MapTarget";
     public const string TargetCaptured = "MapTargetCaptured";
+    public const string Track = "MapTrack";
 
     public static MapsuiColor Get(string key, double? alpha = null)
     {

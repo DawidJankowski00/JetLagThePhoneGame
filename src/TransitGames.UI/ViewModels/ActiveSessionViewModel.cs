@@ -1,18 +1,21 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TransitGames.Core.Games;
+using TransitGames.Core.Geography;
+using TransitGames.Core.Location;
 using TransitGames.Core.Sessions;
 using TransitGames.Core.Stations;
 using TransitGames.Core.Timing;
 using TransitGames.Geo.Areas;
+using TransitGames.Tracking;
 using TransitGames.UI.Resources;
 using TransitGames.UI.Services;
 
 namespace TransitGames.UI.ViewModels;
 
 /// <summary>
-/// Shared by all in-game screens: header (game name, role, elapsed time, "finish game") and the map basics
-/// (game area and stations copied into the session settings).
+/// Shared by all in-game screens: header (game name, role, elapsed time, recording indicator, "finish game") and
+/// the map basics (game area and stations copied into the session settings, own position).
 /// </summary>
 public sealed partial class ActiveSessionViewModel : ObservableObject
 {
@@ -21,6 +24,9 @@ public sealed partial class ActiveSessionViewModel : ObservableObject
     private readonly IClock _clock;
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
+    private readonly ILocationTracker _location;
+    private readonly TrackRecorder _recorder;
+    private readonly TrackingCoordinator _tracking;
     private IDispatcherTimer? _timer;
     private Guid? _mapSessionId;
 
@@ -29,13 +35,19 @@ public sealed partial class ActiveSessionViewModel : ObservableObject
         GameRegistry registry,
         IClock clock,
         IDialogService dialogs,
-        INavigationService navigation)
+        INavigationService navigation,
+        ILocationTracker location,
+        TrackRecorder recorder,
+        TrackingCoordinator tracking)
     {
         _sessions = sessions;
         _registry = registry;
         _clock = clock;
         _dialogs = dialogs;
         _navigation = navigation;
+        _location = location;
+        _recorder = recorder;
+        _tracking = tracking;
     }
 
     [ObservableProperty]
@@ -54,6 +66,13 @@ public sealed partial class ActiveSessionViewModel : ObservableObject
     [ObservableProperty]
     public partial IReadOnlyList<Station> Stations { get; set; } = [];
 
+    /// <summary>This device's last GPS fix (never shared by itself, see LocationSharingPolicy).</summary>
+    [ObservableProperty]
+    public partial GeoPoint? OwnLocation { get; set; }
+
+    [ObservableProperty]
+    public partial bool IsRecording { get; set; }
+
     public IGameSession? Session => _sessions.Current;
 
     /// <summary>Call from the page's OnAppearing.</summary>
@@ -69,6 +88,8 @@ public sealed partial class ActiveSessionViewModel : ObservableObject
                 Area = session.Settings.Area is { } area ? GameArea.FromDefinition(area) : null;
                 Stations = session.Settings.Stations;
             }
+
+            _tracking.OnGameScreenShown(session);
         }
 
         _timer ??= Application.Current!.Dispatcher.CreateTimer();
@@ -77,10 +98,28 @@ public sealed partial class ActiveSessionViewModel : ObservableObject
         _timer.Tick += OnTick;
         _timer.Start();
         OnTick(null, EventArgs.Empty);
+
+        _location.LocationChanged -= OnLocationChanged;
+        _location.LocationChanged += OnLocationChanged;
+        _recorder.StateChanged -= OnRecorderStateChanged;
+        _recorder.StateChanged += OnRecorderStateChanged;
+        OwnLocation = _location.LastLocation?.Point ?? OwnLocation;
+        IsRecording = _recorder.IsRecording;
     }
 
     /// <summary>Call from the page's OnDisappearing.</summary>
-    public void Deactivate() => _timer?.Stop();
+    public void Deactivate()
+    {
+        _timer?.Stop();
+        _location.LocationChanged -= OnLocationChanged;
+        _recorder.StateChanged -= OnRecorderStateChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationSample sample) =>
+        MainThread.BeginInvokeOnMainThread(() => OwnLocation = sample.Point);
+
+    private void OnRecorderStateChanged(object? sender, EventArgs e) =>
+        MainThread.BeginInvokeOnMainThread(() => IsRecording = _recorder.IsRecording);
 
     [RelayCommand]
     private async Task FinishAsync()

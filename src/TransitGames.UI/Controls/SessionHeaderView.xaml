@@ -20,7 +20,11 @@
             </Label>
         </VerticalStackLayout>
         <VerticalStackLayout Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
-            <Label Text="{x:Static res:UiStrings.ElapsedLabel}" TextColor="White" FontSize="12" HorizontalOptions="End" />
+            <HorizontalStackLayout Spacing="8" HorizontalOptions="End">
+                <Label Text="{x:Static res:UiStrings.RecordingIndicator}" IsVisible="{Binding IsRecording}"
+                       TextColor="#FFCDD2" FontSize="12" FontAttributes="Bold" />
+                <Label Text="{x:Static res:UiStrings.ElapsedLabel}" TextColor="White" FontSize="12" />
+            </HorizontalStackLayout>
             <Label Text="{Binding ElapsedText}" TextColor="White" FontSize="22" FontAttributes="Bold"
                    FontFamily="monospace" HorizontalOptions="End" />
         </VerticalStackLayout>

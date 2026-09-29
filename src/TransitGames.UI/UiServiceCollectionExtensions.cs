@@ -18,6 +18,10 @@ public static class UiServiceCollectionExtensions
         services.TryAddSingleton<GameUiRegistry>();
         services.TryAddSingleton(Preferences.Default);
         services.TryAddSingleton<AppPreferences>();
+        services.TryAddSingleton<TrackingPreferences>();
+        services.TryAddSingleton(DeviceInfo.Current);
+        services.TryAddSingleton(Share.Default);
+        services.TryAddSingleton<TrackingCoordinator>();
         services.TryAddSingleton(Geolocation.Default);
         services.TryAddSingleton<IDeviceLocationService, DeviceLocationService>();
         services.TryAddSingleton(FilePicker.Default);

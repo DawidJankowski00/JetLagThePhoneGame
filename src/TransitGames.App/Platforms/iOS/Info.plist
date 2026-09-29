@@ -28,6 +28,12 @@
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Transit Games pokazuje Twoją pozycję na mapie gry i używa jej do pytań i celów. / Transit Games shows your position on the game map and uses it for questions and targets.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Transit Games nagrywa trasę GPS podczas gry, także przy zablokowanym ekranie. / Transit Games records your GPS track during a game, also with the screen locked.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
 </dict>

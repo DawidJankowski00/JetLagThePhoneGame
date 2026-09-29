@@ -11,6 +11,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(Routes.NewGame, typeof(NewGamePage));
         Routing.RegisterRoute(Routes.NewGameArea, typeof(AreaSetupPage));
         Routing.RegisterRoute(Routes.NewGameStations, typeof(StationsSetupPage));
+        Routing.RegisterRoute(Routes.TrackPreview, typeof(TrackPreviewPage));
         games.RegisterRoutes();
     }
 }

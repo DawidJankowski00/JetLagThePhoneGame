@@ -53,4 +53,5 @@
     <Color x:Key="MapOwnPosition">#D32F2F</Color>
     <Color x:Key="MapTarget">#6A1B9A</Color>
     <Color x:Key="MapTargetCaptured">#43A047</Color>
+    <Color x:Key="MapTrack">#E65100</Color>
 </ResourceDictionary>

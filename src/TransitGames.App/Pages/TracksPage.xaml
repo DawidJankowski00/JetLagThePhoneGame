@@ -1,10 +1,49 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.App.ViewModels"
              xmlns:res="clr-namespace:TransitGames.UI.Resources;assembly=TransitGames.UI"
              x:Class="TransitGames.App.Pages.TracksPage"
+             x:DataType="vm:TracksViewModel"
              Title="{x:Static res:UiStrings.TracksTitle}"
              Style="{StaticResource PageBackground}">
-    <Label Text="{x:Static res:UiStrings.TracksEmpty}" HorizontalOptions="Center" VerticalOptions="Center"
-           Style="{StaticResource Caption}" />
+    <Grid RowDefinitions="Auto,*" Padding="16,8" RowSpacing="8">
+        <Border Style="{StaticResource Card}">
+            <Grid>
+                <Button Text="{x:Static res:UiStrings.TracksStartManual}" Style="{StaticResource BigButton}"
+                        Command="{Binding StartRecordingCommand}" IsVisible="{Binding IsNotRecording}" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" IsVisible="{Binding IsRecording}">
+                    <Label Text="{Binding RecordingText}" VerticalOptions="Center" FontAttributes="Bold" />
+                    <Button Grid.Column="1" Text="{x:Static res:UiStrings.TracksStop}" Style="{StaticResource BigSecondaryButton}"
+                            Command="{Binding StopRecordingCommand}" />
+                </Grid>
+            </Grid>
+        </Border>
+
+        <Label Grid.Row="1" Text="{x:Static res:UiStrings.TracksEmpty}" IsVisible="{Binding IsEmpty}"
+               HorizontalOptions="Center" VerticalOptions="Center" Style="{StaticResource Caption}" />
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Items}" SelectionMode="None">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:TrackItem">
+                    <Border Style="{StaticResource Card}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenCommand, Source={RelativeSource AncestorType={x:Type vm:TracksViewModel}}, x:DataType=vm:TracksViewModel}"
+                                                  CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding Title}" FontSize="17" FontAttributes="Bold" />
+                                <Label Text="{Binding Subtitle}" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1" Text="{Binding Badge}" VerticalOptions="Center"
+                                   TextColor="{StaticResource MapOwnPosition}" FontAttributes="Bold" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
 </ContentPage>

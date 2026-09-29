@@ -14,12 +14,14 @@ public sealed partial class SettingsViewModel : ObservableObject
 {
     private readonly AppPreferences _preferences;
     private readonly IDialogService _dialogs;
+    private readonly TrackingPreferences _tracking;
     private bool _initialized;
 
-    public SettingsViewModel(AppPreferences preferences, IDialogService dialogs)
+    public SettingsViewModel(AppPreferences preferences, IDialogService dialogs, TrackingPreferences tracking)
     {
         _preferences = preferences;
         _dialogs = dialogs;
+        _tracking = tracking;
 
         Languages =
         [
@@ -36,6 +38,15 @@ public sealed partial class SettingsViewModel : ObservableObject
 
         SelectedLanguage = Languages.FirstOrDefault(l => l.Value == preferences.Language) ?? Languages[0];
         SelectedTheme = Themes.FirstOrDefault(t => t.Value == preferences.Theme) ?? Themes[0];
+
+        Intervals = Choices(TrackingPreferences.IntervalChoicesSeconds, UiStrings.SecondsFormat);
+        MinDistances = Choices(TrackingPreferences.MinDistanceChoicesMeters, UiStrings.MetersFormat);
+        MaxAccuracies = Choices(TrackingPreferences.MaxAccuracyChoicesMeters, UiStrings.MetersFormat);
+        AutoRecord = tracking.AutoRecord;
+        BatterySaver = tracking.BatterySaver;
+        SelectedInterval = Closest(Intervals, tracking.IntervalSeconds);
+        SelectedMinDistance = Closest(MinDistances, tracking.MinDistanceMeters);
+        SelectedMaxAccuracy = Closest(MaxAccuracies, tracking.MaxAccuracyMeters);
         _initialized = true;
     }
 
@@ -43,8 +54,33 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     public IReadOnlyList<Option<ThemePreference>> Themes { get; }
 
+    public IReadOnlyList<Option<int>> Intervals { get; }
+
+    public IReadOnlyList<Option<int>> MinDistances { get; }
+
+    public IReadOnlyList<Option<int>> MaxAccuracies { get; }
+
     [ObservableProperty]
     public partial Option<string> SelectedLanguage { get; set; }
+
+    [ObservableProperty]
+    public partial bool AutoRecord { get; set; }
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(CustomTracking))]
+    public partial bool BatterySaver { get; set; }
+
+    /// <summary>Interval/distance/accuracy apply only without battery saver (which has its own preset).</summary>
+    public bool CustomTracking => !BatterySaver;
+
+    [ObservableProperty]
+    public partial Option<int> SelectedInterval { get; set; }
+
+    [ObservableProperty]
+    public partial Option<int> SelectedMinDistance { get; set; }
+
+    [ObservableProperty]
+    public partial Option<int> SelectedMaxAccuracy { get; set; }
 
     [ObservableProperty]
     public partial Option<ThemePreference> SelectedTheme { get; set; }
@@ -70,4 +106,28 @@ public sealed partial class SettingsViewModel : ObservableObject
         _preferences.Theme = value.Value;
         _preferences.ApplyTheme(Application.Current!);
     }
+
+    partial void OnAutoRecordChanged(bool value) => Save(() => _tracking.AutoRecord = value);
+
+    partial void OnBatterySaverChanged(bool value) => Save(() => _tracking.BatterySaver = value);
+
+    partial void OnSelectedIntervalChanged(Option<int> value) => Save(() => _tracking.IntervalSeconds = value.Value);
+
+    partial void OnSelectedMinDistanceChanged(Option<int> value) => Save(() => _tracking.MinDistanceMeters = value.Value);
+
+    partial void OnSelectedMaxAccuracyChanged(Option<int> value) => Save(() => _tracking.MaxAccuracyMeters = value.Value);
+
+    private void Save(Action save)
+    {
+        if (_initialized)
+        {
+            save();
+        }
+    }
+
+    private static IReadOnlyList<Option<int>> Choices(IReadOnlyList<int> values, string format) =>
+        values.Select(v => new Option<int>(v, string.Format(format, v))).ToList();
+
+    private static Option<int> Closest(IReadOnlyList<Option<int>> options, int value) =>
+        options.MinBy(o => Math.Abs(o.Value - value))!;
 }

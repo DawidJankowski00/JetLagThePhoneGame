@@ -5,11 +5,14 @@ using TransitGames.App.Pages;
 using TransitGames.App.Services;
 using TransitGames.App.ViewModels;
 using TransitGames.Core;
+using TransitGames.Core.Location;
 using TransitGames.Geo;
+using TransitGames.Tracking;
 using TransitGames.Games.HideAndSeek.Maui;
 using TransitGames.Games.Tag.Maui;
 using TransitGames.UI;
 using TransitGames.UI.Games;
+using TransitGames.UI.Services;
 using TransitGames.UI.Settings;
 
 namespace TransitGames.App;
@@ -35,7 +38,13 @@ public static class MauiProgram
         var services = builder.Services;
         services.AddTransitGamesCore(Path.Combine(FileSystem.AppDataDirectory, "transitgames.db3"));
         services.AddTransitGamesGeo();
+        services.AddTransitGamesTracking();
         services.AddTransitGamesUi();
+#if ANDROID
+        services.AddSingleton<ILocationTracker, TransitGames.App.Tracking.AndroidLocationTracker>();
+#elif IOS
+        services.AddSingleton<ILocationTracker, TransitGames.App.Tracking.IosLocationTracker>();
+#endif
 
         // Games: one line per game.
         services.AddGame<HideAndSeekUiModule>();
@@ -48,13 +57,18 @@ public static class MauiProgram
         services.AddTransient<AreaSetupPage>().AddTransient<AreaSetupViewModel>();
         services.AddTransient<StationsSetupPage>().AddTransient<StationsSetupViewModel>();
         services.AddTransient<HistoryPage>().AddTransient<HistoryViewModel>();
-        services.AddTransient<TracksPage>();
+        services.AddTransient<TracksPage>().AddTransient<TracksViewModel>();
+        services.AddTransient<TrackPreviewPage>().AddTransient<TrackPreviewViewModel>();
         services.AddTransient<SettingsPage>().AddTransient<SettingsViewModel>();
 
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
 
-        return builder.Build();
+        var app = builder.Build();
+
+        // Created eagerly: it must observe the session manager before the first game is resumed.
+        app.Services.GetRequiredService<TrackingCoordinator>();
+        return app;
     }
 }
