@@ -10,7 +10,7 @@ namespace TransitGames.UI;
 
 public static class UiServiceCollectionExtensions
 {
-    /// <summary>Shared UI infrastructure used by the app and by all game UI modules.</summary>
+    /// <summary>Shared UI infrastructure used by the app and by all game UI modules (needs Core, Tracking and Sync).</summary>
     public static IServiceCollection AddTransitGamesUi(this IServiceCollection services)
     {
         services.TryAddSingleton<IDialogService, ShellDialogService>();
@@ -22,6 +22,9 @@ public static class UiServiceCollectionExtensions
         services.TryAddSingleton(DeviceInfo.Current);
         services.TryAddSingleton(Share.Default);
         services.TryAddSingleton<TrackingCoordinator>();
+        services.TryAddSingleton<OnlinePreferences>();
+        services.TryAddSingleton<OnlineGameService>();
+        services.TryAddSingleton<OnlineSessionCoordinator>();
         services.TryAddSingleton(Geolocation.Default);
         services.TryAddSingleton<IDeviceLocationService, DeviceLocationService>();
         services.TryAddSingleton(FilePicker.Default);

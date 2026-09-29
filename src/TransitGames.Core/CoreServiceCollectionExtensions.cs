@@ -13,7 +13,10 @@ namespace TransitGames.Core;
 
 public static class CoreServiceCollectionExtensions
 {
-    /// <summary>Registers registry, session management, persistence and the offline sync transport.</summary>
+    /// <summary>
+    /// Registers registry, session management, persistence and sync. <see cref="IGameSyncService"/> is the
+    /// <see cref="GameSyncRouter"/>, offline (<see cref="LocalGameSyncService"/>) until an online game switches it.
+    /// </summary>
     public static IServiceCollection AddTransitGamesCore(this IServiceCollection services, string databasePath)
     {
         services.TryAddSingleton<IClock>(SystemClock.Instance);
@@ -23,7 +26,9 @@ public static class CoreServiceCollectionExtensions
         services.TryAddSingleton<IGameEventLog, SqliteGameEventLog>();
         services.TryAddSingleton<IStationRepository, SqliteStationRepository>();
         services.TryAddSingleton<IGameAreaRepository, SqliteGameAreaRepository>();
-        services.TryAddSingleton<IGameSyncService, LocalGameSyncService>();
+        services.TryAddSingleton<LocalGameSyncService>();
+        services.TryAddSingleton<GameSyncRouter>();
+        services.TryAddSingleton<IGameSyncService>(sp => sp.GetRequiredService<GameSyncRouter>());
         services.TryAddSingleton<GameRegistry>();
         services.TryAddSingleton<GameSessionManager>();
         return services;

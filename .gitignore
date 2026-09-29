@@ -480,3 +480,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Local server database (dotnet run of TransitGames.Server)
+src/TransitGames.Server/data/

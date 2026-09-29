@@ -16,8 +16,8 @@ internal sealed class TestState
 
 internal sealed class TestSession : GameSessionBase<TestSettings, TestState>
 {
-    public TestSession(TestSettings settings, string role)
-        : base(TestModule.GameId, settings, role)
+    public TestSession(Guid id, TestSettings settings, string role)
+        : base(id, TestModule.GameId, settings, role)
     {
     }
 
@@ -46,7 +46,8 @@ internal sealed class TestModule : GameModule<TestSettings, TestSession>
 
     public override LocationSharingPolicy LocationSharing => Sharing;
 
-    protected override TestSession CreateSession(TestSettings settings, string localRoleId) => new(settings, localRoleId);
+    protected override TestSession CreateSession(TestSettings settings, string localRoleId, Guid sessionId) =>
+        new(sessionId, settings, localRoleId);
 
     protected override TestSession RestoreSession(GameSessionSnapshot snapshot, TestSettings settings) =>
         new(snapshot, settings);

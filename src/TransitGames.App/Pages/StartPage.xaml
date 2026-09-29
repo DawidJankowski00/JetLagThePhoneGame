@@ -14,6 +14,8 @@
                 <Label Text="{x:Static res:UiStrings.StartSubtitle}" Style="{StaticResource Caption}" />
                 <Button Text="{Binding ResumeText}" IsVisible="{Binding HasResumableSession}"
                         Command="{Binding ResumeCommand}" Style="{StaticResource BigButton}" Margin="0,12,0,0" />
+                <Button Text="{x:Static res:UiStrings.StartJoinOnline}" Command="{Binding JoinOnlineCommand}"
+                        Style="{StaticResource ToolButton}" HorizontalOptions="Fill" Margin="0,8,0,0" />
             </VerticalStackLayout>
         </CollectionView.Header>
         <CollectionView.ItemsLayout>

@@ -82,16 +82,53 @@ Testy: 24/24.
   - Po restarcie aplikacji trasa jest kontynuowana w nowym segmencie.
 - Testy: 111/111 (Core 19, Geo 61, Tracking 25, HideAndSeek 3, Tag 3).
 
-**Otwarte pytanie do użytkownika:** czy tryb online (serwer ASP.NET Core + SignalR, Etap 7) ma powstać przed
-grami (Etapy 4–5), i gdzie ma działać serwer.
+## ✅ Etap 4 — Tryb online: serwer SignalR w Dockerze (2026-09-29)
 
-**Następny krok — Etap 4: Hide and Seek**
+Zmiana kolejności (decyzja właściciela): serwer działa w Dockerze na prywatnym serwerze, gra tylko przez VPN.
+Tryb online powstał przed grami, żeby Hide and Seek i Tag od razu z niego korzystały. Nowa numeracja:
+**5 Hide and Seek, 6 Tag, 7 dopracowanie**.
+
+**Działa:**
+- `TransitGames.Server` (ASP.NET Core + SignalR + SQLite):
+  - lobby z 6-znakowym kodem (bez mylących znaków), dołączanie z wyborem roli, ustawienia gry dla dołączających;
+  - tokeny urządzeń (SHA-256 na serwerze), tożsamość nadawcy z tokenu;
+  - routing wiadomości wg roli, egzekwowanie `LocationSharingPolicy` dla pozycji;
+  - numery sekwencyjne, `Sync` (nadrabianie), `LatestLocations`, obecność graczy;
+  - sprzątanie starych gier, `/health`, `/api/info`.
+- Docker: `src/TransitGames.Server/Dockerfile`, `deploy/docker-compose.yml` (wolumen na bazę, `BIND_ADDRESS`
+  do nasłuchu tylko na VPN), opis w `docs/SERVER.md`. Obraz zbudowany i uruchomiony lokalnie; gra przetrwała
+  restart kontenera.
+- `TransitGames.Sync` (klient): `OnlineServerClient` (REST, kody błędów), `SignalRGameSyncService`
+  (ponowne łączenie bez końca, nadrabianie w kolejności, trwała kolejka wysyłki, echo lokalne),
+  `OnlineSessionStore`.
+- Core: `GameSyncRouter` (gry używają `IGameSyncService`, który przełącza się offline/online),
+  kontrakty protokołu, wspólne id sesji, `IGameModule.Serialize/DeserializeSettings`,
+  `GetLocationShareInterval` (Tag: `RevealInterval`), `GameSessionManager.FinishAsync(id)` i `SessionFinished`.
+- UI/App:
+  - Ustawienia → „Gra online”: adres serwera, nazwa gracza, „Sprawdź połączenie”.
+  - Kreator: przełącznik „Graj online” → kod gry po starcie.
+  - Ekran startowy → „Dołącz do gry online”: kod → gra i gracze → wybór roli.
+  - Nagłówek gry: stan połączenia i liczba graczy, kod (dotknięcie = udostępnij), kto widzi moją pozycję, jak
+    często i kiedy ostatnio.
+  - Mapa: pozycje innych graczy (drużyna / przeciwnicy) z wiekiem pozycji.
+  - Koniec gry na jednym telefonie kończy ją na wszystkich.
+- Zweryfikowano na emulatorze z serwerem w Dockerze i drugim „telefonem” (bot na bibliotece Sync):
+  - Tag: emulator dołączył kodem (wpisanym małymi literami z myślnikiem) jako uciekający; goniący dostał jego
+    pozycję; nagłówek: „Twoją pozycję widzą: Goniący · co 15 min · ostatnio 10:13”; kolejna pozycja nie została
+    wysłana przed upływem interwału; „Zakończ grę” dotarło do goniącego.
+  - Hide and Seek: emulator założył grę jako ukrywający; szukający wysyłał pozycję co 5 s → marker
+    „Bartek · teraz” na mapie ukrywającego; szukający **nie dostał żadnej** pozycji ukrywającego; koniec gry
+    ogłoszony przez szukającego zamknął grę i nagrywanie na emulatorze.
+- Testy: 137/137 (Core 25, Geo 61, Tracking 25, Sync 19 — w tym serwer w pamięci: prywatność pozycji,
+  podszywanie się pod rolę, nadrabianie po restarcie, kolejka offline; HideAndSeek 3, Tag 4).
+
+**Następny krok — Etap 5: Hide and Seek**
 - Logika:
   - strefy ukrycia wokół stacji;
-  - pytania (radar, termometr, porównania, matching…) z liczeniem obszaru wyeliminowanego w projekcji
-    metrycznej;
+  - pytania (radar, termometr, dopasowanie, mierzenie, macki, zdjęcie) jako `IQuestion.Apply` z testami
+    geometrii; obszar = funkcja listy pytań (cofanie/edycja);
   - licznik „zostało X z Y stacji”.
+- Pytania i odpowiedzi jako wiadomości `IGameSyncService` (online automatycznie, offline przez ręczne wpisanie).
 - Mapa szukających: obszar wyeliminowany i możliwy, wykluczone stacje. Ekran ukrywającego: podpowiedź
-  odpowiedzi liczona lokalnie.
-- Ukrywający widzi pozycję szukających (`LocationSharingPolicy`); w trybie offline przez `LocalGameSyncService`.
+  odpowiedzi liczona z GPS, karty z talii JSON.
 - Zdarzenia z lokalizacją (pytania) trafiają do eksportu jako waypointy.

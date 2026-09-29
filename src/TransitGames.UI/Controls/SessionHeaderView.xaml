@@ -5,7 +5,7 @@
              xmlns:res="clr-namespace:TransitGames.UI.Resources"
              x:Class="TransitGames.UI.Controls.SessionHeaderView"
              x:DataType="vm:ActiveSessionViewModel">
-    <Grid ColumnDefinitions="*,Auto" Padding="16,10" ColumnSpacing="12"
+    <Grid RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto" Padding="16,10" ColumnSpacing="12" RowSpacing="6"
           BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
         <VerticalStackLayout Spacing="2">
             <Label Text="{Binding GameName}" FontSize="18" FontAttributes="Bold" TextColor="White" />
@@ -27,6 +27,22 @@
             </HorizontalStackLayout>
             <Label Text="{Binding ElapsedText}" TextColor="White" FontSize="22" FontAttributes="Bold"
                    FontFamily="monospace" HorizontalOptions="End" />
+        </VerticalStackLayout>
+
+        <!-- Online games: connection, game code (tap to share) and what the own position reveals. -->
+        <VerticalStackLayout Grid.Row="1" Grid.ColumnSpan="2" Spacing="2" IsVisible="{Binding IsOnlineGame}">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <Label Text="{Binding ConnectionText}" TextColor="White" FontSize="13" FontAttributes="Bold"
+                       VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                <Border Grid.Column="1" Padding="10,4" StrokeThickness="1" Stroke="White" BackgroundColor="Transparent"
+                        StrokeShape="RoundRectangle 12" SemanticProperties.Description="{x:Static res:UiStrings.OnlineShareCode}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ShareCodeCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="{Binding CodeText}" TextColor="White" FontSize="13" FontAttributes="Bold" FontFamily="monospace" />
+                </Border>
+            </Grid>
+            <Label Text="{Binding SharingText}" TextColor="White" FontSize="12" />
         </VerticalStackLayout>
     </Grid>
 </ContentView>

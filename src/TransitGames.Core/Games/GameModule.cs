@@ -19,26 +19,36 @@ public abstract class GameModule<TSettings, TSession> : IGameModule
     /// <summary>Default: every role's location is private.</summary>
     public virtual LocationSharingPolicy LocationSharing => LocationSharingPolicy.None;
 
+    /// <summary>Default for online location sharing: close to live.</summary>
+    public static TimeSpan LiveLocationInterval { get; } = TimeSpan.FromSeconds(20);
+
     public virtual TSettings CreateDefaultSettings() => new();
 
     GameSettings IGameModule.CreateDefaultSettings() => CreateDefaultSettings();
 
-    public IGameSession CreateSession(GameSettings settings, string localRoleId)
-    {
-        if (settings is not TSettings typed)
-        {
-            throw new ArgumentException($"Expected settings of type {typeof(TSettings).Name}.", nameof(settings));
-        }
+    public TimeSpan GetLocationShareInterval(GameSettings settings) => GetLocationShareInterval(Typed(settings));
 
+    protected virtual TimeSpan GetLocationShareInterval(TSettings settings) => LiveLocationInterval;
+
+    public string SerializeSettings(GameSettings settings) =>
+        JsonSerializer.Serialize(Typed(settings), GameJson.Options);
+
+    public GameSettings DeserializeSettings(string json) =>
+        JsonSerializer.Deserialize<TSettings>(json, GameJson.Options)
+        ?? throw new InvalidOperationException("Game settings are empty.");
+
+    public IGameSession CreateSession(GameSettings settings, string localRoleId, Guid? sessionId = null)
+    {
+        var typed = Typed(settings);
         if (Roles.All(r => r.Id != localRoleId))
         {
             throw new ArgumentException($"Unknown role '{localRoleId}' for game '{Id}'.", nameof(localRoleId));
         }
 
-        return CreateSession(typed, localRoleId);
+        return CreateSession(typed, localRoleId, sessionId ?? Guid.NewGuid());
     }
 
-    protected abstract TSession CreateSession(TSettings settings, string localRoleId);
+    protected abstract TSession CreateSession(TSettings settings, string localRoleId, Guid sessionId);
 
     public IGameSession RestoreSession(GameSessionSnapshot snapshot)
     {
@@ -57,4 +67,8 @@ public abstract class GameModule<TSettings, TSession> : IGameModule
     public virtual void RegisterServices(IServiceCollection services)
     {
     }
+
+    private static TSettings Typed(GameSettings settings) =>
+        settings as TSettings
+        ?? throw new ArgumentException($"Expected settings of type {typeof(TSettings).Name}.", nameof(settings));
 }

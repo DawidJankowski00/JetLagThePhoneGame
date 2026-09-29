@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.App.ViewModels"
+             xmlns:res="clr-namespace:TransitGames.UI.Resources;assembly=TransitGames.UI"
+             x:Class="TransitGames.App.Pages.JoinGamePage"
+             x:DataType="vm:JoinGameViewModel"
+             Title="{x:Static res:UiStrings.JoinTitle}"
+             Style="{StaticResource PageBackground}">
+    <ScrollView>
+        <VerticalStackLayout Padding="16" Spacing="12">
+            <Label Text="{Binding ServerText}" Style="{StaticResource Caption}" />
+
+            <Label Text="{x:Static res:UiStrings.JoinCodeLabel}" FontSize="20" FontAttributes="Bold" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                <Entry Text="{Binding Code}" Placeholder="{x:Static res:UiStrings.JoinCodePlaceholder}"
+                       FontSize="26" FontFamily="monospace" CharacterSpacing="4" MaxLength="12" TextTransform="Uppercase"
+                       Keyboard="Plain" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False"
+                       ReturnCommand="{Binding FindCommand}" />
+                <Button Grid.Column="1" Text="{x:Static res:UiStrings.JoinFind}" Command="{Binding FindCommand}"
+                        Style="{StaticResource ToolButton}" VerticalOptions="Center" />
+            </Grid>
+
+            <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsBusy}">
+                <ActivityIndicator IsRunning="{Binding IsBusy}" HeightRequest="20" WidthRequest="20" />
+                <Label Text="{Binding BusyText}" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+
+            <Border Style="{StaticResource Card}" IsVisible="{Binding HasGame}">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="{Binding GameTitle}" FontSize="22" FontAttributes="Bold" />
+                    <Label Text="{Binding PlayersText}" Style="{StaticResource Caption}" />
+                    <Label Text="{x:Static res:UiStrings.JoinChooseRole}" FontAttributes="Bold" Margin="0,8,0,0" />
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Roles}" Spacing="12">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="vm:JoinRoleChoice">
+                                <VerticalStackLayout Spacing="2">
+                                    <Button Text="{Binding Label}" Style="{StaticResource BigButton}"
+                                            Command="{Binding JoinCommand, Source={RelativeSource AncestorType={x:Type vm:JoinGameViewModel}}, x:DataType=vm:JoinGameViewModel}"
+                                            CommandParameter="{Binding .}" />
+                                    <Label Text="{Binding Description}" Style="{StaticResource Caption}" FontSize="12" />
+                                </VerticalStackLayout>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

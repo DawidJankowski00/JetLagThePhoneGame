@@ -1,0 +1,10 @@
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+.git/
+tests/
+src/TransitGames.App/
+src/TransitGames.UI/
+src/*.Maui/
+docs/

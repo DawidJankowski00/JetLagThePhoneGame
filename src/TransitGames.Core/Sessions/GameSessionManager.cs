@@ -37,10 +37,14 @@ public sealed class GameSessionManager
 
     public event EventHandler? CurrentChanged;
 
-    public async Task<IGameSession> StartNewAsync(string gameId, GameSettings settings, string localRoleId)
+    /// <summary>Raised after a session was finished and saved (current or not, e.g. ended by another device).</summary>
+    public event EventHandler<IGameSession>? SessionFinished;
+
+    /// <param name="sessionId">Id shared by all devices of an online game; a new one when null.</param>
+    public async Task<IGameSession> StartNewAsync(string gameId, GameSettings settings, string localRoleId, Guid? sessionId = null)
     {
         var module = _registry.Get(gameId);
-        var session = module.CreateSession(settings, localRoleId);
+        var session = module.CreateSession(settings, localRoleId, sessionId);
         Attach(session);
         session.Start(_clock.UtcNow);
         await SaveAsync().ConfigureAwait(false);
@@ -76,6 +80,33 @@ public sealed class GameSessionManager
         session.Finish(_clock.UtcNow);
         await SaveAsync().ConfigureAwait(false);
         Detach();
+        SessionFinished?.Invoke(this, session);
+    }
+
+    /// <summary>
+    /// Finishes the session with the given id: the current one, or one that was left (e.g. the other device ended
+    /// an online game while this device was on another screen). Unknown or already finished sessions are ignored.
+    /// </summary>
+    public async Task FinishAsync(Guid sessionId)
+    {
+        if (Current?.Id == sessionId)
+        {
+            await FinishAsync().ConfigureAwait(false);
+            return;
+        }
+
+        var snapshot = await _store.LoadAsync(sessionId).ConfigureAwait(false);
+        if (snapshot is null || snapshot.Status == SessionStatus.Finished || !_registry.TryGet(snapshot.GameId, out var module) || module is null)
+        {
+            return;
+        }
+
+        var session = module.RestoreSession(snapshot);
+        session.EventRaised += OnEventRaised;
+        session.Finish(_clock.UtcNow);
+        session.EventRaised -= OnEventRaised;
+        await _store.SaveAsync(session.CreateSnapshot(_clock.UtcNow)).ConfigureAwait(false);
+        SessionFinished?.Invoke(this, session);
     }
 
     /// <summary>Leaves the current session without finishing it (it stays resumable).</summary>

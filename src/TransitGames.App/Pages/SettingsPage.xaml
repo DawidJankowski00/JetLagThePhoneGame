@@ -23,6 +23,20 @@
             </Border>
             <Border Style="{StaticResource Card}">
                 <VerticalStackLayout Spacing="6">
+                    <Label Text="{x:Static res:UiStrings.SettingsOnline}" FontAttributes="Bold" />
+                    <Label Text="{x:Static res:UiStrings.SettingsServerUrl}" Style="{StaticResource Caption}" />
+                    <Entry Text="{Binding ServerUrl}" Placeholder="{x:Static res:UiStrings.SettingsServerUrlPlaceholder}"
+                           Keyboard="Url" IsSpellCheckEnabled="False" IsTextPredictionEnabled="False" />
+                    <Label Text="{x:Static res:UiStrings.SettingsPlayerName}" Style="{StaticResource Caption}" />
+                    <Entry Text="{Binding PlayerName}" MaxLength="40" />
+                    <Button Text="{x:Static res:UiStrings.SettingsTestConnection}" Command="{Binding TestConnectionCommand}"
+                            Style="{StaticResource ToolButton}" HorizontalOptions="Start" />
+                    <Label Text="{Binding ConnectionResult}" IsVisible="{Binding HasConnectionResult}" />
+                    <Label Text="{x:Static res:UiStrings.SettingsOnlineHint}" Style="{StaticResource Caption}" />
+                </VerticalStackLayout>
+            </Border>
+            <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="6">
                     <Label Text="{x:Static res:UiStrings.SettingsTracking}" FontAttributes="Bold" />
                     <Grid ColumnDefinitions="*,Auto">
                         <Label Text="{x:Static res:UiStrings.SettingsAutoRecord}" VerticalOptions="Center" />

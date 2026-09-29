@@ -23,7 +23,6 @@ public sealed class TrackingCoordinator
     private readonly IDialogService _dialogs;
     private readonly IDeviceInfo _device;
     private readonly ILogger<TrackingCoordinator> _logger;
-    private IGameSession? _currentSession;
 
     public TrackingCoordinator(
         GameSessionManager sessions,
@@ -43,7 +42,7 @@ public sealed class TrackingCoordinator
         _dialogs = dialogs;
         _device = device;
         _logger = logger;
-        _sessions.CurrentChanged += OnCurrentSessionChanged;
+        _sessions.SessionFinished += OnSessionFinished;
     }
 
     public Task<bool> StartManualAsync() =>
@@ -52,28 +51,16 @@ public sealed class TrackingCoordinator
     /// <summary>Stops the current recording; a game's track stays open and continues when the game is resumed.</summary>
     public Task StopAsync() => _recorder.ActiveTrack?.SessionId is null ? _recorder.StopAsync() : _recorder.PauseAsync();
 
-    private async void OnCurrentSessionChanged(object? sender, EventArgs e)
+    /// <summary>Only a finished game ends its track; a left game keeps recording.</summary>
+    private async void OnSessionFinished(object? sender, IGameSession session)
     {
         try
         {
-            var current = _sessions.Current;
-            if (current is null)
-            {
-                // Only a finished game ends its track; a left game keeps recording.
-                if (_currentSession is { Status: SessionStatus.Finished } finished)
-                {
-                    _currentSession = null;
-                    await CloseTrackAsync(finished.Id);
-                }
-
-                return;
-            }
-
-            _currentSession = current;
+            await CloseTrackAsync(session.Id);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Track recording coordination failed");
+            _logger.LogError(ex, "Closing the game track failed");
         }
     }
 
@@ -86,15 +73,29 @@ public sealed class TrackingCoordinator
     {
         try
         {
-            if (session.Status != SessionStatus.Finished && _preferences.AutoRecord && _recorder.ActiveTrack?.SessionId != session.Id)
+            if (_preferences.AutoRecord)
             {
-                await TryStartAsync(RequestFor(session));
+                await EnsureRecordingAsync(session);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Track recording could not start");
         }
+    }
+
+    /// <summary>
+    /// Records the game's track even when automatic recording is off: used when the game needs continuous
+    /// location (sharing the position in an online game), which comes from the same foreground service.
+    /// </summary>
+    public async Task<bool> EnsureRecordingAsync(IGameSession session)
+    {
+        if (session.Status == SessionStatus.Finished)
+        {
+            return false;
+        }
+
+        return _recorder.ActiveTrack?.SessionId == session.Id || await TryStartAsync(RequestFor(session));
     }
 
     private async Task CloseTrackAsync(Guid sessionId)

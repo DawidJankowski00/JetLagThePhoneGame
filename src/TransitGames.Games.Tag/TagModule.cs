@@ -24,7 +24,11 @@ public sealed class TagModule : GameModule<TagSettings, TagSession>
     public override LocationSharingPolicy LocationSharing { get; } =
         new([new LocationSharingRule(TagRoles.Chaser, TagRoles.Runner)]);
 
-    protected override TagSession CreateSession(TagSettings settings, string localRoleId) => new(settings, localRoleId);
+    /// <summary>Runners are revealed to the chasers every <see cref="TagSettings.RevealInterval"/>, not live.</summary>
+    protected override TimeSpan GetLocationShareInterval(TagSettings settings) => settings.RevealInterval;
+
+    protected override TagSession CreateSession(TagSettings settings, string localRoleId, Guid sessionId) =>
+        new(sessionId, settings, localRoleId);
 
     protected override TagSession RestoreSession(GameSessionSnapshot snapshot, TagSettings settings) =>
         new(snapshot, settings);

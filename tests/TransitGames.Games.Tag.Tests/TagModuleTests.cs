@@ -29,6 +29,14 @@ public class TagModuleTests
     }
 
     [Fact]
+    public void Runners_are_revealed_online_at_the_reveal_interval()
+    {
+        IGameModule module = new TagModule();
+
+        Assert.Equal(TimeSpan.FromMinutes(7), module.GetLocationShareInterval(new TagSettings { RevealInterval = TimeSpan.FromMinutes(7) }));
+    }
+
+    [Fact]
     public void ChaserSeesRunners_RunnersNeverSeeChaser()
     {
         var sharing = new TagModule().LocationSharing;

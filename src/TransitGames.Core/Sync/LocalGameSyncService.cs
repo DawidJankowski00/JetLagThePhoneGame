@@ -11,7 +11,23 @@ public sealed class LocalGameSyncService : IGameSyncService
 
     public bool IsOnline => false;
 
+    public SyncConnectionState State => SyncConnectionState.Local;
+
+    public IReadOnlyList<SyncPeer> Peers => [];
+
     public IReadOnlyList<SyncMessage> Outbox => _outbox;
+
+    public event EventHandler? StateChanged
+    {
+        add { }
+        remove { }
+    }
+
+    public event EventHandler? PeersChanged
+    {
+        add { }
+        remove { }
+    }
 
     public event EventHandler<SyncMessage>? MessageReceived;
 

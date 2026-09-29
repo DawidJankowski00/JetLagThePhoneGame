@@ -36,6 +36,17 @@
   <data name="HistoryEmpty" xml:space="preserve"><value>No games played yet.</value></data>
   <data name="HistoryTitle" xml:space="preserve"><value>Game history</value></data>
   <data name="InvalidGeoJsonFormat" xml:space="preserve"><value>Invalid GeoJSON file: {0}</value></data>
+  <data name="JoinAsFormat" xml:space="preserve"><value>Join as: {0}</value></data>
+  <data name="JoinChooseRole" xml:space="preserve"><value>Choose your team's role:</value></data>
+  <data name="JoinCodeLabel" xml:space="preserve"><value>Game code</value></data>
+  <data name="JoinCodePlaceholder" xml:space="preserve"><value>e.g. K7M2QX</value></data>
+  <data name="JoinFind" xml:space="preserve"><value>Find</value></data>
+  <data name="JoinJoining" xml:space="preserve"><value>Joining…</value></data>
+  <data name="JoinNoPlayers" xml:space="preserve"><value>none</value></data>
+  <data name="JoinPlayersFormat" xml:space="preserve"><value>Players: {0}</value></data>
+  <data name="JoinSearching" xml:space="preserve"><value>Looking for the game…</value></data>
+  <data name="JoinServerFormat" xml:space="preserve"><value>Server: {0}</value></data>
+  <data name="JoinTitle" xml:space="preserve"><value>Join a game</value></data>
   <data name="KilometersFormat" xml:space="preserve"><value>{0:0.0} km</value></data>
   <data name="LanguageSystem" xml:space="preserve"><value>System</value></data>
   <data name="LeaveGame" xml:space="preserve"><value>Leave (game stays saved)</value></data>
@@ -53,6 +64,37 @@
   <data name="Next" xml:space="preserve"><value>Next</value></data>
   <data name="No" xml:space="preserve"><value>No</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="OnlineCodeFormat" xml:space="preserve"><value>Code: {0}</value></data>
+  <data name="OnlineConnected" xml:space="preserve"><value>● Online</value></data>
+  <data name="OnlineConnecting" xml:space="preserve"><value>◌ Connecting…</value></data>
+  <data name="OnlineCreating" xml:space="preserve"><value>Creating the game on the server…</value></data>
+  <data name="OnlineErrorFinished" xml:space="preserve"><value>This game has already finished.</value></data>
+  <data name="OnlineErrorIncompatible" xml:space="preserve"><value>The server does not match this app version. Update the app or the server.</value></data>
+  <data name="OnlineErrorNetwork" xml:space="preserve"><value>Cannot reach the server. Check that the VPN is on and the server address is correct.
+
+{0}</value></data>
+  <data name="OnlineErrorNotFound" xml:space="preserve"><value>There is no game with this code.</value></data>
+  <data name="OnlineErrorTitle" xml:space="preserve"><value>Online game</value></data>
+  <data name="OnlineErrorUnknownGame" xml:space="preserve"><value>The game “{0}” is not available in this app version.</value></data>
+  <data name="OnlineGameCreatedFormat" xml:space="preserve"><value>Game code: {0}
+
+The other team taps “Join an online game” on the start screen and enters this code.</value></data>
+  <data name="OnlineGameCreatedTitle" xml:space="preserve"><value>Online game created</value></data>
+  <data name="OnlineGameFinishedBy" xml:space="preserve"><value>The game was finished by {0}.</value></data>
+  <data name="OnlineGameFinishedTitle" xml:space="preserve"><value>Game over</value></data>
+  <data name="OnlineIntervalLive" xml:space="preserve"><value>live</value></data>
+  <data name="OnlineIntervalMinutesFormat" xml:space="preserve"><value>every {0} min</value></data>
+  <data name="OnlinePlayerAgeMinutesFormat" xml:space="preserve"><value>{0} min ago</value></data>
+  <data name="OnlinePlayerAgeNow" xml:space="preserve"><value>now</value></data>
+  <data name="OnlinePlayersFormat" xml:space="preserve"><value>{0}/{1} players</value></data>
+  <data name="OnlineReconnecting" xml:space="preserve"><value>⚠ No connection – messages are queued</value></data>
+  <data name="OnlineRejected" xml:space="preserve"><value>⚠ The server no longer knows this game</value></data>
+  <data name="OnlineServerMissing" xml:space="preserve"><value>Set the server address in Settings first (“Online play”).</value></data>
+  <data name="OnlineShareCode" xml:space="preserve"><value>Share code</value></data>
+  <data name="OnlineShareCodeText" xml:space="preserve"><value>Join my {0} game in Transit Games. Game code: {1}</value></data>
+  <data name="OnlineSharingFormat" xml:space="preserve"><value>📍 Your position is visible to: {0} · {1}</value></data>
+  <data name="OnlineSharingLastFormat" xml:space="preserve"><value>{0} · last {1:HH:mm}</value></data>
+  <data name="OnlineSharingPrivate" xml:space="preserve"><value>🔒 Your position is not shared with other teams</value></data>
   <data name="RecordingIndicator" xml:space="preserve"><value>● GPS</value></data>
   <data name="RestartRequired" xml:space="preserve"><value>The language change applies after restarting the app.</value></data>
   <data name="ResumeGameFormat" xml:space="preserve"><value>Resume: {0}</value></data>
@@ -63,15 +105,24 @@
   <data name="SettingsAutoRecord" xml:space="preserve"><value>Record the track during games</value></data>
   <data name="SettingsBatterySaver" xml:space="preserve"><value>Battery saver</value></data>
   <data name="SettingsBatterySaverHint" xml:space="preserve"><value>Fewer, less accurate points (every 20 s, every 30 m).</value></data>
+  <data name="SettingsConnectionOkFormat" xml:space="preserve"><value>Connected to {0} (version {1}).</value></data>
   <data name="SettingsInterval" xml:space="preserve"><value>Recording interval</value></data>
   <data name="SettingsLanguage" xml:space="preserve"><value>Language</value></data>
   <data name="SettingsMaxAccuracy" xml:space="preserve"><value>Discard fixes less accurate than</value></data>
   <data name="SettingsMinDistance" xml:space="preserve"><value>Minimum distance between points</value></data>
+  <data name="SettingsOnline" xml:space="preserve"><value>Online play</value></data>
+  <data name="SettingsOnlineHint" xml:space="preserve"><value>The server runs in a Docker container on a private server; phones must be connected to the VPN.</value></data>
+  <data name="SettingsPlayerName" xml:space="preserve"><value>Your name in the game</value></data>
+  <data name="SettingsServerInvalid" xml:space="preserve"><value>Invalid server address.</value></data>
+  <data name="SettingsServerUrl" xml:space="preserve"><value>Server address (over VPN)</value></data>
+  <data name="SettingsServerUrlPlaceholder" xml:space="preserve"><value>e.g. 10.8.0.1:5080</value></data>
+  <data name="SettingsTestConnection" xml:space="preserve"><value>Test connection</value></data>
   <data name="SettingsTheme" xml:space="preserve"><value>Theme</value></data>
   <data name="SettingsTitle" xml:space="preserve"><value>Settings</value></data>
   <data name="SettingsTracking" xml:space="preserve"><value>GPS track recording</value></data>
   <data name="SettingsTrackingHint" xml:space="preserve"><value>Changes apply to the next recording.</value></data>
   <data name="StartGame" xml:space="preserve"><value>Start game</value></data>
+  <data name="StartJoinOnline" xml:space="preserve"><value>🔗 Join an online game</value></data>
   <data name="StartSubtitle" xml:space="preserve"><value>Real-world transit games</value></data>
   <data name="StartTitle" xml:space="preserve"><value>Choose a game</value></data>
   <data name="StationCustom" xml:space="preserve"><value>custom</value></data>
@@ -86,6 +137,8 @@
   <data name="StationsImport" xml:space="preserve"><value>📄 GeoJSON</value></data>
   <data name="StationsImportedFormat" xml:space="preserve"><value>Imported stations: {0}. Skipped outside the area: {1}, without a name: {2}.</value></data>
   <data name="StationsNoneEnabled" xml:space="preserve"><value>Enable at least one station.</value></data>
+  <data name="StationsPlayOnline" xml:space="preserve"><value>Play online (via the server)</value></data>
+  <data name="StationsPlayOnlineHint" xml:space="preserve"><value>The other team joins with a game code. Messages and positions (as the game rules allow) sync automatically.</value></data>
   <data name="StationsSelectMode" xml:space="preserve"><value>Select at least one transit mode.</value></data>
   <data name="StationsStepTitle" xml:space="preserve"><value>Stations</value></data>
   <data name="StationsTapHint" xml:space="preserve"><value>Tap a station on the map or in the list to enable or disable it.</value></data>

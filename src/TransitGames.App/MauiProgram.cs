@@ -8,6 +8,7 @@ using TransitGames.Core;
 using TransitGames.Core.Location;
 using TransitGames.Geo;
 using TransitGames.Tracking;
+using TransitGames.Sync;
 using TransitGames.Games.HideAndSeek.Maui;
 using TransitGames.Games.Tag.Maui;
 using TransitGames.UI;
@@ -39,6 +40,7 @@ public static class MauiProgram
         services.AddTransitGamesCore(Path.Combine(FileSystem.AppDataDirectory, "transitgames.db3"));
         services.AddTransitGamesGeo();
         services.AddTransitGamesTracking();
+        services.AddTransitGamesSync();
         services.AddTransitGamesUi();
 #if ANDROID
         services.AddSingleton<ILocationTracker, TransitGames.App.Tracking.AndroidLocationTracker>();
@@ -59,6 +61,7 @@ public static class MauiProgram
         services.AddTransient<HistoryPage>().AddTransient<HistoryViewModel>();
         services.AddTransient<TracksPage>().AddTransient<TracksViewModel>();
         services.AddTransient<TrackPreviewPage>().AddTransient<TrackPreviewViewModel>();
+        services.AddTransient<JoinGamePage>().AddTransient<JoinGameViewModel>();
         services.AddTransient<SettingsPage>().AddTransient<SettingsViewModel>();
 
 #if DEBUG
@@ -67,8 +70,9 @@ public static class MauiProgram
 
         var app = builder.Build();
 
-        // Created eagerly: it must observe the session manager before the first game is resumed.
+        // Created eagerly: they must observe the session manager before the first game is resumed.
         app.Services.GetRequiredService<TrackingCoordinator>();
+        app.Services.GetRequiredService<OnlineSessionCoordinator>();
         return app;
     }
 }

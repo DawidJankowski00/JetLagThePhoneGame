@@ -65,6 +65,9 @@ public sealed partial class StartViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private Task JoinOnlineAsync() => _navigation.GoToAsync(Routes.JoinGame);
+
+    [RelayCommand]
     private Task SelectGameAsync(GameCard card) =>
         _navigation.GoToAsync(Routes.NewGame, new Dictionary<string, object> { [NewGameViewModel.GameIdKey] = card.Module.Id });
 

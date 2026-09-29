@@ -8,8 +8,8 @@ public sealed class HideAndSeekState
 
 public sealed class HideAndSeekSession : GameSessionBase<HideAndSeekSettings, HideAndSeekState>
 {
-    public HideAndSeekSession(HideAndSeekSettings settings, string localRoleId)
-        : base(HideAndSeekModule.GameId, settings, localRoleId)
+    public HideAndSeekSession(Guid id, HideAndSeekSettings settings, string localRoleId)
+        : base(id, HideAndSeekModule.GameId, settings, localRoleId)
     {
     }
 

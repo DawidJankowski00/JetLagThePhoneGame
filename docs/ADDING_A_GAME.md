@@ -24,7 +24,7 @@ public sealed class XState                          // cały zmienny stan sesji,
 
 public sealed class XSession : GameSessionBase<XSettings, XState>
 {
-    public XSession(XSettings s, string role) : base(XModule.GameId, s, role) { }
+    public XSession(Guid id, XSettings s, string role) : base(id, XModule.GameId, s, role) { }
     public XSession(GameSessionSnapshot snap, XSettings s) : base(snap, s) { }
 
     // Każda zmiana stanu przez Mutate(...) → automatyczny zapis do SQLite.
@@ -44,7 +44,11 @@ public sealed class XModule : GameModule<XSettings, XSession>
     // Kto widzi czyją lokalizację (jednokierunkowo). Domyślnie: nikt nikogo.
     public override LocationSharingPolicy LocationSharing { get; } = new([new LocationSharingRule("a", "b")]);
 
-    protected override XSession CreateSession(XSettings s, string role) => new(s, role);
+    // Online: jak często rola, której pozycję widzą inni, ją wysyła (domyślnie ~na żywo, co 20 s).
+    // protected override TimeSpan GetLocationShareInterval(XSettings s) => s.PingInterval;
+
+    // sessionId: w grze online wspólny dla wszystkich telefonów.
+    protected override XSession CreateSession(XSettings s, string role, Guid sessionId) => new(sessionId, s, role);
     protected override XSession RestoreSession(GameSessionSnapshot snap, XSettings s) => new(snap, s);
 
     // opcjonalnie: public override void RegisterServices(IServiceCollection services) { ... }
@@ -56,6 +60,13 @@ Teksty: `Resources/XStrings.resx` (polski) + `Resources/XStrings.en.resx`. Klasa
 
 Zdarzenia na osi czasu: w sesji wywołaj `Raise(GameEvent.Create(...))` — trafią do `IGameEventLog`
 i (jeśli mają lokalizację) do eksportu GPX/GeoJSON jako waypointy.
+
+Komunikacja między telefonami: wstrzyknij `IGameSyncService` i publikuj `SyncMessage` z własnym `Type`
+(np. `"x.question"`) i ładunkiem JSON. Ta sama usługa działa offline (wiadomość wraca lokalnie) i online (serwer
+przekazuje ją drużynom zgodnie z `Audience`). Własne wiadomości też przychodzą przez `MessageReceived`, więc stan
+gry zmieniaj w jednym miejscu — w obsłudze odebranej wiadomości (idempotentnie, po `SyncMessage.Id`).
+Pozycji nie wysyłaj samodzielnie: robi to aplikacja zgodnie z `LocationSharing` i `GetLocationShareInterval`,
+a pozycje innych graczy są w `Header.Players`.
 
 ## 2. UI (`TransitGames.Games.X.Maui`)
 
@@ -74,13 +85,13 @@ public sealed class XUiModule : GameUiModule<XModule>
 
 Strony są rozwiązywane z DI (rejestrowane automatycznie na podstawie `Routes`). Do dyspozycji:
 `ActiveSessionViewModel` + `SessionHeaderView` (nagłówek gry, a także `Area` i `Stations` bieżącej sesji),
-`GameMapView` (mapa z obszarem, stacjami, własną pozycją `Header.OwnLocation`, trasą `Track` i punktami `Waypoints`), `IMapLayerProvider` (własne warstwy:
+`GameMapView` (mapa z obszarem, stacjami, własną pozycją `Header.OwnLocation`, pozycjami innych graczy `Header.Players`, trasą `Track` i punktami `Waypoints`), `IMapLayerProvider` (własne warstwy:
 `CreatePolygonLayer`/`CreatePointLayer` + `SetPolygon`/`SetPoints`, dodawane przez `GameMapView.AddLayer`),
 `IDialogService`, `INavigationService`, style `BigButton`, `Card`, `ToolButton`, kolory warstw mapy (`Map*`).
 
 ```xml
 <controls:GameMapView x:Name="Map" Area="{Binding Header.Area}" Stations="{Binding Header.Stations}"
-                      OwnLocation="{Binding Header.OwnLocation}" />
+                      OwnLocation="{Binding Header.OwnLocation}" Players="{Binding Header.Players}" />
 ```
 
 Obszar gry i stacje wybiera wspólny kreator (rola → obszar → stacje) — trafiają do `GameSettings.Area`

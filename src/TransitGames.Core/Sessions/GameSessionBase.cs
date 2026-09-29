@@ -13,9 +13,9 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
     where TSettings : GameSettings
     where TState : class, new()
 {
-    protected GameSessionBase(string gameId, TSettings settings, string localRoleId)
+    protected GameSessionBase(Guid id, string gameId, TSettings settings, string localRoleId)
     {
-        Id = Guid.NewGuid();
+        Id = id;
         GameId = gameId;
         Settings = settings;
         LocalRoleId = localRoleId;

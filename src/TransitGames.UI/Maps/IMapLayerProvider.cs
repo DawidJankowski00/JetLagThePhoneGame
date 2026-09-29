@@ -16,6 +16,9 @@ using Font = Mapsui.Styles.Font;
 
 namespace TransitGames.UI.Maps;
 
+/// <summary>A labelled marker, e.g. another player ("Anna · 2 min").</summary>
+public sealed record MapMarker(GeoPoint Point, string ColorKey, string? Label = null, double Scale = 0.5);
+
 /// <summary>
 /// Shared map layers for all games. Layers are plain Mapsui <see cref="MemoryLayer"/>s; update them with the
 /// <c>Set*</c> methods, which convert domain objects (WGS84) to map features.
@@ -42,6 +45,9 @@ public interface IMapLayerProvider
 
     /// <summary>One polyline per list; lists with fewer than two points are skipped.</summary>
     void SetLines(MemoryLayer layer, IEnumerable<IReadOnlyList<GeoPoint>> lines);
+
+    /// <summary>Markers with their own colour and an always visible label.</summary>
+    void SetMarkers(MemoryLayer layer, IEnumerable<MapMarker> markers);
 }
 
 public sealed class MapLayerProvider : IMapLayerProvider
@@ -125,6 +131,29 @@ public sealed class MapLayerProvider : IMapLayerProvider
             .Select(l => new GeometryFeature(MapCoordinates.ToWorld(
                 GeometryFactories.Wgs84.CreateLineString(l.Select(p => new Coordinate(p.Longitude, p.Latitude)).ToArray()))))
             .ToList();
+        layer.DataHasChanged();
+    }
+
+    public void SetMarkers(MemoryLayer layer, IEnumerable<MapMarker> markers)
+    {
+        layer.Features = markers.Select(m =>
+        {
+            var feature = new PointFeature(MapCoordinates.ToWorld(m.Point)) { Data = m };
+            feature.Styles.Add(Marker(MapPalette.Get(m.ColorKey), m.Scale));
+            if (!string.IsNullOrEmpty(m.Label))
+            {
+                feature.Styles.Add(new LabelStyle
+                {
+                    Text = m.Label,
+                    Font = new Font { Size = 12, Bold = true },
+                    ForeColor = Color.White,
+                    BackColor = new Brush(MapPalette.Get(m.ColorKey, 0.85)),
+                    Offset = new Offset(0, -20),
+                });
+            }
+
+            return feature;
+        }).ToList();
         layer.DataHasChanged();
     }
 

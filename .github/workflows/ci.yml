@@ -20,6 +20,13 @@ jobs:
           global-json-file: global.json
       - run: dotnet test TransitGames.Libraries.slnf -c Release
 
+  server-image:
+    name: Server Docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f src/TransitGames.Server/Dockerfile -t transitgames-server .
+
   android:
     name: Android app
     runs-on: windows-latest

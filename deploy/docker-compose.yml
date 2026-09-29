@@ -1,0 +1,21 @@
+# Transit Games server (online mode). Run from this folder:
+#   docker compose up -d --build
+# Players reach it over the VPN at http://<VPN address of the server>:5080
+services:
+  transitgames:
+    build:
+      context: ..
+      dockerfile: src/TransitGames.Server/Dockerfile
+    image: transitgames-server:latest
+    container_name: transitgames-server
+    restart: unless-stopped
+    ports:
+      # Set BIND_ADDRESS to the server's VPN address (e.g. 10.8.0.1) to listen on the VPN only.
+      - "${BIND_ADDRESS:-0.0.0.0}:${PORT:-5080}:8080"
+    environment:
+      Storage__RetentionDays: "${RETENTION_DAYS:-14}"
+    volumes:
+      - transitgames-data:/data
+
+volumes:
+  transitgames-data:

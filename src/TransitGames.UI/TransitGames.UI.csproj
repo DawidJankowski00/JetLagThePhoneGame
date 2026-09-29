@@ -20,6 +20,7 @@
     <ProjectReference Include="..\TransitGames.Core\TransitGames.Core.csproj" />
     <ProjectReference Include="..\TransitGames.Geo\TransitGames.Geo.csproj" />
     <ProjectReference Include="..\TransitGames.Tracking\TransitGames.Tracking.csproj" />
+    <ProjectReference Include="..\TransitGames.Sync\TransitGames.Sync.csproj" />
   </ItemGroup>
 
 </Project>

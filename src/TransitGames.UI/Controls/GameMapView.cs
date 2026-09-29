@@ -43,6 +43,10 @@ public sealed class GameMapView : ContentView
     public static readonly BindableProperty WaypointsProperty = BindableProperty.Create(
         nameof(Waypoints), typeof(IEnumerable<GeoPoint>), typeof(GameMapView), propertyChanged: (b, _, _) => ((GameMapView)b).RefreshWaypoints());
 
+    /// <summary>Other players' positions (only those the local role may see, see LocationSharingPolicy).</summary>
+    public static readonly BindableProperty PlayersProperty = BindableProperty.Create(
+        nameof(Players), typeof(IEnumerable<MapMarker>), typeof(GameMapView), propertyChanged: (b, _, _) => ((GameMapView)b).RefreshPlayers());
+
     public static readonly BindableProperty OwnLocationProperty = BindableProperty.Create(
         nameof(OwnLocation), typeof(GeoPoint?), typeof(GameMapView), propertyChanged: (b, _, _) => ((GameMapView)b).RefreshOwnLocation());
 
@@ -66,6 +70,7 @@ public sealed class GameMapView : ContentView
     private readonly MemoryLayer _draftLayer;
     private readonly MemoryLayer _draftVertexLayer;
     private readonly MemoryLayer _stationsLayer;
+    private readonly MemoryLayer _playersLayer;
     private readonly MemoryLayer _ownLocationLayer;
 
     public GameMapView()
@@ -82,6 +87,7 @@ public sealed class GameMapView : ContentView
         Map.Layers.Add(_draftLayer = _layers.CreatePolygonLayer("draft", MapPalette.HidingZone, MapPalette.OwnPosition));
         Map.Layers.Add(_draftVertexLayer = _layers.CreatePointLayer("draft-vertices"));
         Map.Layers.Add(_stationsLayer = _layers.CreatePointLayer("stations"));
+        Map.Layers.Add(_playersLayer = _layers.CreatePointLayer("players"));
         Map.Layers.Add(_ownLocationLayer = _layers.CreatePointLayer("own-location"));
         Map.Tapped += OnMapTapped;
         Map.Navigator.CenterOnAndZoomTo(MapCoordinates.ToWorld(DefaultCenter), 20);
@@ -137,6 +143,12 @@ public sealed class GameMapView : ContentView
         set => SetValue(WaypointsProperty, value);
     }
 
+    public IEnumerable<MapMarker>? Players
+    {
+        get => (IEnumerable<MapMarker>?)GetValue(PlayersProperty);
+        set => SetValue(PlayersProperty, value);
+    }
+
     public GeoPoint? OwnLocation
     {
         get => (GeoPoint?)GetValue(OwnLocationProperty);
@@ -155,8 +167,8 @@ public sealed class GameMapView : ContentView
         set => SetValue(StationTapCommandProperty, value);
     }
 
-    /// <summary>Adds a game-specific layer below the stations and the own position.</summary>
-    public void AddLayer(ILayer layer) => Map.Layers.Insert(Map.Layers.Count - 2, layer);
+    /// <summary>Adds a game-specific layer below the stations, the players and the own position.</summary>
+    public void AddLayer(ILayer layer) => Map.Layers.Insert(Map.Layers.ToList().IndexOf(_stationsLayer), layer);
 
     /// <summary>Fits the game area on screen (Mapsui postpones this until the viewport has a size).</summary>
     public void ZoomToArea()
@@ -204,6 +216,8 @@ public sealed class GameMapView : ContentView
         };
         _layers.SetPolygon(_draftLayer, geometry);
     }
+
+    private void RefreshPlayers() => _layers.SetMarkers(_playersLayer, Players?.ToList() ?? []);
 
     private void RefreshOwnLocation() =>
         _layers.SetPoints(_ownLocationLayer, OwnLocation is { } p ? [p] : [], MapPalette.OwnPosition, 0.55);

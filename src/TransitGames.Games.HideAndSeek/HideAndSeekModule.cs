@@ -24,8 +24,8 @@ public sealed class HideAndSeekModule : GameModule<HideAndSeekSettings, HideAndS
     public override LocationSharingPolicy LocationSharing { get; } =
         new([new LocationSharingRule(HideAndSeekRoles.Hider, HideAndSeekRoles.Seeker)]);
 
-    protected override HideAndSeekSession CreateSession(HideAndSeekSettings settings, string localRoleId) =>
-        new(settings, localRoleId);
+    protected override HideAndSeekSession CreateSession(HideAndSeekSettings settings, string localRoleId, Guid sessionId) =>
+        new(sessionId, settings, localRoleId);
 
     protected override HideAndSeekSession RestoreSession(GameSessionSnapshot snapshot, HideAndSeekSettings settings) =>
         new(snapshot, settings);

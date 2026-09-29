@@ -103,6 +103,41 @@
 - **Własna pozycja w grze** pochodzi z `ILocationTracker` tego urządzenia i jest pokazywana tylko lokalnie.
   Udostępnianie pozycji innym rolom nadal przechodzi wyłącznie przez `LocationSharingPolicy`.
 
+## Tryb online (etap 4)
+
+- **Kolejność zmieniona na prośbę właściciela projektu:** tryb online (w specyfikacji etap 7, opcjonalny) powstał
+  przed grami, bo obie gry opierają się na wymianie pytań/pingów i udostępnianiu pozycji. Gry (etapy 5–6) od razu
+  korzystają z `IGameSyncService`; tryb offline (`LocalGameSyncService`) nadal działa bez serwera.
+- **Hosting (ustalenie z właścicielem):** kontener Docker na prywatnym serwerze, dostęp tylko przez VPN. Dlatego
+  zwykłe HTTP (Android `usesCleartextTraffic`, iOS `NSAllowsArbitraryLoads`) i adres serwera wpisywany w
+  Ustawieniach. Przed publikacją w sklepach trzeba przejść na HTTPS i zawęzić wyjątek ATS.
+- **Serwer nie zna gier.** Host przysyła role, ustawienia (JSON) i reguły `LocationSharingPolicy`; serwer
+  egzekwuje je dla wiadomości `location` (drużyna nadawcy + dozwoleni widzowie), resztę kieruje wg `Audience`.
+  Dzięki temu nowa gra nie wymaga zmian na serwerze. Tożsamość (rola, urządzenie, nazwa) pochodzi z tokenu.
+- **Uwierzytelnienie:** losowy token urządzenia (32 B) wydawany przy założeniu/dołączeniu, na serwerze tylko
+  SHA-256. Bez kont i haseł — wystarczy kod gry + VPN.
+- **Kolejność i niezawodność:** serwer nadaje globalny numer sekwencyjny. Klient po każdym (ponownym) połączeniu
+  pobiera przegapione wiadomości (`Sync`), buforując w tym czasie wiadomości na żywo, więc każda dociera raz i w
+  kolejności. Wiadomości wysyłane bez zasięgu (metro) czekają w trwałej kolejce SQLite (`sync_outbox`) i są
+  wysyłane po odzyskaniu połączenia; publikacja jest idempotentna (po `SyncMessage.Id`). Ponowne łączenie
+  trwa bez końca (0/2/5/10/30 s).
+- **Echo lokalne:** opublikowana wiadomość od razu wraca przez `MessageReceived` (tak jak offline), a serwer nie
+  odsyła jej nadawcy — gry obsługują własne i cudze wiadomości w jednym miejscu.
+- **Udostępnianie pozycji:** robi to aplikacja (`OnlineSessionCoordinator`), nie gra: tylko gdy polityka gry
+  pozwala komuś widzieć rolę tego telefonu, co `IGameModule.GetLocationShareInterval` (Hide and Seek ≈ na żywo,
+  co 20 s; Tag co `RevealInterval`). Wymaga ciągłej pozycji, więc wtedy nagrywanie trasy startuje nawet przy
+  wyłączonym „Nagrywaj trasę podczas gry”. Nagłówek gry pokazuje, kto widzi pozycję, jak często i kiedy ostatnio
+  ją wysłano (albo „🔒 nie jest udostępniana”). Pozycje innych: na mapie z wiekiem pozycji; po restarcie
+  aplikacji ostatnie znane pozycje przychodzą z serwera (`LatestLocations`).
+- **Wspólne id sesji:** gra online ma na wszystkich telefonach to samo `SessionId` (`IGameModule.CreateSession`
+  przyjmuje id). Host najpierw zakłada grę na serwerze, dopiero potem lokalnie — błąd serwera nic nie zostawia.
+- **Koniec gry:** „Zakończ grę” na jednym telefonie kończy ją wszędzie (`session.finished`); drugi telefon
+  pokazuje komunikat i zamyka trasę (`GameSessionManager.FinishAsync(id)` działa też dla gry, z której wyszliśmy).
+  Uproszczenie: jeśli telefon kończący grę jest akurat bez zasięgu, wiadomość zostaje w kolejce, a połączenie
+  zakończonej gry nie jest już wznawiane — drugi telefon trzeba wtedy zakończyć ręcznie.
+- **Obecność** (kto jest połączony) jest trzymana w pamięci serwera; po restarcie kontenera wszyscy łączą się
+  ponownie automatycznie.
+
 ## Build
 
 - **TFM-y MAUI** ustawiane centralnie (`MauiTargetFrameworks` w `Directory.Build.props`): Android zawsze,

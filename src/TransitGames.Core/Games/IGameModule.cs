@@ -28,7 +28,18 @@ public interface IGameModule
 
     GameSettings CreateDefaultSettings();
 
-    IGameSession CreateSession(GameSettings settings, string localRoleId);
+    /// <summary>
+    /// How often a role whose location is shared (see <see cref="LocationSharing"/>) sends it in an online game,
+    /// e.g. live for Hide and Seek, every N minutes for Tag.
+    /// </summary>
+    TimeSpan GetLocationShareInterval(GameSettings settings);
+
+    string SerializeSettings(GameSettings settings);
+
+    GameSettings DeserializeSettings(string json);
+
+    /// <param name="sessionId">Id of the new session; online games pass the id shared by all devices.</param>
+    IGameSession CreateSession(GameSettings settings, string localRoleId, Guid? sessionId = null);
 
     IGameSession RestoreSession(GameSessionSnapshot snapshot);
 

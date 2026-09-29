@@ -30,6 +30,12 @@
 	<string>Transit Games pokazuje Twoją pozycję na mapie gry i używa jej do pytań i celów. / Transit Games shows your position on the game map and uses it for questions and targets.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Transit Games nagrywa trasę GPS podczas gry, także przy zablokowanym ekranie. / Transit Games records your GPS track during a game, also with the screen locked.</string>
+	<!-- The game server is reached over a VPN at a plain http address (see docs/SERVER.md). -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>

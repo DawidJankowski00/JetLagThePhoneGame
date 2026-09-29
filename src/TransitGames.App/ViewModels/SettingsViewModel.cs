@@ -1,4 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using TransitGames.Sync;
 using TransitGames.UI.Resources;
 using TransitGames.UI.Services;
 using TransitGames.UI.Settings;
@@ -15,13 +17,22 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly AppPreferences _preferences;
     private readonly IDialogService _dialogs;
     private readonly TrackingPreferences _tracking;
+    private readonly OnlinePreferences _online;
+    private readonly OnlineServerClient _server;
     private bool _initialized;
 
-    public SettingsViewModel(AppPreferences preferences, IDialogService dialogs, TrackingPreferences tracking)
+    public SettingsViewModel(
+        AppPreferences preferences,
+        IDialogService dialogs,
+        TrackingPreferences tracking,
+        OnlinePreferences online,
+        OnlineServerClient server)
     {
         _preferences = preferences;
         _dialogs = dialogs;
         _tracking = tracking;
+        _online = online;
+        _server = server;
 
         Languages =
         [
@@ -47,6 +58,8 @@ public sealed partial class SettingsViewModel : ObservableObject
         SelectedInterval = Closest(Intervals, tracking.IntervalSeconds);
         SelectedMinDistance = Closest(MinDistances, tracking.MinDistanceMeters);
         SelectedMaxAccuracy = Closest(MaxAccuracies, tracking.MaxAccuracyMeters);
+        ServerUrl = online.ServerUrl;
+        PlayerName = online.PlayerName;
         _initialized = true;
     }
 
@@ -65,6 +78,22 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool AutoRecord { get; set; }
+
+    [ObservableProperty]
+    public partial string ServerUrl { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    public partial string PlayerName { get; set; } = string.Empty;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasConnectionResult))]
+    public partial string? ConnectionResult { get; set; }
+
+    public bool HasConnectionResult => !string.IsNullOrEmpty(ConnectionResult);
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(TestConnectionCommand))]
+    public partial bool IsTesting { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(CustomTracking))]
@@ -116,6 +145,53 @@ public sealed partial class SettingsViewModel : ObservableObject
     partial void OnSelectedMinDistanceChanged(Option<int> value) => Save(() => _tracking.MinDistanceMeters = value.Value);
 
     partial void OnSelectedMaxAccuracyChanged(Option<int> value) => Save(() => _tracking.MaxAccuracyMeters = value.Value);
+
+    /// <summary>Saved as soon as it is a valid address (half-typed text is not stored); empty clears it.</summary>
+    partial void OnServerUrlChanged(string value)
+    {
+        ConnectionResult = null;
+        if (string.IsNullOrWhiteSpace(value) || OnlineServerUrl.Normalize(value) is not null)
+        {
+            Save(() => _online.ServerUrl = value);
+        }
+    }
+
+    partial void OnPlayerNameChanged(string value)
+    {
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            Save(() => _online.PlayerName = value);
+        }
+    }
+
+    private bool CanTestConnection() => !IsTesting;
+
+    [RelayCommand(CanExecute = nameof(CanTestConnection))]
+    private async Task TestConnectionAsync()
+    {
+        var url = OnlineServerUrl.Normalize(ServerUrl);
+        if (url is null)
+        {
+            ConnectionResult = UiStrings.SettingsServerInvalid;
+            return;
+        }
+
+        try
+        {
+            IsTesting = true;
+            ConnectionResult = UiStrings.OnlineConnecting;
+            var info = await _server.GetInfoAsync(url);
+            ConnectionResult = string.Format(UiStrings.SettingsConnectionOkFormat, url, info.Version);
+        }
+        catch (OnlineException ex)
+        {
+            ConnectionResult = OnlineErrors.Describe(ex);
+        }
+        finally
+        {
+            IsTesting = false;
+        }
+    }
 
     private void Save(Action save)
     {

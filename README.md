@@ -13,13 +13,16 @@ src/
   TransitGames.Core/                 # kontrakty gier, rejestr, sesja, zdarzenia, timery, SQLite, sync
   TransitGames.Geo/                  # NTS, projekcja metryczna, GeoJSON, Overpass, stacje, granice OSM
   TransitGames.Tracking/             # zapis tras GPS (filtr, SQLite), eksport GPX/GeoJSON, odtwarzanie
+  TransitGames.Sync/                 # klient trybu online: REST + SignalR, kolejka wiadomości offline
+  TransitGames.Server/               # serwer gry online (ASP.NET Core + SignalR + SQLite, Docker)
   TransitGames.Games.HideAndSeek/    # logika gry (net10.0, bez MAUI)
   TransitGames.Games.Tag/            # logika gry (net10.0, bez MAUI)
   TransitGames.UI/                   # wspólne UI (MAUI): IGameUiModule, motyw, kontrolki, usługi platformowe
   TransitGames.Games.HideAndSeek.Maui/  # strony i ViewModele gry
   TransitGames.Games.Tag.Maui/          # strony i ViewModele gry
   TransitGames.App/                  # aplikacja: Shell, ekrany wspólne, DI
-tests/                               # xUnit dla Core, Geo, Tracking i logiki gier
+tests/                               # xUnit dla Core, Geo, Tracking, Sync (serwer w pamięci) i logiki gier
+deploy/docker-compose.yml            # uruchomienie serwera w Dockerze
 docs/                                # decyzje, postęp, jak dodać grę
 tools/resx.py                        # dopisywanie kluczy do par resx pl/en
 ```
@@ -51,8 +54,20 @@ dotnet build src/TransitGames.App/TransitGames.App.csproj -f net10.0-android -t:
 |-----------|-------------|-------|
 | Android | `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION` | pozycja w grze, pytania |
 | Android | `ACCESS_BACKGROUND_LOCATION`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_LOCATION`, `POST_NOTIFICATIONS` | nagrywanie trasy przy wygaszonym ekranie (etap 3) |
-| Android | `INTERNET`, `ACCESS_NETWORK_STATE` | kafelki OSM, Overpass |
+| Android | `INTERNET`, `ACCESS_NETWORK_STATE` | kafelki OSM, Overpass, serwer gry |
+| Android | `usesCleartextTraffic` | serwer gry przez VPN pod adresem http |
 | iOS | `NSLocationWhenInUseUsageDescription`, `NSLocationAlwaysAndWhenInUseUsageDescription`, `UIBackgroundModes: location` | jw. |
+| iOS | `NSAppTransportSecurity/NSAllowsArbitraryLoads` | serwer gry przez VPN pod adresem http |
+
+## Gra online
+
+Serwer działa w kontenerze Docker na prywatnym serwerze, telefony łączą się z nim przez VPN:
+
+```bash
+cd deploy && docker compose up -d --build
+```
+
+W aplikacji: Ustawienia → Gra online → adres serwera. Szczegóły: [docs/SERVER.md](docs/SERVER.md).
 
 ## Jak dodać nową grę
 
@@ -72,3 +87,4 @@ przy buildzie (`Directory.Build.targets`), bez plików Designer. Język można w
 - [docs/PROGRESS.md](docs/PROGRESS.md) — stan prac po każdym etapie
 - [docs/DECISIONS.md](docs/DECISIONS.md) — decyzje i uproszczenia
 - [docs/ADDING_A_GAME.md](docs/ADDING_A_GAME.md) — dodawanie gier
+- [docs/SERVER.md](docs/SERVER.md) — serwer gry online (Docker, VPN, protokół)
