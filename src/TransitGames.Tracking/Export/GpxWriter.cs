@@ -10,11 +10,15 @@ public sealed record TrackWithPoints(TrackInfo Track, IReadOnlyList<TrackPoint> 
 
 /// <summary>
 /// Writes GPX 1.1 (valid against the official XSD): game events with a location become waypoints, each track
-/// becomes a trk (one per player/device) and each recording segment a trkseg.
+/// becomes a trk (one per player/device) and each recording segment a trkseg — split further where the device's
+/// role changed (see <see cref="TrackRoles"/>), the role written as a <c>tg:role</c> extension of the trkseg.
 /// </summary>
 public static class GpxWriter
 {
     public const string Namespace = "http://www.topografix.com/GPX/1/1";
+
+    /// <summary>Namespace of our GPX extensions (<c>&lt;tg:role&gt;</c> on track segments).</summary>
+    public const string ExtensionsNamespace = "urn:transitgames:gpx:1";
     private const string XsiNamespace = "http://www.w3.org/2001/XMLSchema-instance";
     private const string Creator = "Transit Games";
 
@@ -33,6 +37,7 @@ public static class GpxWriter
         xml.WriteAttributeString("version", "1.1");
         xml.WriteAttributeString("creator", Creator);
         xml.WriteAttributeString("xmlns", "xsi", null, XsiNamespace);
+        xml.WriteAttributeString("xmlns", "tg", null, ExtensionsNamespace);
         xml.WriteAttributeString("xsi", "schemaLocation", XsiNamespace, $"{Namespace} {Namespace}/gpx.xsd");
 
         WriteMetadata(xml, name, tracks, events, createdAt);
@@ -44,7 +49,7 @@ public static class GpxWriter
 
         foreach (var track in tracks)
         {
-            WriteTrack(xml, track);
+            WriteTrack(xml, track, TrackRoles.Split(track, events));
         }
 
         xml.WriteEndElement();
@@ -91,7 +96,7 @@ public static class GpxWriter
         xml.WriteEndElement();
     }
 
-    private static void WriteTrack(XmlWriter xml, TrackWithPoints track)
+    private static void WriteTrack(XmlWriter xml, TrackWithPoints track, IReadOnlyList<RolePiece> pieces)
     {
         xml.WriteStartElement("trk", Namespace);
         xml.WriteElementString("name", Namespace, track.Track.Name);
@@ -105,10 +110,10 @@ public static class GpxWriter
             xml.WriteElementString("type", Namespace, gameId);
         }
 
-        foreach (var segment in track.Points.GroupBy(p => p.Segment).OrderBy(g => g.Key))
+        foreach (var piece in pieces)
         {
             xml.WriteStartElement("trkseg", Namespace);
-            foreach (var point in segment)
+            foreach (var point in piece.Points)
             {
                 xml.WriteStartElement("trkpt", Namespace);
                 xml.WriteAttributeString("lat", Coordinate(point.Point.Latitude));
@@ -119,6 +124,13 @@ public static class GpxWriter
                 }
 
                 xml.WriteElementString("time", Namespace, Time(point.Timestamp));
+                xml.WriteEndElement();
+            }
+
+            if (piece.Role is { } role)
+            {
+                xml.WriteStartElement("extensions", Namespace);
+                xml.WriteElementString("role", ExtensionsNamespace, role);
                 xml.WriteEndElement();
             }
 

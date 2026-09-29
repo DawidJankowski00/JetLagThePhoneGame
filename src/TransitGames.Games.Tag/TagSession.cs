@@ -596,8 +596,7 @@ public sealed class TagSession : GameSessionBase<TagSettings, TagState>
             at,
             TagEventTypes.TimeUp,
             TagStrings.EventTimeUp,
-            TagTexts.PointSource(payload.Source),
-            payload.Point));
+            TagTexts.PointSource(payload.Source))); // the place is on the game end entry
         RaiseGameEnded();
     }
 

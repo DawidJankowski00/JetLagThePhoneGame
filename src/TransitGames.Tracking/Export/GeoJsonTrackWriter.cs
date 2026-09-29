@@ -6,7 +6,8 @@ namespace TransitGames.Tracking.Export;
 
 /// <summary>
 /// Writes an RFC 7946 FeatureCollection: one LineString (MultiLineString when there are several segments) per track
-/// and one Point per located game event. Point times follow the common <c>coordinateProperties.times</c>
+/// and role period — a track whose device changed roles (see <see cref="TrackRoles"/>) becomes one feature per
+/// period with its <c>role</c> — and one Point per located game event. Point times follow the common <c>coordinateProperties.times</c>
 /// convention (togeojson, gpx.studio).
 /// </summary>
 public static class GeoJsonTrackWriter
@@ -23,7 +24,13 @@ public static class GeoJsonTrackWriter
 
         foreach (var track in tracks)
         {
-            WriteTrack(json, track);
+            var periods = Periods(TrackRoles.Split(track, events));
+            foreach (var (role, pieces) in periods)
+            {
+                // With one period the track's own distance is exact; otherwise each period measures its fixes.
+                var distance = periods.Count == 1 ? track.Track.DistanceMeters : pieces.Sum(Length);
+                WriteTrack(json, track.Track, [.. pieces.Select(p => p.Points)], role, distance);
+            }
         }
 
         foreach (var gameEvent in events.Where(e => e.Location is not null).OrderBy(e => e.Timestamp))
@@ -35,15 +42,30 @@ public static class GeoJsonTrackWriter
         json.WriteEndObject();
     }
 
-    private static void WriteTrack(Utf8JsonWriter json, TrackWithPoints track)
+    /// <summary>Consecutive pieces with the same role.</summary>
+    private static List<(string? Role, List<RolePiece> Pieces)> Periods(IReadOnlyList<RolePiece> pieces)
+    {
+        var periods = new List<(string? Role, List<RolePiece> Pieces)>();
+        foreach (var piece in pieces)
+        {
+            if (periods.Count == 0 || periods[^1].Role != piece.Role)
+            {
+                periods.Add((piece.Role, []));
+            }
+
+            periods[^1].Pieces.Add(piece);
+        }
+
+        return periods;
+    }
+
+    private static double Length(RolePiece piece) =>
+        piece.Points.Zip(piece.Points.Skip(1), (a, b) => a.Point.DistanceTo(b.Point)).Sum();
+
+    private static void WriteTrack(Utf8JsonWriter json, TrackInfo info, IReadOnlyList<IReadOnlyList<TrackPoint>> pieces, string? role, double distanceMeters)
     {
         // A LineString needs at least two positions; single-fix segments carry no line.
-        var segments = track.Points
-            .GroupBy(p => p.Segment)
-            .OrderBy(g => g.Key)
-            .Select(g => g.ToList())
-            .Where(s => s.Count >= 2)
-            .ToList();
+        var segments = pieces.Where(s => s.Count >= 2).ToList();
         if (segments.Count == 0)
         {
             return;
@@ -73,16 +95,15 @@ public static class GeoJsonTrackWriter
 
         json.WriteEndObject();
 
-        var info = track.Track;
         json.WriteStartObject("properties");
         json.WriteString("kind", KindTrack);
         json.WriteString("name", info.Name);
         WriteOptional(json, "device", info.DeviceName);
         WriteOptional(json, "game", info.GameId);
-        WriteOptional(json, "role", info.RoleId);
+        WriteOptional(json, "role", role);
         json.WriteString("startTime", GpxWriter.Time(segments[0][0].Timestamp));
         json.WriteString("endTime", GpxWriter.Time(segments[^1][^1].Timestamp));
-        json.WriteNumber("distanceMeters", Math.Round(info.DistanceMeters, 1));
+        json.WriteNumber("distanceMeters", Math.Round(distanceMeters, 1));
         json.WriteNumber("segments", segments.Count);
 
         json.WriteStartObject("coordinateProperties");

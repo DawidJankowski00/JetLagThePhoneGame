@@ -80,6 +80,54 @@ public class ExportTests
     }
 
     [Fact]
+    public void Tracks_are_split_where_the_device_changed_roles()
+    {
+        // Tag: this device chases, becomes the runner at 12:03:20 (turn 2), and the game ends at 12:06:45.
+        GameEvent[] events =
+        [
+            GameEvent.Create(SessionId, T0.AddSeconds(200), "tag.turn.started", "Tura 2", location: North(60),
+                data: new Dictionary<string, string> { [GameEventData.LocalRole] = "runner" }),
+            GameEvent.Create(SessionId, T0.AddSeconds(405), "tag.game.ended", "Koniec", location: North(5040),
+                data: new Dictionary<string, string> { [GameEventData.LocalRole] = string.Empty }),
+        ];
+        var track = TwoSegments with
+        {
+            Points = [.. TwoSegments.Points.Take(2), Point(0, 150, 300), Point(1, 5000, 400), Point(1, 5050, 410)],
+        };
+
+        var gpx = XDocument.Parse(WriteGpx(track, events));
+        var segments = gpx.Root!.Element(Gpx + "trk")!.Elements(Gpx + "trkseg").ToList();
+        XNamespace tg = GpxWriter.ExtensionsNamespace;
+        Assert.Equal(
+            ["chaser", "runner", "runner", null],
+            segments.Select(s => s.Element(Gpx + "extensions")?.Element(tg + "role")?.Value));
+        Assert.Equal([2, 1, 1, 1], segments.Select(s => s.Elements(Gpx + "trkpt").Count()));
+
+        var features = GeoJson.ReadFeatures(WriteGeoJson(track, events)).Where(f => (string)f.Attributes["kind"] == "track").ToList();
+        Assert.Equal(["chaser"], features.Select(f => (string)f.Attributes["role"])); // single-fix pieces carry no line
+    }
+
+    [Fact]
+    public void Gpx_with_role_extensions_is_valid()
+    {
+        GameEvent[] events =
+        [
+            GameEvent.Create(SessionId, T0.AddSeconds(200), "tag.turn.started", "Tura 2",
+                data: new Dictionary<string, string> { [GameEventData.LocalRole] = "runner" }),
+        ];
+        var schemas = new XmlSchemaSet();
+        using (var xsd = typeof(ExportTests).Assembly.GetManifestResourceStream("gpx.xsd")!)
+        {
+            schemas.Add(GpxWriter.Namespace, XmlReader.Create(xsd));
+        }
+
+        var errors = new List<string>();
+        XDocument.Parse(WriteGpx(TwoSegments, events)).Validate(schemas, (_, e) => errors.Add(e.Message));
+
+        Assert.Empty(errors);
+    }
+
+    [Fact]
     public void Gpx_UsesInvariantNumbersRegardlessOfCulture()
     {
         var previous = Thread.CurrentThread.CurrentCulture;

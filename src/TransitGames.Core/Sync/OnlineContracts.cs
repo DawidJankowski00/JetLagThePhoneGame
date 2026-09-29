@@ -6,7 +6,7 @@ namespace TransitGames.Core.Sync;
 /// <summary>Wire contract between the app and TransitGames.Server. Bump <see cref="Version"/> on breaking changes.</summary>
 public static class OnlineProtocol
 {
-    public const int Version = 2;
+    public const int Version = 3;
 
     public const string HubPath = "/hubs/game";
 

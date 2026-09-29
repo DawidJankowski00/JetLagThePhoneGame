@@ -49,7 +49,7 @@ public sealed class OnlineGameService
             _preferences.PlayerName);
         var ticket = await _server.CreateLobbyAsync(serverUrl, request);
         await _store.SaveLinkAsync(OnlineLink.From(serverUrl, ticket, _preferences.PlayerName));
-        var session = await _sessions.StartNewAsync(module.Id, settings, roleId, sessionId);
+        var session = await _sessions.StartNewAsync(module.Id, settings, roleId, sessionId, deviceId: ticket.DeviceId, isHost: true);
         return (session, ticket);
     }
 
@@ -65,7 +65,8 @@ public sealed class OnlineGameService
         var result = await _server.JoinLobbyAsync(serverUrl, lobby.Code, new JoinLobbyRequest(roleId, _preferences.PlayerName));
         var settings = module.DeserializeSettings(result.SettingsJson);
         await _store.SaveLinkAsync(OnlineLink.From(serverUrl, result.Ticket, _preferences.PlayerName));
-        return await _sessions.StartNewAsync(module.Id, settings, roleId, result.Ticket.SessionId, result.Ticket.RolesVersion);
+        return await _sessions.StartNewAsync(
+            module.Id, settings, roleId, result.Ticket.SessionId, result.Ticket.RolesVersion, result.Ticket.DeviceId, isHost: false);
     }
 
     private string RequireServer() =>

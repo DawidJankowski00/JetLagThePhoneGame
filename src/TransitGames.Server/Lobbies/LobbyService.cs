@@ -196,7 +196,7 @@ public sealed class LobbyService
 
             // A role change is applied once, for the version it was made for, and only when everybody sees it.
             var change = stamped.RoleChange;
-            if (change is not null && (change.FromVersion != lobby.RolesVersion || !change.IsPermutationOf(allRoles) || !toAll))
+            if (change is not null && (change.FromVersion != lobby.RolesVersion || !change.IsValidFor(allRoles) || !toAll))
             {
                 change = null;
                 stamped = stamped with { RoleChange = null };
@@ -321,7 +321,7 @@ public sealed class LobbyService
         var moves = new List<RoleMove>();
         foreach (var device in await db.Table<DeviceRow>().Where(d => d.SessionId == lobby.SessionId).ToListAsync())
         {
-            var newRole = change.Apply(device.RoleId);
+            var newRole = change.Apply(device.RoleId, device.Id);
             moves.Add(new RoleMove(device.Id, device.RoleId, newRole));
             device.RoleId = newRole;
             await db.UpdateAsync(device);

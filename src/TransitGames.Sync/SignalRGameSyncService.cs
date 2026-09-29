@@ -354,7 +354,7 @@ public sealed class SignalRGameSyncService : IGameSyncService, IAsyncDisposable
             return;
         }
 
-        var updated = link with { RoleId = change.Apply(link.RoleId), RolesVersion = link.RolesVersion + 1 };
+        var updated = link with { RoleId = change.Apply(link.RoleId, link.DeviceId), RolesVersion = link.RolesVersion + 1 };
         _link = updated;
         await _store.SetRoleAsync(updated.SessionId, updated.RoleId, updated.RolesVersion).ConfigureAwait(false);
         _logger.LogInformation("Role changed to {Role} (version {Version})", updated.RoleId, updated.RolesVersion);

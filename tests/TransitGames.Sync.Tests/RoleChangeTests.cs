@@ -166,6 +166,72 @@ public sealed class RoleChangeTests : IAsyncLifetime
     }
 
     [Fact]
+    public async Task Single_devices_get_new_roles_and_privacy_follows_them()
+    {
+        var api = _server.CreateRestClient();
+        var annaTicket = await api.CreateLobbyAsync(ServerFactory.Url, TagRequest() with { RoleId = Chaser });
+        var bartekTicket = (await api.JoinLobbyAsync(ServerFactory.Url, annaTicket.Code, new JoinLobbyRequest(Chaser, "Bartek"))).Ticket;
+        var celinaTicket = (await api.JoinLobbyAsync(ServerFactory.Url, annaTicket.Code, new JoinLobbyRequest(Chaser, "Celina"))).Ticket;
+        var anna = await ConnectAsync(annaTicket, "Anna");
+        var bartek = await ConnectAsync(bartekTicket, "Bartek");
+        var celina = await ConnectAsync(celinaTicket, "Celina");
+
+        // The start makes Celina the runner; everybody else stays a chaser.
+        var start = TestGame.Message("tag.start") with
+        {
+            RoleChange = RoleChange.Assign(0, new Dictionary<Guid, string> { [celinaTicket.DeviceId] = Runner }),
+        };
+        await anna.Sync.PublishAsync(start);
+        await celina.WaitForAsync(m => m.Id == start.Id, "start on Celina");
+        await bartek.WaitForAsync(m => m.Id == start.Id, "start on Bartek");
+        Assert.Equal((Chaser, 1), (anna.Sync.Link!.RoleId, anna.Sync.Link.RolesVersion));
+        Assert.Equal((Chaser, 1), (bartek.Sync.Link!.RoleId, bartek.Sync.Link.RolesVersion));
+        Assert.Equal((Runner, 1), (celina.Sync.Link!.RoleId, celina.Sync.Link.RolesVersion));
+
+        var runnerPing = TestGame.Location(52.1, 21.0);
+        var chaserPosition = TestGame.Location(52.2, 21.1);
+        await celina.Sync.PublishAsync(runnerPing);
+        await anna.Sync.PublishAsync(chaserPosition);
+        await anna.WaitForAsync(m => m.Id == runnerPing.Id, "runner ping on Anna");
+        await bartek.WaitForAsync(m => m.Id == runnerPing.Id, "runner ping on Bartek");
+
+        // The catch: Celina chases, Bartek runs.
+        var caught = TestGame.Message("tag.catch") with
+        {
+            RoleChange = RoleChange.Assign(1, new Dictionary<Guid, string> { [celinaTicket.DeviceId] = Chaser, [bartekTicket.DeviceId] = Runner }),
+        };
+        await celina.Sync.PublishAsync(caught);
+        await bartek.WaitForAsync(m => m.Id == caught.Id, "catch on Bartek");
+        var bartekPing = TestGame.Location(52.3, 21.2);
+        await bartek.Sync.PublishAsync(bartekPing);
+        await celina.WaitForAsync(m => m.Id == bartekPing.Id, "new runner ping on Celina");
+
+        await Eventually.QuietPeriodAsync();
+        Assert.DoesNotContain(celina.Received, m => m.Id == chaserPosition.Id); // the runner never saw a chaser
+        Assert.Equal((Runner, 2), (bartek.Sync.Link!.RoleId, bartek.Sync.Link.RolesVersion));
+        var lobby = await api.GetLobbyAsync(ServerFactory.Url, annaTicket.Code);
+        Assert.Equal(
+            [("Anna", Chaser), ("Bartek", Runner), ("Celina", Chaser)],
+            lobby.Players.OrderBy(p => p.Name).Select(p => (p.Name, p.RoleId)));
+    }
+
+    [Fact]
+    public async Task Device_assignments_to_unknown_roles_are_ignored()
+    {
+        var (annaTicket, _) = await CreateGameAsync();
+        var anna = await ConnectAsync(annaTicket, "Anna");
+
+        await anna.Sync.PublishAsync(TestGame.Message("tag.x") with
+        {
+            RoleChange = RoleChange.Assign(0, new Dictionary<Guid, string> { [annaTicket.DeviceId] = "referee" }),
+        });
+        await Eventually.QuietPeriodAsync();
+
+        var lobby = await _server.CreateRestClient().GetLobbyAsync(ServerFactory.Url, annaTicket.Code);
+        Assert.Equal(Runner, lobby.Players.Single(p => p.Name == "Anna").RoleId);
+    }
+
+    [Fact]
     public async Task Invalid_role_changes_are_ignored()
     {
         var (annaTicket, _) = await CreateGameAsync();
