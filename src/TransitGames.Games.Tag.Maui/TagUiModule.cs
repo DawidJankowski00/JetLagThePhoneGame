@@ -30,6 +30,17 @@ public sealed class TagUiModule : GameUiModule<TagModule>
 
     public override string GetGameRoute(string roleId) => MainRoute;
 
+    public override string EventIcon(string eventType) => eventType switch
+    {
+        TagEventTypes.TargetCaptured => "🎯",
+        TagEventTypes.Caught => "🙌",
+        TagEventTypes.TimeUp => "⏱️",
+        TagEventTypes.ReachedFinal => "🏁",
+        TagEventTypes.RoundStarted => "🔄",
+        TagEventTypes.Ping => "📍",
+        _ => base.EventIcon(eventType),
+    };
+
     public override View? CreateSettingsView(GameSettings settings, IServiceProvider services) =>
         settings is TagSettings typed
             ? new TagSettingsView(new TagSettingsViewModel(

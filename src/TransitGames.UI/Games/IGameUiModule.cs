@@ -26,6 +26,9 @@ public interface IGameUiModule
     /// <param name="services">App services, e.g. for downloading places or opening a page.</param>
     View? CreateSettingsView(GameSettings settings, IServiceProvider services);
 
+    /// <summary>Icon (emoji) of a timeline event type in the game history.</summary>
+    string EventIcon(string eventType);
+
     /// <summary>Registers the logic module plus pages and view models.</summary>
     void RegisterServices(IServiceCollection services);
 }
@@ -41,6 +44,9 @@ public abstract class GameUiModule<TGameModule> : IGameUiModule
     public abstract string GetGameRoute(string roleId);
 
     public virtual View? CreateSettingsView(GameSettings settings, IServiceProvider services) => null;
+
+    /// <summary>Default: icons of the common event types; override for the game's own types.</summary>
+    public virtual string EventIcon(string eventType) => EventIcons.For(eventType);
 
     public void RegisterServices(IServiceCollection services)
     {

@@ -33,6 +33,8 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
         RolesVersion = snapshot.RolesVersion;
         Status = snapshot.Status;
         CreatedAt = snapshot.CreatedAt;
+        // Games finished before the time was stored: their last save is when they ended.
+        FinishedAt = snapshot.FinishedAt ?? (snapshot.Status == SessionStatus.Finished ? snapshot.UpdatedAt : null);
         State = JsonSerializer.Deserialize<TState>(snapshot.StateJson, GameJson.Options) ?? new TState();
     }
 
@@ -44,6 +46,7 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
     public int RolesVersion { get; private set; }
     public SessionStatus Status { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
+    public DateTimeOffset? FinishedAt { get; private set; }
 
     protected TState State { get; private set; }
 
@@ -97,6 +100,7 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
         }
 
         Status = SessionStatus.Finished;
+        FinishedAt = now;
         OnFinished(now);
         Raise(GameEvent.Create(Id, now, GameEventTypes.SessionFinished, CoreStrings.SessionFinished));
         NotifyChanged();
@@ -111,6 +115,7 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
         Status = Status,
         CreatedAt = CreatedAt == default ? now : CreatedAt,
         UpdatedAt = now,
+        FinishedAt = FinishedAt,
         SettingsJson = JsonSerializer.Serialize(Settings, Settings.GetType(), GameJson.Options),
         StateJson = JsonSerializer.Serialize(State, GameJson.Options),
     };

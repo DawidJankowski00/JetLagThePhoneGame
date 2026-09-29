@@ -21,6 +21,9 @@ public interface IGameSession
 
     DateTimeOffset CreatedAt { get; }
 
+    /// <summary>When the game was finished; null while it is not.</summary>
+    DateTimeOffset? FinishedAt { get; }
+
     /// <summary>Raised after any state mutation; the session manager persists the snapshot in response.</summary>
     event EventHandler? StateChanged;
 

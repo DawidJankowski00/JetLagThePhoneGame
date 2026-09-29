@@ -101,10 +101,13 @@ public sealed class HideAndSeekSession : GameSessionBase<HideAndSeekSettings, Hi
         : now < HidingEndsAt ? HideAndSeekPhase.Hiding
         : HideAndSeekPhase.Seeking;
 
-    /// <summary>The hiders' score: time from the end of the hiding period until found (or now), plus bonuses.</summary>
+    /// <summary>
+    /// The hiders' score: time from the end of the hiding period until found (or until the game was finished, or
+    /// now), plus bonuses.
+    /// </summary>
     public TimeSpan HiddenFor(DateTimeOffset now)
     {
-        var end = State.FoundAt ?? now;
+        var end = State.FoundAt ?? FinishedAt ?? now;
         var seeking = end - HidingEndsAt;
         return (seeking < TimeSpan.Zero ? TimeSpan.Zero : seeking) + TimeSpan.FromMinutes(BonusMinutes);
     }

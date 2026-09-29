@@ -36,8 +36,20 @@
   <data name="GameSetupNoOptions" xml:space="preserve"><value>This game has no further settings.</value></data>
   <data name="GameSetupSummaryFormat" xml:space="preserve"><value>{0} · {1} · stations: {2}</value></data>
   <data name="GameSetupTitle" xml:space="preserve"><value>Game settings</value></data>
+  <data name="HistoryDelete" xml:space="preserve"><value>Delete from history</value></data>
+  <data name="HistoryDeleteConfirm" xml:space="preserve"><value>The game and its timeline will be removed. The recorded track stays in the GPS tracks tab.</value></data>
+  <data name="HistoryDeleteTitle" xml:space="preserve"><value>Delete the game?</value></data>
   <data name="HistoryEmpty" xml:space="preserve"><value>No games played yet.</value></data>
+  <data name="HistoryFinish" xml:space="preserve"><value>Finish the game</value></data>
+  <data name="HistoryFinishConfirm" xml:space="preserve"><value>The game will be marked as finished.</value></data>
+  <data name="HistoryFinishTitle" xml:space="preserve"><value>Finish the game?</value></data>
+  <data name="HistoryResume" xml:space="preserve"><value>Back to the game</value></data>
+  <data name="HistorySubtitleFormat" xml:space="preserve"><value>{0} · {1} · {2}</value></data>
+  <data name="HistoryTimeline" xml:space="preserve"><value>Timeline</value></data>
+  <data name="HistoryTimelineEmpty" xml:space="preserve"><value>No events recorded.</value></data>
   <data name="HistoryTitle" xml:space="preserve"><value>Game history</value></data>
+  <data name="HistoryTrack" xml:space="preserve"><value>GPS track</value></data>
+  <data name="HistoryTrackFormat" xml:space="preserve"><value>{0} · {1} points</value></data>
   <data name="InvalidGeoJsonFormat" xml:space="preserve"><value>Invalid GeoJSON file: {0}</value></data>
   <data name="JoinAsFormat" xml:space="preserve"><value>Join as: {0}</value></data>
   <data name="JoinChooseRole" xml:space="preserve"><value>Choose your team's role:</value></data>
@@ -66,6 +78,9 @@
   <data name="NewGameTitle" xml:space="preserve"><value>New game</value></data>
   <data name="Next" xml:space="preserve"><value>Next</value></data>
   <data name="No" xml:space="preserve"><value>No</value></data>
+  <data name="NotificationChannelGame" xml:space="preserve"><value>Game events</value></data>
+  <data name="NotifyGameFinishedFormat" xml:space="preserve"><value>{0}: the game was finished on another phone.</value></data>
+  <data name="NotifyGameFinishedTitle" xml:space="preserve"><value>Game over</value></data>
   <data name="Ok" xml:space="preserve"><value>OK</value></data>
   <data name="OnlineCodeFormat" xml:space="preserve"><value>Code: {0}</value></data>
   <data name="OnlineConnected" xml:space="preserve"><value>● Online</value></data>
@@ -113,6 +128,8 @@ The other team taps “Join an online game” on the start screen and enters thi
   <data name="SettingsLanguage" xml:space="preserve"><value>Language</value></data>
   <data name="SettingsMaxAccuracy" xml:space="preserve"><value>Discard fixes less accurate than</value></data>
   <data name="SettingsMinDistance" xml:space="preserve"><value>Minimum distance between points</value></data>
+  <data name="SettingsNotifications" xml:space="preserve"><value>Game notifications</value></data>
+  <data name="SettingsNotificationsHint" xml:space="preserve"><value>Reminders (end of the hiding time, end of the head start, pings) and news from the other team while the app is in the background.</value></data>
   <data name="SettingsOnline" xml:space="preserve"><value>Online play</value></data>
   <data name="SettingsOnlineHint" xml:space="preserve"><value>The server runs in a Docker container on a private server; phones must be connected to the VPN.</value></data>
   <data name="SettingsPlayerName" xml:space="preserve"><value>Your name in the game</value></data>
@@ -164,10 +181,13 @@ The other team taps “Join an online game” on the start screen and enters thi
   <data name="TrackingNotificationTitle" xml:space="preserve"><value>Recording GPS track</value></data>
   <data name="TrackingPermissionDenied" xml:space="preserve"><value>Without location access the track will not be recorded. Allow location for the app in the system settings.</value></data>
   <data name="TrackingUnavailable" xml:space="preserve"><value>Could not start GPS: {0}</value></data>
+  <data name="TrackNextEvent" xml:space="preserve"><value>Event ▶</value></data>
+  <data name="TrackNoEventYet" xml:space="preserve"><value>Before the first event</value></data>
   <data name="TrackNoPoints" xml:space="preserve"><value>The track has no points yet.</value></data>
   <data name="TrackOpenBadge" xml:space="preserve"><value>open</value></data>
   <data name="TrackPreview" xml:space="preserve"><value>🗺️ Preview</value></data>
   <data name="TrackPreviewTitle" xml:space="preserve"><value>Track preview</value></data>
+  <data name="TrackPreviousEvent" xml:space="preserve"><value>◀ Event</value></data>
   <data name="TracksEmpty" xml:space="preserve"><value>No recorded tracks.</value></data>
   <data name="TrackShareGeoJson" xml:space="preserve"><value>📤 Share GeoJSON</value></data>
   <data name="TrackShareGpx" xml:space="preserve"><value>📤 Share GPX</value></data>
@@ -175,7 +195,7 @@ The other team taps “Join an online game” on the start screen and enters thi
   <data name="TracksRecordingFormat" xml:space="preserve"><value>● Recording: {0}</value></data>
   <data name="TracksStartManual" xml:space="preserve"><value>▶ Record a track</value></data>
   <data name="TracksStop" xml:space="preserve"><value>■ Stop</value></data>
-  <data name="TrackStatsFormat" xml:space="preserve"><value>{0} · {1} · {2} pts</value></data>
+  <data name="TrackStatsFormat" xml:space="preserve"><value>{0} · {1} · avg {2:0.0} km/h</value></data>
   <data name="TracksTitle" xml:space="preserve"><value>GPS tracks</value></data>
   <data name="Yes" xml:space="preserve"><value>Yes</value></data>
 </root>

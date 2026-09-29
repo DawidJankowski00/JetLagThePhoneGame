@@ -67,6 +67,8 @@ public sealed class SqliteGameSessionStore : IGameSessionStore
         [Indexed]
         public long UpdatedAtTicks { get; set; }
 
+        public long? FinishedAtTicks { get; set; }
+
         public string SettingsJson { get; set; } = "";
         public string StateJson { get; set; } = "";
 
@@ -79,6 +81,7 @@ public sealed class SqliteGameSessionStore : IGameSessionStore
             Status = (int)s.Status,
             CreatedAtTicks = s.CreatedAt.UtcTicks,
             UpdatedAtTicks = s.UpdatedAt.UtcTicks,
+            FinishedAtTicks = s.FinishedAt?.UtcTicks,
             SettingsJson = s.SettingsJson,
             StateJson = s.StateJson,
         };
@@ -92,6 +95,7 @@ public sealed class SqliteGameSessionStore : IGameSessionStore
             Status = (SessionStatus)Status,
             CreatedAt = new DateTimeOffset(CreatedAtTicks, TimeSpan.Zero),
             UpdatedAt = new DateTimeOffset(UpdatedAtTicks, TimeSpan.Zero),
+            FinishedAt = FinishedAtTicks is { } finished ? new DateTimeOffset(finished, TimeSpan.Zero) : null,
             SettingsJson = SettingsJson,
             StateJson = StateJson,
         };

@@ -21,7 +21,7 @@
                     StrokeShape="RoundRectangle 8">
                 <VerticalStackLayout Spacing="2">
                     <HorizontalStackLayout Spacing="6">
-                        <BoxView WidthRequest="12" HeightRequest="12" Color="#FFD37F" />
+                        <BoxView WidthRequest="12" HeightRequest="12" Color="{StaticResource MapHidingZoneLegend}" />
                         <Label Text="{x:Static res:HideAndSeekStrings.LegendPossible}" FontSize="11" />
                     </HorizontalStackLayout>
                     <HorizontalStackLayout Spacing="6">

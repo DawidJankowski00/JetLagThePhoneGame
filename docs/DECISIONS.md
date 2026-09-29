@@ -219,7 +219,43 @@
   przypomnienie i wysyłają pozycję systemowym „Udostępnij” (tekst + link OSM), a goniący wpisują ją dotknięciem
   mapy. Offline każdy telefon zna tylko zdobycze własnej drużyny — tabela wyników mówi o tym wprost.
 - Na mapie Tag nie ma przystanków (zasłaniały cele) ani emoji w etykietach (Mapsui ich nie rysuje).
-- Powiadomienia systemowe (ping, koniec przewagi) — w etapie dopracowania.
+- Powiadomienia systemowe (ping, koniec przewagi) — zrobione w etapie 7.
+
+## Dopracowanie (etap 7)
+
+- **Powiadomienia opisują gry, nie aplikacja.** Moduł gry planuje przypomnienia (`PlanNotifications`: koniec
+  ukrywania i 5 min przed nim, koniec przewagi, koniec czasu rundy, pingi offline) i mówi, o czym powiadomić, gdy
+  aplikacja jest w tle (`NotificationFor`: pytanie dla ukrywających, odpowiedź i karta dla szukających, zdobyty cel,
+  koniec i początek rundy; `NotificationForLocation`: ping uciekających u goniących online). Koordynator
+  (`GameNotificationCoordinator`) planuje od nowa po każdej zmianie sesji i przez `NotificationSchedule` wysyła do
+  systemu tylko różnice (np. runda skończyła się wcześniej → stare przypomnienia są anulowane).
+- **Nowości tylko w tle.** Co dzieje się na ekranie, gra pokazuje sama; powiadomienie pojawia się, gdy aplikacja
+  nie jest na pierwszym planie (w tym gra zakończona na innym telefonie). Ping online co 20 s w Hide and Seek nie
+  jest powiadamiany (zbyt częsty).
+- **Android:** przypomnienia to alarmy `AlarmManager` z odbiornikiem, który pokazuje powiadomienie także przy
+  zamkniętej aplikacji. Alarmy dokładne (`USE_EXACT_ALARM` od Androida 13, `SCHEDULE_EXACT_ALARM` na 12) — timery
+  są sednem gier; bez uprawnienia wracamy do alarmów niedokładnych (na Androidzie 16 potrafiły się spóźniać o
+  kilka minut, a przy dłuższym czasie nawet o godzinę). Uwaga na przyszłość: Google Play wymaga uzasadnienia
+  `USE_EXACT_ALARM`; przy publikacji w sklepie trzeba je obronić albo przejść na `SCHEDULE_EXACT_ALARM` z prośbą do
+  użytkownika. System kasuje alarmy przy wymuszonym zatrzymaniu, aktualizacji i restarcie telefonu — zapisany
+  harmonogram jest planowany ponownie przy starcie aplikacji (po restarcie telefonu dopiero po jej otwarciu).
+- **iOS:** `UNUserNotificationCenter` z wyzwalaczem czasowym; delegat pokazuje powiadomienia także przy otwartej
+  aplikacji. Nie zweryfikowane na urządzeniu (build w CI).
+- Przypomnienia planowane są dla gry na ekranie (bieżącej sesji). Gdy gracz wyjdzie z gry („Wyjdź”), już
+  zaplanowane przypomnienia zostają, ale zmiany z drugiego telefonu nie przesuwają ich do czasu powrotu do gry.
+- **Historia:** szczegóły gry = wynik z modułu (`DescribeResult`), oś czasu zdarzeń (ikony z `IGameUiModule.EventIcon`)
+  i trasa. Sesja zapisuje czas zakończenia (`FinishedAt`), więc wynik nie „rośnie” po końcu gry; starsze gry
+  bez tego pola używają czasu ostatniego zapisu. Runda Tag przerwana końcem gry ma opis „przerwana końcem gry”.
+  Usunięcie gry z historii kasuje sesję i jej zdarzenia, ale nie trasę (ta ma własną zakładkę).
+- **Podgląd trasy** gry pokazuje obszar gry i jej zdarzenia: ostatnie zdarzenie w chwili suwaka oraz przeskoki do
+  poprzedniego/następnego. Zdarzenia o tym samym czasie (koniec rundy i start następnej) zachowują kolejność zapisu.
+- **Tłumaczenia:** test `TranslationTests` pilnuje, żeby każdy `*.resx` miał angielską parę z tymi samymi kluczami,
+  bez pustych tekstów i z tymi samymi `{n}`. Język wybrany w Ustawieniach ustawia też format dat i liczb („System” =
+  ustawienia telefonu). Tytuły zdarzeń na osi czasu są zapisywane w języku z chwili gry (to zapis przebiegu), więc
+  po zmianie języka stare gry pokazują je w poprzednim języku.
+- **Tryb ciemny:** przejrzane ekrany; poprawione przełączniki (włączony był szary) i akcent natywnych okien wyboru
+  (`values-night/colors.xml`). Legenda stref ukrycia ma własny kolor `MapHidingZoneLegend` (kafelki mapy są zawsze
+  jasne). Własna ikona i ekran startowy zamiast domyślnych „.NET”.
 
 ## Build
 

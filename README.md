@@ -54,6 +54,7 @@ dotnet build src/TransitGames.App/TransitGames.App.csproj -f net10.0-android -t:
 |-----------|-------------|-------|
 | Android | `ACCESS_FINE_LOCATION`, `ACCESS_COARSE_LOCATION` | pozycja w grze, pytania |
 | Android | `ACCESS_BACKGROUND_LOCATION`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_LOCATION`, `POST_NOTIFICATIONS` | nagrywanie trasy przy wygaszonym ekranie (etap 3) |
+| Android | `POST_NOTIFICATIONS`, `USE_EXACT_ALARM` (13+), `SCHEDULE_EXACT_ALARM` (12) | powiadomienia z gry o czasie (koniec ukrycia, przewagi, pingi) |
 | Android | `INTERNET`, `ACCESS_NETWORK_STATE` | kafelki OSM, Overpass, serwer gry |
 | Android | `usesCleartextTraffic` | serwer gry przez VPN pod adresem http |
 | iOS | `NSLocationWhenInUseUsageDescription`, `NSLocationAlwaysAndWhenInUseUsageDescription`, `UIBackgroundModes: location` | jw. |
@@ -84,6 +85,7 @@ przy buildzie (`Directory.Build.targets`), bez plików Designer. Język można w
 
 ## Dokumentacja
 
+- [docs/USER_GUIDE.md](docs/USER_GUIDE.md) — instrukcja dla graczy
 - [docs/PROGRESS.md](docs/PROGRESS.md) — stan prac po każdym etapie
 - [docs/DECISIONS.md](docs/DECISIONS.md) — decyzje i uproszczenia
 - [docs/ADDING_A_GAME.md](docs/ADDING_A_GAME.md) — dodawanie gier

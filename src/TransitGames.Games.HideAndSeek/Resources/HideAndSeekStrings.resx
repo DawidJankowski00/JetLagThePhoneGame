@@ -89,6 +89,15 @@
   <data name="NoticeChooseCards" xml:space="preserve"><value>🃏 Wybierz karty za odpowiedź</value></data>
   <data name="NoticeCurseFormat" xml:space="preserve"><value>😈 {0}: {1}</value></data>
   <data name="NoticeWaitingFormat" xml:space="preserve"><value>⏳ Czekamy na odpowiedź: {0}</value></data>
+  <data name="NotifyAnswerFormat" xml:space="preserve"><value>Odpowiedź: {0}</value></data>
+  <data name="NotifyCardFormat" xml:space="preserve"><value>Ukrywający zagrali kartę: {0}</value></data>
+  <data name="NotifyFoundTitle" xml:space="preserve"><value>Znaleźli was!</value></data>
+  <data name="NotifyHidingOverHider" xml:space="preserve"><value>Szukający ruszają – powodzenia!</value></data>
+  <data name="NotifyHidingOverSeeker" xml:space="preserve"><value>Możecie szukać i zadawać pytania.</value></data>
+  <data name="NotifyHidingOverTitle" xml:space="preserve"><value>Koniec czasu na ukrycie</value></data>
+  <data name="NotifyHidingSoonBody" xml:space="preserve"><value>Wybierzcie stację i zostańcie w jej strefie.</value></data>
+  <data name="NotifyHidingSoonTitle" xml:space="preserve"><value>Za 5 minut koniec ukrywania</value></data>
+  <data name="NotifyQuestionFormat" xml:space="preserve"><value>Nowe pytanie: {0}</value></data>
   <data name="Overdue" xml:space="preserve"><value>po czasie!</value></data>
   <data name="PendingCardsFormat" xml:space="preserve"><value>Wybierz zdobyte karty ({0})</value></data>
   <data name="PhaseFoundFormat" xml:space="preserve"><value>🏁 Znalezieni po {0}</value></data>
@@ -113,7 +122,16 @@
   <data name="QuestionThermometer" xml:space="preserve"><value>Termometr</value></data>
   <data name="RemoveQuestion" xml:space="preserve"><value>🗑 Usuń pytanie</value></data>
   <data name="RemoveQuestionConfirm" xml:space="preserve"><value>Usunąć pytanie z historii? Obszar zostanie przeliczony bez niego.</value></data>
+  <data name="ResultBonus" xml:space="preserve"><value>Premia czasowa</value></data>
+  <data name="ResultCards" xml:space="preserve"><value>Zagrane karty</value></data>
   <data name="ResultFormat" xml:space="preserve"><value>Czas ukrycia: {0}</value></data>
+  <data name="ResultHiding" xml:space="preserve"><value>Trwa czas na ukrycie</value></data>
+  <data name="ResultHidingTime" xml:space="preserve"><value>Czas na ukrycie</value></data>
+  <data name="ResultNotFoundFormat" xml:space="preserve"><value>Nieznalezieni · czas ukrycia: {0}</value></data>
+  <data name="ResultQuestions" xml:space="preserve"><value>Pytania</value></data>
+  <data name="ResultQuestionsFormat" xml:space="preserve"><value>{0} (z odpowiedzią: {1})</value></data>
+  <data name="ResultSeekingFormat" xml:space="preserve"><value>Szukanie trwa · {0}</value></data>
+  <data name="ResultStation" xml:space="preserve"><value>Stacja ukrywających</value></data>
   <data name="RoleHider" xml:space="preserve"><value>Ukrywający</value></data>
   <data name="RoleHiderDescription" xml:space="preserve"><value>Wybiera stację, ukrywa się i odpowiada na pytania.</value></data>
   <data name="RoleSeeker" xml:space="preserve"><value>Szukający</value></data>

@@ -13,6 +13,9 @@ namespace TransitGames.UI.Services;
 /// <summary>Last known position of another device, as far as the local role may see it.</summary>
 public sealed record RemotePlayer(Guid DeviceId, string Name, string RoleId, GeoPoint Point, DateTimeOffset Timestamp, bool IsTeammate);
 
+/// <summary>A new position of another device arrived (<paramref name="LocalRoleId"/> = who is looking).</summary>
+public sealed record RemoteLocationNews(Guid SessionId, string SenderRoleId, string LocalRoleId);
+
 /// <summary>What the local role reveals about its position: to whom, how often, and when it last did.</summary>
 public sealed record LocationShareInfo(bool IsShared, IReadOnlyList<string> ViewerRoleNames, TimeSpan Interval, DateTimeOffset? LastSharedAt)
 {
@@ -88,6 +91,9 @@ public sealed class OnlineSessionCoordinator
 
     /// <summary>Raised (on any thread) when connection, peers, positions or sharing info change.</summary>
     public event EventHandler? Changed;
+
+    /// <summary>A newer position of another device the local role may see has arrived.</summary>
+    public event EventHandler<RemoteLocationNews>? RemoteLocationReceived;
 
     /// <summary>Online link of the active game; null for offline games.</summary>
     public OnlineLink? Link => _link;
@@ -339,6 +345,7 @@ public sealed class OnlineSessionCoordinator
         }
 
         RaiseChanged();
+        RemoteLocationReceived?.Invoke(this, new RemoteLocationNews(session.Id, message.SenderRoleId, role));
     }
 
     private void OnRemoteFinish(Guid sessionId, string? finishedBy) =>

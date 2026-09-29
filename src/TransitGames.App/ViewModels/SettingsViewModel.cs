@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using TransitGames.Sync;
+using TransitGames.UI.Notifications;
 using TransitGames.UI.Resources;
 using TransitGames.UI.Services;
 using TransitGames.UI.Settings;
@@ -19,6 +20,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     private readonly TrackingPreferences _tracking;
     private readonly OnlinePreferences _online;
     private readonly OnlineServerClient _server;
+    private readonly GameNotificationCoordinator _notifications;
     private bool _initialized;
 
     public SettingsViewModel(
@@ -26,13 +28,15 @@ public sealed partial class SettingsViewModel : ObservableObject
         IDialogService dialogs,
         TrackingPreferences tracking,
         OnlinePreferences online,
-        OnlineServerClient server)
+        OnlineServerClient server,
+        GameNotificationCoordinator notifications)
     {
         _preferences = preferences;
         _dialogs = dialogs;
         _tracking = tracking;
         _online = online;
         _server = server;
+        _notifications = notifications;
 
         Languages =
         [
@@ -54,6 +58,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         MinDistances = Choices(TrackingPreferences.MinDistanceChoicesMeters, UiStrings.MetersFormat);
         MaxAccuracies = Choices(TrackingPreferences.MaxAccuracyChoicesMeters, UiStrings.MetersFormat);
         AutoRecord = tracking.AutoRecord;
+        NotificationsEnabled = preferences.NotificationsEnabled;
         BatterySaver = tracking.BatterySaver;
         SelectedInterval = Closest(Intervals, tracking.IntervalSeconds);
         SelectedMinDistance = Closest(MinDistances, tracking.MinDistanceMeters);
@@ -78,6 +83,9 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [ObservableProperty]
     public partial bool AutoRecord { get; set; }
+
+    [ObservableProperty]
+    public partial bool NotificationsEnabled { get; set; }
 
     [ObservableProperty]
     public partial string ServerUrl { get; set; } = string.Empty;
@@ -137,6 +145,12 @@ public sealed partial class SettingsViewModel : ObservableObject
     }
 
     partial void OnAutoRecordChanged(bool value) => Save(() => _tracking.AutoRecord = value);
+
+    partial void OnNotificationsEnabledChanged(bool value) => Save(() =>
+    {
+        _preferences.NotificationsEnabled = value;
+        _notifications.OnPreferenceChanged();
+    });
 
     partial void OnBatterySaverChanged(bool value) => Save(() => _tracking.BatterySaver = value);
 

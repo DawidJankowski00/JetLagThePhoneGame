@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark theme: a light accent, so native pickers and dialogs (selected radio buttons, dialog buttons) stay visible. -->
+<resources>
+    <color name="colorPrimary">#1B5E20</color>
+    <color name="colorPrimaryDark">#0D3B12</color>
+    <color name="colorAccent">#81C784</color>
+</resources>

@@ -98,7 +98,11 @@ public sealed record RoundResult(
     int Captures,
     int TargetPoints,
     int FinalBonus,
-    int Score);
+    int Score)
+{
+    /// <summary>The game was finished while this round was still running.</summary>
+    public bool WasStopped { get; init; }
+}
 
 public sealed record TeamResult(TagTeam Team, TimeSpan Survived, int Captures, int Points, int Score);
 
@@ -305,8 +309,14 @@ public sealed class TagSession : GameSessionBase<TagSettings, TagState>
         return start + TimeSpan.FromTicks((elapsed / interval.Ticks + 1) * interval.Ticks);
     }
 
+    /// <summary>Scores until <paramref name="now"/>; a finished game counts until it was finished.</summary>
     public TagScoreboard Scoreboard(DateTimeOffset now)
     {
+        if (FinishedAt is { } finished && finished < now)
+        {
+            now = finished;
+        }
+
         var rounds = State.Rounds.Select(r => Result(r, now)).ToList();
         var teams = new[] { TagTeam.First, TagTeam.Second }
             .Select(team =>
@@ -335,11 +345,14 @@ public sealed class TagSession : GameSessionBase<TagSettings, TagState>
             round.Runners,
             survived,
             round.EndReason,
-            round.EndedAt is not null || now >= roundEnd,
+            round.EndedAt is not null || now >= roundEnd || FinishedAt is not null,
             round.Captures.Count,
             targetPoints,
             finalBonus,
-            (int)survived.TotalMinutes + targetPoints + finalBonus);
+            (int)survived.TotalMinutes + targetPoints + finalBonus)
+        {
+            WasStopped = round.EndedAt is null && FinishedAt is { } finished && finished < roundEnd,
+        };
     }
 
     protected override void OnStarted(DateTimeOffset now) =>

@@ -93,6 +93,12 @@ internal sealed class FakeEventLog : IGameEventLog
 
     public Task<IReadOnlyList<GameEvent>> GetEventsAsync(Guid sessionId, CancellationToken cancellationToken = default) =>
         Task.FromResult<IReadOnlyList<GameEvent>>(Events.Where(e => e.SessionId == sessionId).ToList());
+
+    public Task DeleteAsync(Guid sessionId, CancellationToken cancellationToken = default)
+    {
+        Events.RemoveAll(e => e.SessionId == sessionId);
+        return Task.CompletedTask;
+    }
 }
 
 internal sealed class TempDatabase : IDisposable

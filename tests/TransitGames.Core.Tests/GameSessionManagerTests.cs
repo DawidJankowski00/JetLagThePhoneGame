@@ -58,6 +58,24 @@ public sealed class GameSessionManagerTests : IDisposable
     }
 
     [Fact]
+    public async Task FinishTime_IsStored_AndEventsCanBeDeleted()
+    {
+        var (manager, log, store) = Create();
+        var session = await manager.StartNewAsync(TestModule.GameId, new TestSettings(), "a");
+        _clock.Advance(TimeSpan.FromMinutes(42));
+        await manager.FinishAsync();
+        await log.AppendAsync(GameEvent.Create(session.Id, _clock.UtcNow, GameEventTypes.Note, "note"));
+
+        var snapshot = await store.LoadAsync(session.Id);
+        var restored = new TestModule().RestoreSession(snapshot!);
+        await log.DeleteAsync(session.Id);
+
+        Assert.Equal(_clock.UtcNow, snapshot!.FinishedAt);
+        Assert.Equal(_clock.UtcNow, restored.FinishedAt);
+        Assert.Empty(await log.GetEventsAsync(session.Id));
+    }
+
+    [Fact]
     public async Task SessionEvents_AreWrittenToTheLog()
     {
         var (manager, log, _) = Create();

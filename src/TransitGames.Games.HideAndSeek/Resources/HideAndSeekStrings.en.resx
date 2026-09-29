@@ -89,6 +89,15 @@
   <data name="NoticeChooseCards" xml:space="preserve"><value>🃏 Choose the cards you earned</value></data>
   <data name="NoticeCurseFormat" xml:space="preserve"><value>😈 {0}: {1}</value></data>
   <data name="NoticeWaitingFormat" xml:space="preserve"><value>⏳ Waiting for the answer: {0}</value></data>
+  <data name="NotifyAnswerFormat" xml:space="preserve"><value>Answer: {0}</value></data>
+  <data name="NotifyCardFormat" xml:space="preserve"><value>The hiders played a card: {0}</value></data>
+  <data name="NotifyFoundTitle" xml:space="preserve"><value>You have been found!</value></data>
+  <data name="NotifyHidingOverHider" xml:space="preserve"><value>The seekers are on their way – good luck!</value></data>
+  <data name="NotifyHidingOverSeeker" xml:space="preserve"><value>You can start seeking and asking questions.</value></data>
+  <data name="NotifyHidingOverTitle" xml:space="preserve"><value>Hiding time is over</value></data>
+  <data name="NotifyHidingSoonBody" xml:space="preserve"><value>Pick your station and stay in its zone.</value></data>
+  <data name="NotifyHidingSoonTitle" xml:space="preserve"><value>5 minutes of hiding time left</value></data>
+  <data name="NotifyQuestionFormat" xml:space="preserve"><value>New question: {0}</value></data>
   <data name="Overdue" xml:space="preserve"><value>overdue!</value></data>
   <data name="PendingCardsFormat" xml:space="preserve"><value>Choose your earned cards ({0})</value></data>
   <data name="PhaseFoundFormat" xml:space="preserve"><value>🏁 Found after {0}</value></data>
@@ -113,7 +122,16 @@
   <data name="QuestionThermometer" xml:space="preserve"><value>Thermometer</value></data>
   <data name="RemoveQuestion" xml:space="preserve"><value>🗑 Remove the question</value></data>
   <data name="RemoveQuestionConfirm" xml:space="preserve"><value>Remove the question from the history? The area is recomputed without it.</value></data>
+  <data name="ResultBonus" xml:space="preserve"><value>Time bonus</value></data>
+  <data name="ResultCards" xml:space="preserve"><value>Cards played</value></data>
   <data name="ResultFormat" xml:space="preserve"><value>Hidden for: {0}</value></data>
+  <data name="ResultHiding" xml:space="preserve"><value>Hiding time in progress</value></data>
+  <data name="ResultHidingTime" xml:space="preserve"><value>Hiding time</value></data>
+  <data name="ResultNotFoundFormat" xml:space="preserve"><value>Not found · hidden for: {0}</value></data>
+  <data name="ResultQuestions" xml:space="preserve"><value>Questions</value></data>
+  <data name="ResultQuestionsFormat" xml:space="preserve"><value>{0} ({1} answered)</value></data>
+  <data name="ResultSeekingFormat" xml:space="preserve"><value>Seeking in progress · {0}</value></data>
+  <data name="ResultStation" xml:space="preserve"><value>Hiders' station</value></data>
   <data name="RoleHider" xml:space="preserve"><value>Hider</value></data>
   <data name="RoleHiderDescription" xml:space="preserve"><value>Picks a station, hides and answers questions.</value></data>
   <data name="RoleSeeker" xml:space="preserve"><value>Seeker</value></data>

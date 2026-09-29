@@ -51,6 +51,8 @@
     <Color x:Key="MapStation">#0D47A1</Color>
     <Color x:Key="MapStationExcluded">#9E9E9E</Color>
     <Color x:Key="MapHidingZone">#55FFA000</Color>
+    <!-- The hiding zone as it looks over the (always light) map tiles, for the legend. -->
+    <Color x:Key="MapHidingZoneLegend">#FFD37F</Color>
     <Color x:Key="MapOwnPosition">#D32F2F</Color>
     <Color x:Key="MapTarget">#6A1B9A</Color>
     <Color x:Key="MapTargetCaptured">#43A047</Color>

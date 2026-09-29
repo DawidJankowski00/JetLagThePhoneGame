@@ -60,6 +60,7 @@ Czy wyzwanie jest wykonane?</value></data>
   <data name="EndCaught" xml:space="preserve"><value>złapani</value></data>
   <data name="EndReachedFinal" xml:space="preserve"><value>dotarli do mety</value></data>
   <data name="EndRunning" xml:space="preserve"><value>trwa</value></data>
+  <data name="EndStopped" xml:space="preserve"><value>przerwana końcem gry</value></data>
   <data name="EndTimeUp" xml:space="preserve"><value>przetrwali</value></data>
   <data name="EventCaught" xml:space="preserve"><value>Złapani po {0}</value></data>
   <data name="EventPingEntered" xml:space="preserve"><value>Pozycja uciekających (wpisana)</value></data>
@@ -82,6 +83,18 @@ Czy wyzwanie jest wykonane?</value></data>
   <data name="NoticePingDueRunner" xml:space="preserve"><value>Czas na ping: wyślij goniącym swoją pozycję.</value></data>
   <data name="NoticeTimeUp" xml:space="preserve"><value>Czas rundy minął – uciekający przetrwali!</value></data>
   <data name="NoticeWinnerFormat" xml:space="preserve"><value>Koniec gry: wygrywa {0}!</value></data>
+  <data name="NotifyHeadStartChaser" xml:space="preserve"><value>Możecie gonić uciekających.</value></data>
+  <data name="NotifyHeadStartRunner" xml:space="preserve"><value>Goniący ruszają w pościg.</value></data>
+  <data name="NotifyHeadStartTitle" xml:space="preserve"><value>Koniec przewagi</value></data>
+  <data name="NotifyPingChaser" xml:space="preserve"><value>Uciekający powinni teraz wysłać swoją pozycję.</value></data>
+  <data name="NotifyPingReceivedBody" xml:space="preserve"><value>Uciekający ujawnili swoją pozycję – sprawdź mapę.</value></data>
+  <data name="NotifyPingReceivedTitle" xml:space="preserve"><value>Nowy ping</value></data>
+  <data name="NotifyPingRunner" xml:space="preserve"><value>Wyślijcie goniącym swoją pozycję.</value></data>
+  <data name="NotifyPingTitle" xml:space="preserve"><value>Czas na ping</value></data>
+  <data name="NotifyRoundEndTitle" xml:space="preserve"><value>Koniec rundy</value></data>
+  <data name="NotifyRoundStartTitle" xml:space="preserve"><value>Nowa runda – zamiana ról</value></data>
+  <data name="NotifyTimeUpBody" xml:space="preserve"><value>Otwórz grę i zakończ rundę.</value></data>
+  <data name="NotifyTimeUpTitle" xml:space="preserve"><value>Koniec czasu rundy</value></data>
   <data name="PhaseChaseChaserFormat" xml:space="preserve"><value>🔎 Gonicie · {0} (zostało {1})</value></data>
   <data name="PhaseChaseRunnerFormat" xml:space="preserve"><value>🏃 Uciekacie · {0} (zostało {1})</value></data>
   <data name="PhaseGameOver" xml:space="preserve"><value>🏁 Koniec gry</value></data>
@@ -92,6 +105,9 @@ Czy wyzwanie jest wykonane?</value></data>
   <data name="PingShareTextFormat" xml:space="preserve"><value>Berek – pozycja uciekających o {0:HH:mm}: {1}
 {2}</value></data>
   <data name="PingTitle" xml:space="preserve"><value>Ping pozycji</value></data>
+  <data name="ResultDrawFormat" xml:space="preserve"><value>Remis · {0} : {1}</value></data>
+  <data name="ResultStandingFormat" xml:space="preserve"><value>Stan gry · {0} : {1}</value></data>
+  <data name="ResultWinnerFormat" xml:space="preserve"><value>Wygrywa {0} · {1} : {2}</value></data>
   <data name="RewardCoinsFormat" xml:space="preserve"><value>{0} monet</value></data>
   <data name="RewardKindCoins" xml:space="preserve"><value>Monety na przejazdy</value></data>
   <data name="RewardKindPoints" xml:space="preserve"><value>Punkty do wyniku</value></data>

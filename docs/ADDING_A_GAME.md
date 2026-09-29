@@ -63,6 +63,26 @@ Teksty: `Resources/XStrings.resx` (polski) + `Resources/XStrings.en.resx`. Klasa
 Zdarzenia na osi czasu: w sesji wywołaj `Raise(GameEvent.Create(...))` — trafią do `IGameEventLog`
 i (jeśli mają lokalizację) do eksportu GPX/GeoJSON jako waypointy.
 
+Powiadomienia i wynik (opcjonalne nadpisania w `XModule`):
+
+```csharp
+// Przypomnienia na przyszłe chwile gry (planowane od nowa po każdej zmianie sesji; klucz = tożsamość).
+protected override IReadOnlyList<GameNotification> PlanNotifications(XSession s, bool isOnline, DateTimeOffset now) =>
+    [new("round.end", XStrings.RoundEndTitle, XStrings.RoundEndBody, s.RoundEndsAt)];
+
+// Nowości, gdy aplikacja jest w tle (zdarzenie z osi czasu, zwykle wiadomość od drugiej drużyny).
+public override GameNotification? NotificationFor(GameEvent e, string localRoleId) => ...;
+
+// Pozycja innego gracza z serwera (np. ping w Tagu); domyślnie cisza.
+public override GameNotification? NotificationForLocation(string senderRoleId, string localRoleId) => ...;
+
+// Wynik do historii gier: nagłówek + wiersze.
+protected override GameResult DescribeResult(XSession s, DateTimeOffset now) => new(headline, lines);
+```
+
+Aplikacja sama planuje, anuluje i pokazuje powiadomienia (także gdy aplikacja jest zamknięta) i szanuje
+ustawienie „Powiadomienia z gry”. Ikony zdarzeń na osi czasu w historii: `XUiModule.EventIcon(type)`.
+
 Ustawienia gry w kreatorze: nadpisz `CreateSettingsView(GameSettings, IServiceProvider)` w `XUiModule` i zwróć
 widok, który edytuje obiekt ustawień w miejscu (obszar i stacje są już ustawione; przykłady: `HideAndSeekSettingsView`,
 `TagSettingsView`).

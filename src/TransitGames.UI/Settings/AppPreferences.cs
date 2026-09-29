@@ -18,6 +18,7 @@ public sealed class AppPreferences
 
     private const string LanguageKey = "app.language";
     private const string ThemeKey = "app.theme";
+    private const string NotificationsKey = "app.notifications";
 
     private readonly IPreferences _preferences;
 
@@ -38,6 +39,13 @@ public sealed class AppPreferences
         set => _preferences.Set(ThemeKey, value.ToString());
     }
 
+    /// <summary>Game notifications (reminders and news from the other team); on by default.</summary>
+    public bool NotificationsEnabled
+    {
+        get => _preferences.Get(NotificationsKey, true);
+        set => _preferences.Set(NotificationsKey, value);
+    }
+
     /// <summary>Applies the language before any UI is created (x:Static resources are read at page load).</summary>
     public void ApplyLanguage()
     {
@@ -46,9 +54,12 @@ public sealed class AppPreferences
             return;
         }
 
+        // Dates and numbers follow the chosen language too, so a Polish screen does not show "9/29/2026 2:39 PM".
         var culture = CultureInfo.GetCultureInfo(Language);
         CultureInfo.DefaultThreadCurrentUICulture = culture;
         CultureInfo.CurrentUICulture = culture;
+        CultureInfo.DefaultThreadCurrentCulture = culture;
+        CultureInfo.CurrentCulture = culture;
     }
 
     public void ApplyTheme(Application application) =>

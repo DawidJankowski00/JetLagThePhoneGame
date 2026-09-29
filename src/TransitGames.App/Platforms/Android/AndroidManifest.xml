@@ -13,6 +13,11 @@
 	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+	<!-- Game reminders on time (end of the hiding time, head start...): the game's timers are its core function, so
+	     exact alarms are used — USE_EXACT_ALARM is granted automatically from Android 13, SCHEDULE_EXACT_ALARM covers
+	     Android 12. Without either, reminders fall back to inexact alarms (see docs/DECISIONS.md). -->
+	<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" android:maxSdkVersion="32" />
+	<uses-permission android:name="android.permission.USE_EXACT_ALARM" />
 	<uses-feature android:name="android.hardware.location" android:required="false" />
 	<uses-feature android:name="android.hardware.location.gps" android:required="false" />
 </manifest>

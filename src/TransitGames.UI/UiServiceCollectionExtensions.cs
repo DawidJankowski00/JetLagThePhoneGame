@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TransitGames.UI.Games;
 using TransitGames.UI.Maps;
+using TransitGames.UI.Notifications;
 using TransitGames.UI.Services;
 using TransitGames.UI.Settings;
 using TransitGames.UI.ViewModels;
@@ -25,6 +26,9 @@ public static class UiServiceCollectionExtensions
         services.TryAddSingleton<OnlinePreferences>();
         services.TryAddSingleton<OnlineGameService>();
         services.TryAddSingleton<OnlineSessionCoordinator>();
+        services.TryAddSingleton<AppLifecycle>();
+        services.TryAddSingleton<INotificationScheduler, NullNotificationScheduler>();
+        services.TryAddSingleton<GameNotificationCoordinator>();
         services.TryAddSingleton(Geolocation.Default);
         services.TryAddSingleton<IDeviceLocationService, DeviceLocationService>();
         services.TryAddSingleton(FilePicker.Default);

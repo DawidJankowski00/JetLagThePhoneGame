@@ -183,6 +183,40 @@ Tryb online powstał przed grami, żeby Hide and Seek i Tag od razu z niego korz
 - Testy: 188/188 (Core 29, Geo 62, Tracking 25, Sync 25 — w tym 6 testów zamiany ról na serwerze, HideAndSeek 28,
   Tag 19); cała solucja buduje się bez ostrzeżeń.
 
-**Następny krok — Etap 7: Dopracowanie**
-- Powiadomienia (koniec czasu ukrycia, nowe pytanie, ping, koniec przewagi), historia gier z osią czasu i wynikami,
-  podgląd tras, przegląd tłumaczeń i trybu ciemnego, dokumentacja użytkownika.
+## ✅ Etap 7 — Dopracowanie (2026-09-29)
+
+**Działa:**
+- Powiadomienia:
+  - moduły gier opisują przypomnienia (`PlanNotifications`) i nowości (`NotificationFor`, `NotificationForLocation`);
+  - Hide and Seek: 5 min do końca ukrywania (ukrywający), koniec ukrywania, nowe pytanie (ukrywający), odpowiedź,
+    zagrana karta, „znaleźli was”;
+  - Tag: koniec przewagi, koniec czasu rundy, pingi offline, nowy ping online (goniący), zdobyty cel, koniec i
+    początek rundy;
+  - wspólne: gra zakończona na innym telefonie;
+  - `GameNotificationCoordinator` + `NotificationSchedule` (planowanie od nowa po każdej zmianie, tylko różnice,
+    ponowne zaplanowanie po starcie aplikacji); nowości tylko, gdy aplikacja jest w tle (`AppLifecycle`);
+  - Android: kanał „Wydarzenia w grze”, dokładne alarmy `AlarmManager` + odbiornik; iOS: `UNUserNotificationCenter`;
+  - przełącznik w Ustawieniach, prośba o zgodę przy pierwszym wejściu do gry.
+- Historia gier: wynik na liście, ekran szczegółów (wynik z modułu, oś czasu zdarzeń z ikonami, trasa GPS,
+  „Wróć do gry” / „Zakończ” / „Usuń z historii”); sesje zapisują `FinishedAt`, więc wynik nie rośnie po końcu gry.
+- Podgląd trasy: obszar gry, statystyki (dystans, czas, średnia prędkość), zdarzenie w chwili suwaka, przeskoki
+  „◀ Zdarzenie / Zdarzenie ▶”.
+- Tłumaczenia: test spójności pl/en (klucze, puste teksty, `{n}`); brak tekstów na sztywno w XAML/C#; wybrany język
+  ustawia też format dat i liczb.
+- Tryb ciemny: przełączniki, akcent natywnych okien, kolor legendy; własna ikona i ekran startowy.
+- Dokumentacja: [USER_GUIDE.md](USER_GUIDE.md) (instrukcja dla graczy), ADDING_A_GAME (powiadomienia, wynik, ikony
+  zdarzeń), README (uprawnienia), DECISIONS (sekcja etapu 7).
+- Zweryfikowano na emulatorze (Android 16):
+  - historia: wyniki gier z etapów 5–6, szczegóły z osią czasu, podgląd trasy z obszarem i przeskokami;
+  - Tag online (emulator = goniący, bot = uciekający, serwer w Dockerze), aplikacja w tle: „Nowy ping” i „Zdobyty cel”
+    od bota; przypomnienie „Koniec przewagi” o czasie (alarm 15:17:23, powiadomienie 15:17:25); dotknięcie
+    powiadomienia otwiera grę; „Zakończ” anuluje alarm końca rundy;
+  - tryb ciemny i polska wersja językowa na ekranach historii, szczegółów i ustawień;
+  - znalezione i poprawione: alarmy niedokładne na Androidzie 16 (spóźnienie do godziny) → `USE_EXACT_ALARM`;
+    alarmy znikały po reinstalacji → ponowne planowanie przy starcie; runda przerwana końcem gry opisana jako
+    „trwa”; losowa kolejność zdarzeń o tym samym czasie; szary przełącznik w trybie ciemnym; data w formacie US
+    przy polskim interfejsie; powtórzony tytuł powiadomienia o celu.
+- Testy: 208/208 (Core 40, Geo 62, Tracking 26, Sync 25, HideAndSeek 31, Tag 24); cała solucja bez ostrzeżeń.
+
+**Wszystkie etapy specyfikacji są zrobione.** Możliwe dalsze kroki: test na fizycznym telefonie i iPhonie
+(powiadomienia iOS są sprawdzone tylko kompilacją w CI), wdrożenie serwera na prywatny serwer z VPN, kolejne gry.

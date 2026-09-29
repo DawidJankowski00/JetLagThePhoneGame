@@ -22,6 +22,15 @@
                 </VerticalStackLayout>
             </Border>
             <Border Style="{StaticResource Card}">
+                <VerticalStackLayout Spacing="4">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Label Text="{x:Static res:UiStrings.SettingsNotifications}" FontAttributes="Bold" VerticalOptions="Center" />
+                        <Switch Grid.Column="1" IsToggled="{Binding NotificationsEnabled}" />
+                    </Grid>
+                    <Label Text="{x:Static res:UiStrings.SettingsNotificationsHint}" Style="{StaticResource Caption}" />
+                </VerticalStackLayout>
+            </Border>
+            <Border Style="{StaticResource Card}">
                 <VerticalStackLayout Spacing="6">
                     <Label Text="{x:Static res:UiStrings.SettingsOnline}" FontAttributes="Bold" />
                     <Label Text="{x:Static res:UiStrings.SettingsServerUrl}" Style="{StaticResource Caption}" />

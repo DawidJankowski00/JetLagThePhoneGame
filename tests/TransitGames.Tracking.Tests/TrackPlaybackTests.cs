@@ -44,6 +44,14 @@ public class TrackPlaybackTests
     }
 
     [Fact]
+    public void FractionAt_IsTheInverseOfTimeAtFraction_AndClamps()
+    {
+        Assert.Equal(0.5, _playback.FractionAt(T0.AddSeconds(210)), 6);
+        Assert.Equal(0, _playback.FractionAt(T0.AddHours(-1)));
+        Assert.Equal(1, _playback.FractionAt(T0.AddHours(1)));
+    }
+
+    [Fact]
     public void EmptyTrack_Throws() =>
         Assert.Throws<ArgumentException>(() => new TrackPlayback([]));
 }

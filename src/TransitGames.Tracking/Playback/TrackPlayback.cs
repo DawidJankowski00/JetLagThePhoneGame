@@ -71,4 +71,8 @@ public sealed class TrackPlayback
     public GeoPoint PositionAtFraction(double fraction) => PositionAt(TimeAtFraction(fraction));
 
     public DateTimeOffset TimeAtFraction(double fraction) => Start + Duration * Math.Clamp(fraction, 0, 1);
+
+    /// <summary>Inverse of <see cref="TimeAtFraction"/>: 0..1 slider position of a time (clamped to the track).</summary>
+    public double FractionAt(DateTimeOffset time) =>
+        Duration <= TimeSpan.Zero ? 0 : Math.Clamp((time - Start) / Duration, 0, 1);
 }

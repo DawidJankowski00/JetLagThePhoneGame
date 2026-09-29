@@ -10,6 +10,7 @@ using TransitGames.Core.Timing;
 using TransitGames.Geo.Areas;
 using TransitGames.Tracking;
 using TransitGames.UI.Maps;
+using TransitGames.UI.Notifications;
 using TransitGames.UI.Resources;
 using TransitGames.UI.Services;
 
@@ -31,6 +32,7 @@ public sealed partial class ActiveSessionViewModel : ObservableObject
     private readonly TrackRecorder _recorder;
     private readonly TrackingCoordinator _tracking;
     private readonly OnlineSessionCoordinator _online;
+    private readonly GameNotificationCoordinator _notifications;
     private readonly IShare _share;
     private IDispatcherTimer? _timer;
     private int _ticks;
@@ -46,6 +48,7 @@ public sealed partial class ActiveSessionViewModel : ObservableObject
         TrackRecorder recorder,
         TrackingCoordinator tracking,
         OnlineSessionCoordinator online,
+        GameNotificationCoordinator notifications,
         IShare share)
     {
         _sessions = sessions;
@@ -57,6 +60,7 @@ public sealed partial class ActiveSessionViewModel : ObservableObject
         _recorder = recorder;
         _tracking = tracking;
         _online = online;
+        _notifications = notifications;
         _share = share;
     }
 
@@ -119,6 +123,7 @@ public sealed partial class ActiveSessionViewModel : ObservableObject
 
             _tracking.OnGameScreenShown(session);
             _online.OnGameScreenShown(session);
+            _notifications.OnGameScreenShown();
         }
 
         _timer ??= Application.Current!.Dispatcher.CreateTimer();

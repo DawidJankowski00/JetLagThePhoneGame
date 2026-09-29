@@ -17,10 +17,15 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="vm:HistoryItem">
                     <Border Style="{StaticResource Card}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenCommand, Source={RelativeSource AncestorType={x:Type vm:HistoryViewModel}}, x:DataType=vm:HistoryViewModel}"
+                                                  CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="*,Auto">
                             <VerticalStackLayout Spacing="2">
                                 <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold" />
                                 <Label Text="{Binding Subtitle}" Style="{StaticResource Caption}" />
+                                <Label Text="{Binding Result}" IsVisible="{Binding HasResult}" />
                             </VerticalStackLayout>
                             <Label Grid.Column="1" Text="{Binding Status}" VerticalOptions="Center"
                                    Style="{StaticResource Caption}" />

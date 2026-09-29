@@ -1,5 +1,7 @@
 using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
+using TransitGames.Core.Events;
+using TransitGames.Core.Notifications;
 using TransitGames.Core.Sessions;
 
 namespace TransitGames.Core.Games;
@@ -64,9 +66,30 @@ public abstract class GameModule<TSettings, TSession> : IGameModule
 
     protected abstract TSession RestoreSession(GameSessionSnapshot snapshot, TSettings settings);
 
+    public IReadOnlyList<GameNotification> PlanNotifications(IGameSession session, bool isOnline, DateTimeOffset now) =>
+        PlanNotifications(Typed(session), isOnline, now);
+
+    /// <summary>Default: no reminders.</summary>
+    protected virtual IReadOnlyList<GameNotification> PlanNotifications(TSession session, bool isOnline, DateTimeOffset now) => [];
+
+    /// <summary>Default: silent.</summary>
+    public virtual GameNotification? NotificationFor(GameEvent gameEvent, string localRoleId) => null;
+
+    /// <summary>Default: silent (positions arriving live would be too frequent to notify).</summary>
+    public virtual GameNotification? NotificationForLocation(string senderRoleId, string localRoleId) => null;
+
+    public GameResult DescribeResult(IGameSession session, DateTimeOffset now) => DescribeResult(Typed(session), now);
+
+    /// <summary>Default: no result.</summary>
+    protected virtual GameResult DescribeResult(TSession session, DateTimeOffset now) => GameResult.Empty;
+
     public virtual void RegisterServices(IServiceCollection services)
     {
     }
+
+    private static TSession Typed(IGameSession session) =>
+        session as TSession
+        ?? throw new ArgumentException($"Expected a session of type {typeof(TSession).Name}.", nameof(session));
 
     private static TSettings Typed(GameSettings settings) =>
         settings as TSettings

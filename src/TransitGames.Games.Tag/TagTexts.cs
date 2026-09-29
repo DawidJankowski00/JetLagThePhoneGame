@@ -40,6 +40,12 @@ public static class TagTexts
         _ => TagStrings.EndRunning,
     };
 
+    /// <summary>How a round ended, as shown in the scores.</summary>
+    public static string RoundEnd(RoundResult round) =>
+        round.WasStopped ? TagStrings.EndStopped
+        : round.IsOver && round.Reason is null ? TagStrings.EndTimeUp
+        : EndReason(round.Reason);
+
     public static string Source(TargetSource source) => source switch
     {
         TargetSource.Stations => TagStrings.SourceStations,

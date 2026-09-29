@@ -9,5 +9,6 @@ public static class Routes
     public const string NewGameStations = "newgame-stations";
     public const string NewGameSetup = "newgame-setup";
     public const string TrackPreview = "track-preview";
+    public const string HistoryDetails = "history-details";
     public const string JoinGame = "join-game";
 }

@@ -1,3 +1,4 @@
+using TransitGames.UI.Services;
 using TransitGames.UI.Settings;
 
 namespace TransitGames.App;
@@ -13,6 +14,10 @@ public partial class App : Application
         preferences.ApplyTheme(this);
     }
 
-    protected override Window CreateWindow(IActivationState? activationState) =>
-        new(_services.GetRequiredService<AppShell>());
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        var window = new Window(_services.GetRequiredService<AppShell>());
+        _services.GetRequiredService<AppLifecycle>().Attach(window);
+        return window;
+    }
 }

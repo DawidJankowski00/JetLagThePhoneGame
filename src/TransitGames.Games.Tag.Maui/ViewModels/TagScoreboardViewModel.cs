@@ -53,7 +53,7 @@ public sealed partial class TagScoreboardViewModel : ObservableObject
                 string.Format(
                     TagStrings.RoundRowDetailsFormat,
                     TagTexts.Duration(r.Survived),
-                    r.IsOver && r.Reason is null ? TagStrings.EndTimeUp : TagTexts.EndReason(r.Reason),
+                    TagTexts.RoundEnd(r),
                     r.Captures,
                     r.TargetPoints + r.FinalBonus),
                 string.Format(TagStrings.ScoreFormat, r.Score)))

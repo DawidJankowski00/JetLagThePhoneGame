@@ -44,8 +44,10 @@ public static class MauiProgram
         services.AddTransitGamesUi();
 #if ANDROID
         services.AddSingleton<ILocationTracker, TransitGames.App.Tracking.AndroidLocationTracker>();
+        services.AddSingleton<TransitGames.UI.Notifications.INotificationScheduler, TransitGames.App.Notifications.AndroidNotificationScheduler>();
 #elif IOS
         services.AddSingleton<ILocationTracker, TransitGames.App.Tracking.IosLocationTracker>();
+        services.AddSingleton<TransitGames.UI.Notifications.INotificationScheduler, TransitGames.App.Notifications.IosNotificationScheduler>();
 #endif
 
         // Games: one line per game.
@@ -60,6 +62,7 @@ public static class MauiProgram
         services.AddTransient<StationsSetupPage>().AddTransient<StationsSetupViewModel>();
         services.AddTransient<GameSetupPage>().AddTransient<GameSetupViewModel>();
         services.AddTransient<HistoryPage>().AddTransient<HistoryViewModel>();
+        services.AddTransient<HistoryDetailsPage>().AddTransient<HistoryDetailsViewModel>();
         services.AddTransient<TracksPage>().AddTransient<TracksViewModel>();
         services.AddTransient<TrackPreviewPage>().AddTransient<TrackPreviewViewModel>();
         services.AddTransient<JoinGamePage>().AddTransient<JoinGameViewModel>();
@@ -75,6 +78,7 @@ public static class MauiProgram
         app.Services.GetRequiredService<TrackingCoordinator>();
         app.Services.GetRequiredService<OnlineSessionCoordinator>();
         app.Services.GetRequiredService<TransitGames.Core.Sync.GameMessageDispatcher>();
+        app.Services.GetRequiredService<TransitGames.UI.Notifications.GameNotificationCoordinator>();
         return app;
     }
 }

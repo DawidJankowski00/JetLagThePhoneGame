@@ -25,12 +25,18 @@ public sealed class SqliteGameEventLog : IGameEventLog
     {
         var db = await _database.GetAsync<EventRow>().ConfigureAwait(false);
         var id = sessionId.ToString();
-        var rows = await db.Table<EventRow>()
-            .Where(r => r.SessionId == id)
-            .OrderBy(r => r.TimestampTicks)
-            .ToListAsync()
+        // Events at the same moment (a round ends and the next one starts) keep the order they were written in.
+        var rows = await db.QueryAsync<EventRow>(
+                "SELECT * FROM game_events WHERE SessionId = ? ORDER BY TimestampTicks, rowid", id)
             .ConfigureAwait(false);
         return rows.Select(r => r.ToEvent()).ToList();
+    }
+
+    public async Task DeleteAsync(Guid sessionId, CancellationToken cancellationToken = default)
+    {
+        var db = await _database.GetAsync<EventRow>().ConfigureAwait(false);
+        var id = sessionId.ToString();
+        await db.Table<EventRow>().DeleteAsync(r => r.SessionId == id).ConfigureAwait(false);
     }
 
     [Table("game_events")]
