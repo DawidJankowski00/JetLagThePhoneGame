@@ -63,8 +63,13 @@ Teksty: `Resources/XStrings.resx` (polski) + `Resources/XStrings.en.resx`. Klasa
 Zdarzenia na osi czasu: w sesji wywołaj `Raise(GameEvent.Create(...))` — trafią do `IGameEventLog`
 i (jeśli mają lokalizację) do eksportu GPX/GeoJSON jako waypointy.
 
-Ustawienia gry w kreatorze: nadpisz `CreateSettingsView(GameSettings)` w `XUiModule` i zwróć widok, który
-edytuje obiekt ustawień w miejscu (przykład: `HideAndSeekSettingsView`).
+Ustawienia gry w kreatorze: nadpisz `CreateSettingsView(GameSettings, IServiceProvider)` w `XUiModule` i zwróć
+widok, który edytuje obiekt ustawień w miejscu (obszar i stacje są już ustawione; przykłady: `HideAndSeekSettingsView`,
+`TagSettingsView`).
+
+Zamiana ról w trakcie gry: dołącz do wiadomości `RoleChange` (np. `RoleChange.Swap(session.RolesVersion, a, b)`).
+Aplikacja i serwer zmienią role wszystkich telefonów razem z tą wiadomością (przykład: `TagMessages.EndRound`).
+Miejsca z OSM do gry: `TransitGames.Geo.Places.PlaceCatalog`.
 
 Komunikacja między telefonami: wstrzyknij `IGameSyncService` i publikuj `SyncMessage` z własnym `Type`
 (np. `"x.question"`) i ładunkiem JSON. Ta sama usługa działa offline (wiadomość wraca lokalnie) i online (serwer

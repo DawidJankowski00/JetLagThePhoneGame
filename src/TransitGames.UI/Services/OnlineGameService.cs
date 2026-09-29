@@ -65,7 +65,7 @@ public sealed class OnlineGameService
         var result = await _server.JoinLobbyAsync(serverUrl, lobby.Code, new JoinLobbyRequest(roleId, _preferences.PlayerName));
         var settings = module.DeserializeSettings(result.SettingsJson);
         await _store.SaveLinkAsync(OnlineLink.From(serverUrl, result.Ticket, _preferences.PlayerName));
-        return await _sessions.StartNewAsync(module.Id, settings, roleId, result.Ticket.SessionId);
+        return await _sessions.StartNewAsync(module.Id, settings, roleId, result.Ticket.SessionId, result.Ticket.RolesVersion);
     }
 
     private string RequireServer() =>

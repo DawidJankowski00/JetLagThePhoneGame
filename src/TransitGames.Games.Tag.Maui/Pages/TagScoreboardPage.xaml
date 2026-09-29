@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.Games.Tag.Maui.ViewModels"
+             xmlns:res="clr-namespace:TransitGames.Games.Tag.Resources;assembly=TransitGames.Games.Tag"
+             x:Class="TransitGames.Games.Tag.Maui.Pages.TagScoreboardPage"
+             x:DataType="vm:TagScoreboardViewModel"
+             Title="{x:Static res:TagStrings.ScoreboardTitle}"
+             Style="{StaticResource PageBackground}">
+    <ScrollView>
+        <VerticalStackLayout Padding="16,12" Spacing="12">
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Teams}" Spacing="8">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:TeamRow">
+                        <Border Style="{StaticResource Card}">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="17" />
+                                    <Label Text="{Binding Details}" Style="{StaticResource Caption}" FontSize="12" />
+                                </VerticalStackLayout>
+                                <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                                    <Label Text="🏆" IsVisible="{Binding IsLeader}" FontSize="20" />
+                                    <Label Text="{Binding Score}" FontAttributes="Bold" FontSize="22" />
+                                </HorizontalStackLayout>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <Label Text="{x:Static res:TagStrings.ScoreboardRounds}" FontAttributes="Bold" Margin="0,8,0,0" />
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding Rounds}" Spacing="6">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate x:DataType="vm:RoundRow">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout>
+                                <Label Text="{Binding Title}" />
+                                <Label Text="{Binding Details}" Style="{StaticResource Caption}" FontSize="12" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1" Text="{Binding Score}" FontAttributes="Bold" VerticalOptions="Center" />
+                        </Grid>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+            </VerticalStackLayout>
+
+            <Label Text="{Binding RulesText}" Style="{StaticResource Caption}" Margin="0,8,0,0" />
+            <Label Text="{Binding OfflineHint}" Style="{StaticResource Caption}" IsVisible="{Binding HasOfflineHint}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

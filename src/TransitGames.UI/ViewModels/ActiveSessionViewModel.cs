@@ -109,7 +109,7 @@ public sealed partial class ActiveSessionViewModel : ObservableObject
         if (_sessions.Current is { } session && _registry.TryGet(session.GameId, out var module) && module is not null)
         {
             GameName = module.DisplayName;
-            RoleName = module.Roles.FirstOrDefault(r => r.Id == session.LocalRoleId)?.DisplayName ?? session.LocalRoleId;
+            RefreshRole();
             if (session.Id != _mapSessionId)
             {
                 _mapSessionId = session.Id;
@@ -137,6 +137,15 @@ public sealed partial class ActiveSessionViewModel : ObservableObject
         OwnLocation = _location.LastLocation?.Point ?? OwnLocation;
         IsRecording = _recorder.IsRecording;
         RefreshOnline();
+    }
+
+    /// <summary>Updates the role shown in the header (roles can change during a game, e.g. after a catch in Tag).</summary>
+    public void RefreshRole()
+    {
+        if (_sessions.Current is { } session && _registry.TryGet(session.GameId, out var module) && module is not null)
+        {
+            RoleName = module.Roles.FirstOrDefault(r => r.Id == session.LocalRoleId)?.DisplayName ?? session.LocalRoleId;
+        }
     }
 
     /// <summary>Call from the page's OnDisappearing.</summary>

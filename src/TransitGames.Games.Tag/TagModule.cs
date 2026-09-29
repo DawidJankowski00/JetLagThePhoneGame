@@ -1,6 +1,9 @@
+using Microsoft.Extensions.DependencyInjection;
 using TransitGames.Core.Games;
 using TransitGames.Core.Sessions;
+using TransitGames.Core.Sync;
 using TransitGames.Games.Tag.Resources;
+using TransitGames.Games.Tag.Sync;
 
 namespace TransitGames.Games.Tag;
 
@@ -32,6 +35,9 @@ public sealed class TagModule : GameModule<TagSettings, TagSession>
 
     protected override TagSession RestoreSession(GameSessionSnapshot snapshot, TagSettings settings) =>
         new(snapshot, settings);
+
+    public override void RegisterServices(IServiceCollection services) =>
+        services.AddSingleton<IGameMessageHandler, TagMessageHandler>();
 }
 
 public static class TagRoles

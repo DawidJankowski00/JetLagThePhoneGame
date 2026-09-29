@@ -6,7 +6,7 @@ using TransitGames.Core.Sync;
 using TransitGames.Core.Timing;
 using TransitGames.Geo.Areas;
 using TransitGames.Games.HideAndSeek.Elimination;
-using TransitGames.Games.HideAndSeek.Places;
+using TransitGames.Geo.Places;
 using TransitGames.Games.HideAndSeek.Questions;
 using TransitGames.Games.HideAndSeek.Sync;
 
@@ -124,7 +124,7 @@ public sealed class HideAndSeekController
 
     public Task<IReadOnlyList<Place>> PlacesAsync(string categoryId) =>
         Session is { } session && Area is { } area
-            ? _places.GetAsync(area, session.Settings.Stations, categoryId)
+            ? _places.GetAsync(area, session.Settings.Stations, categoryId, QuestionTexts.CategoryName(categoryId))
             : Task.FromResult<IReadOnlyList<Place>>([]);
 
     public Task AskAsync(QuestionSpec spec) => Publish(s => HideAndSeekMessages.AskQuestion(s, new AskedQuestion

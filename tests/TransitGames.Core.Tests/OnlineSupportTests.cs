@@ -124,6 +124,40 @@ public sealed class OnlineSupportTests : IDisposable
         Assert.Equal(2, score);
     }
 
+    [Fact]
+    public async Task Role_changes_carried_by_messages_apply_once_and_are_saved()
+    {
+        var db = new AppDatabase(new DatabaseOptions(_file.Path));
+        var store = new SqliteGameSessionStore(db);
+        var manager = new GameSessionManager(new GameRegistry([new TestModule()]), store, new SqliteGameEventLog(db), _clock);
+        var local = new LocalGameSyncService();
+        _ = new GameSyncDispatcherProbe(local, manager);
+        var session = await manager.StartNewAsync(TestModule.GameId, new TestSettings(), "a");
+
+        var swap = Message("point") with { SessionId = session.Id, RoleChange = RoleChange.Swap(0, "a", "b") };
+        await local.PublishAsync(swap);
+        await local.PublishAsync(swap with { Id = Guid.NewGuid() }); // same change reported twice
+
+        Assert.Equal(("b", 1), (session.LocalRoleId, session.RolesVersion));
+        Assert.Equal(2, ((TestSession)session).Score); // the game handled both messages
+        GameSessionSnapshot? saved = null;
+        for (var attempt = 0; attempt < 100 && saved?.RolesVersion != 1; attempt++)
+        {
+            await Task.Delay(20);
+            saved = await store.LoadAsync(session.Id);
+        }
+
+        Assert.Equal(("b", 1), (saved!.LocalRoleId, saved.RolesVersion));
+    }
+
+    [Fact]
+    public void Role_changes_must_permute_the_roles()
+    {
+        Assert.True(RoleChange.Swap(0, "a", "b").IsPermutationOf(["a", "b"]));
+        Assert.False(new RoleChange(0, new Dictionary<string, string> { ["a"] = "b" }).IsPermutationOf(["a", "b"]));
+        Assert.False(RoleChange.Swap(0, "a", "x").IsPermutationOf(["a", "b"]));
+    }
+
     private sealed class PointHandler : IGameMessageHandler
     {
         public string GameId => TestModule.GameId;

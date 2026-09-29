@@ -4,7 +4,7 @@ using TransitGames.Core.Games;
 using TransitGames.Core.Geography;
 using TransitGames.Geo.Areas;
 using TransitGames.Geo.Projection;
-using TransitGames.Games.HideAndSeek.Places;
+using TransitGames.Geo.Places;
 using TransitGames.Games.HideAndSeek.Questions;
 using TransitGames.Games.HideAndSeek.Spatial;
 

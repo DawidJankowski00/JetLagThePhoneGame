@@ -57,6 +57,7 @@ public sealed class SqliteGameSessionStore : IGameSessionStore
 
         public string GameId { get; set; } = "";
         public string LocalRoleId { get; set; } = "";
+        public int RolesVersion { get; set; }
 
         [Indexed]
         public int Status { get; set; }
@@ -74,6 +75,7 @@ public sealed class SqliteGameSessionStore : IGameSessionStore
             Id = s.SessionId.ToString(),
             GameId = s.GameId,
             LocalRoleId = s.LocalRoleId,
+            RolesVersion = s.RolesVersion,
             Status = (int)s.Status,
             CreatedAtTicks = s.CreatedAt.UtcTicks,
             UpdatedAtTicks = s.UpdatedAt.UtcTicks,
@@ -86,6 +88,7 @@ public sealed class SqliteGameSessionStore : IGameSessionStore
             SessionId = Guid.Parse(Id),
             GameId = GameId,
             LocalRoleId = LocalRoleId,
+            RolesVersion = RolesVersion,
             Status = (SessionStatus)Status,
             CreatedAt = new DateTimeOffset(CreatedAtTicks, TimeSpan.Zero),
             UpdatedAt = new DateTimeOffset(UpdatedAtTicks, TimeSpan.Zero),

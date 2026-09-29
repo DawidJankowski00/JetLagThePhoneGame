@@ -41,10 +41,12 @@ public sealed class GameSessionManager
     public event EventHandler<IGameSession>? SessionFinished;
 
     /// <param name="sessionId">Id shared by all devices of an online game; a new one when null.</param>
-    public async Task<IGameSession> StartNewAsync(string gameId, GameSettings settings, string localRoleId, Guid? sessionId = null)
+    /// <param name="rolesVersion">Roles version of an online game joined after its roles changed.</param>
+    public async Task<IGameSession> StartNewAsync(string gameId, GameSettings settings, string localRoleId, Guid? sessionId = null, int rolesVersion = 0)
     {
         var module = _registry.Get(gameId);
         var session = module.CreateSession(settings, localRoleId, sessionId);
+        session.InitializeRolesVersion(rolesVersion);
         Attach(session);
         session.Start(_clock.UtcNow);
         await SaveAsync().ConfigureAwait(false);

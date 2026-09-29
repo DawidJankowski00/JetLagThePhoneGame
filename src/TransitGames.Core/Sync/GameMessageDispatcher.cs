@@ -59,5 +59,11 @@ public sealed class GameMessageDispatcher
             {
                 handler.Handle(session, message);
             }
+
+            // After the handler, so it still sees the roles the message was sent under.
+            if (message.RoleChange is { } change)
+            {
+                session.ApplyRoleChange(change, message.Timestamp);
+            }
         });
 }

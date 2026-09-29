@@ -27,7 +27,9 @@ public sealed class OnlineConnectionOptions
 /// <item>it reconnects forever; after every (re)connect it catches up on missed messages by sequence number,
 /// buffering live messages meanwhile so everything is delivered once and in order;</item>
 /// <item>after connecting it also delivers the latest known locations of the other devices (so the map is
-/// filled right after an app restart).</item>
+/// filled right after an app restart);</item>
+/// <item>it follows role changes (<see cref="RoleChange"/>) carried by messages, like the server does, and updates
+/// <see cref="Link"/> before the message is delivered to handlers.</item>
 /// </list>
 /// </summary>
 public sealed class SignalRGameSyncService : IGameSyncService, IAsyncDisposable
@@ -170,6 +172,7 @@ public sealed class SignalRGameSyncService : IGameSyncService, IAsyncDisposable
         };
 
         await _store.EnqueueAsync(stamped).ConfigureAwait(false);
+        await FollowRoleChangeAsync(stamped).ConfigureAwait(false);
         MessageReceived?.Invoke(this, stamped);
         if (State == SyncConnectionState.Connected)
         {
@@ -325,6 +328,7 @@ public sealed class SignalRGameSyncService : IGameSyncService, IAsyncDisposable
             // Own messages were already echoed when published.
             if (message.Message.SenderDeviceId != link.DeviceId)
             {
+                await FollowRoleChangeAsync(message.Message).ConfigureAwait(false);
                 try
                 {
                     MessageReceived?.Invoke(this, message.Message);
@@ -340,6 +344,20 @@ public sealed class SignalRGameSyncService : IGameSyncService, IAsyncDisposable
         {
             await _store.SetLastSequenceAsync(link.SessionId, _lastSequence).ConfigureAwait(false);
         }
+    }
+
+    /// <summary>Applies a role change to the link when it was made for the link's roles version (same rule as the server).</summary>
+    private async Task FollowRoleChangeAsync(SyncMessage message)
+    {
+        if (message.RoleChange is not { } change || _link is not { } link || change.FromVersion != link.RolesVersion)
+        {
+            return;
+        }
+
+        var updated = link with { RoleId = change.Apply(link.RoleId), RolesVersion = link.RolesVersion + 1 };
+        _link = updated;
+        await _store.SetRoleAsync(updated.SessionId, updated.RoleId, updated.RolesVersion).ConfigureAwait(false);
+        _logger.LogInformation("Role changed to {Role} (version {Version})", updated.RoleId, updated.RolesVersion);
     }
 
     private async Task FlushOutboxAsync()

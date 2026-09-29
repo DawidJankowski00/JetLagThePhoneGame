@@ -6,7 +6,7 @@ using TransitGames.Core.Sync;
 
 namespace TransitGames.Sync;
 
-/// <summary>How this device takes part in an online game.</summary>
+/// <summary>How this device takes part in an online game. <see cref="RoleId"/> follows role changes.</summary>
 public sealed record OnlineLink(
     Guid SessionId,
     string ServerUrl,
@@ -15,10 +15,11 @@ public sealed record OnlineLink(
     string RoleId,
     string PlayerName,
     string Token,
-    long LastSequence)
+    long LastSequence,
+    int RolesVersion = 0)
 {
     public static OnlineLink From(string serverUrl, LobbyTicket ticket, string playerName) =>
-        new(ticket.SessionId, serverUrl, ticket.Code, ticket.DeviceId, ticket.RoleId, playerName, ticket.Token, 0);
+        new(ticket.SessionId, serverUrl, ticket.Code, ticket.DeviceId, ticket.RoleId, playerName, ticket.Token, 0, ticket.RolesVersion);
 }
 
 [Table("online_links")]
@@ -34,6 +35,7 @@ internal sealed class OnlineLinkRow
     public string PlayerName { get; set; } = string.Empty;
     public string Token { get; set; } = string.Empty;
     public long LastSequence { get; set; }
+    public int RolesVersion { get; set; }
 }
 
 [Table("sync_outbox")]
@@ -71,6 +73,7 @@ public sealed class OnlineSessionStore
             PlayerName = link.PlayerName,
             Token = link.Token,
             LastSequence = link.LastSequence,
+            RolesVersion = link.RolesVersion,
         }).ConfigureAwait(false);
     }
 
@@ -80,7 +83,14 @@ public sealed class OnlineSessionStore
         var row = await db.FindAsync<OnlineLinkRow>(sessionId).ConfigureAwait(false);
         return row is null
             ? null
-            : new OnlineLink(row.SessionId, row.ServerUrl, row.Code, row.DeviceId, row.RoleId, row.PlayerName, row.Token, row.LastSequence);
+            : new OnlineLink(row.SessionId, row.ServerUrl, row.Code, row.DeviceId, row.RoleId, row.PlayerName, row.Token, row.LastSequence, row.RolesVersion);
+    }
+
+    public async Task SetRoleAsync(Guid sessionId, string roleId, int rolesVersion)
+    {
+        var db = await _database.GetAsync<OnlineLinkRow>().ConfigureAwait(false);
+        await db.ExecuteAsync("UPDATE online_links SET RoleId = ?, RolesVersion = ? WHERE SessionId = ?", roleId, rolesVersion, sessionId)
+            .ConfigureAwait(false);
     }
 
     public async Task SetLastSequenceAsync(Guid sessionId, long sequence)

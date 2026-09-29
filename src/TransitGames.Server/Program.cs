@@ -17,6 +17,7 @@ builder.Services.AddSingleton<ServerStore>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<LobbyService>();
 builder.Services.AddSingleton<PresenceTracker>();
+builder.Services.AddSingleton<SessionGate>();
 builder.Services.AddHostedService<RetentionService>();
 
 builder.Services.AddAuthentication()

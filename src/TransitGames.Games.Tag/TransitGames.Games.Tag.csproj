@@ -10,6 +10,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Built-in challenges (own texts), configurable JSON. -->
+    <EmbeddedResource Include="Challenges\challenges.json" LogicalName="challenges.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="TransitGames.Games.Tag.Tests" />
   </ItemGroup>
 

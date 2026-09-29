@@ -1,7 +1,7 @@
 using System.Globalization;
 using TransitGames.Core.Geography;
 using TransitGames.Geo.Projection;
-using TransitGames.Games.HideAndSeek.Places;
+using TransitGames.Geo.Places;
 using TransitGames.Games.HideAndSeek.Resources;
 
 namespace TransitGames.Games.HideAndSeek.Questions;

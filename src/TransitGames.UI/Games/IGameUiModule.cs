@@ -21,9 +21,10 @@ public interface IGameUiModule
 
     /// <summary>
     /// Editor of the game's own settings, shown in the last step of the new-game wizard (it edits the given
-    /// settings object in place). Null when the game has nothing to configure.
+    /// settings object in place; its area and stations are already set). Null when the game has nothing to configure.
     /// </summary>
-    View? CreateSettingsView(GameSettings settings);
+    /// <param name="services">App services, e.g. for downloading places or opening a page.</param>
+    View? CreateSettingsView(GameSettings settings, IServiceProvider services);
 
     /// <summary>Registers the logic module plus pages and view models.</summary>
     void RegisterServices(IServiceCollection services);
@@ -39,7 +40,7 @@ public abstract class GameUiModule<TGameModule> : IGameUiModule
 
     public abstract string GetGameRoute(string roleId);
 
-    public virtual View? CreateSettingsView(GameSettings settings) => null;
+    public virtual View? CreateSettingsView(GameSettings settings, IServiceProvider services) => null;
 
     public void RegisterServices(IServiceCollection services)
     {

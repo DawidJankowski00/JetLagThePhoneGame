@@ -181,6 +181,46 @@
   (`IGameUiModule.CreateSettingsView`); przełącznik „Graj online” przeniesiony tutaj.
 - Powiadomienia systemowe (koniec czasu ukrycia, nowe pytanie) — w etapie dopracowania.
 
+## Tag (etap 6)
+
+- **Rundy w jednej sesji, zamiana ról przez `RoleChange`.** Wiadomość kończąca rundę (`tag.round.end`) niesie
+  `RoleChange` (zamiana runner↔chaser) dla konkretnej „wersji ról”. Stosują ją wszyscy tak samo: sesja
+  (`IGameSession.ApplyRoleChange`, po handlerze gry w `GameMessageDispatcher`), transport (`OnlineLink.RoleId`),
+  koordynator online (udostępnianie pozycji przełącza się od razu, stare pozycje znikają z mapy) i serwer. Zmiana
+  działa tylko dla wersji, dla której ją wysłano — gdy obie drużyny naciśną „Złapany” naraz, role zmieniają się
+  raz. Drużyny („Drużyna 1” = zaczyna uciekać) wynikają z roli i liczby zamian, więc działa to też dla telefonu,
+  który dołączył po kilku rundach (dostaje `RolesVersion` w bilecie).
+- **Serwer i prywatność po zamianie.** Każda wiadomość pamięta wersję ról z chwili wysłania; urządzenie widzi ją,
+  jeśli jego rola *w tamtej wersji* była odbiorcą (historia ról w tabeli `device_roles`). Po zamianie nikt nie
+  nadrobi więc pozycji ani wiadomości drużynowych, których wcześniej nie mógł widzieć. Połączenia są przenoszone
+  między grupami ról w chwili zamiany, a publikacje i zamiany w jednej grze są szeregowane (`SessionGate`).
+  „Ostatnie pozycje” po restarcie aplikacji pochodzą tylko z bieżącej wersji ról. Wersja protokołu → 2.
+- **Pozycja goniących nigdy nie trafia do uciekających** — także przy „Złapany”: wiadomość wysłana przez goniących
+  nie zawiera miejsca (miejsce złapania zapisuje się tylko, gdy zgłoszą je uciekający). Dlatego **zasięg złapania
+  jest zasadą dla graczy**, a nie sprawdzeniem w aplikacji; złapanie potwierdza się przyciskiem.
+- **Cele** są w ustawieniach gry (te same w każdej rundzie, statusy liczone per runda) i niosą swoje wyzwanie, więc
+  wszystkie telefony mają identyczne dane. Źródła: losowe stacje, losowe miejsca z OSM (`PlaceCatalog`
+  przeniesiony z Hide and Seek do `TransitGames.Geo.Places`, wspólny dla gier) albo ręcznie na mapie. Losowanie
+  rozrzuca cele (minimalny odstęp √(pole/liczba)/2, zmniejszany, gdy brakuje kandydatów); nagroda 5/10/15 rośnie
+  z odległością od środka obszaru. Meta (opcjonalna) kończy rundę uciekających z premią.
+- **Geofencing:** telefon uciekających przy każdym odczycie GPS (nagrywanie trasy startuje samo) zdobywa cele bez
+  wyzwania w promieniu celu i kończy rundę na mecie. Cel z wyzwaniem tylko wyświetla wyzwanie — zdobycie
+  potwierdzają gracze. Ręczne zdobycie z listy celów jest zawsze możliwe. Uproszczenie: geofencing działa, gdy
+  gra jest otwarta w aplikacji (także przy zgaszonym ekranie), nie po wyjściu do ekranu startowego.
+- **Wyzwania** w JSON (`Challenges/challenges.json`, własne teksty pl/en; własną listę można podać w
+  `TagSettings.ChallengesJson`): wyzwania bez miejsca są rozdawane celom (nagroda się sumuje), wyzwania z
+  `location` stają się osobnymi celami.
+- **Czas i wynik:** runda zaczyna się przewagą (`HeadStart`, goniący czekają; „Złapany” nieaktywne), trwa do
+  złapania, mety albo `RoundDuration`. Po upływie czasu rundę zamyka dowolny telefon („Następna runda”), a jej koniec
+  liczy się na granicy czasu. Wynik rundy = przetrwane minuty + punkty z celów (tryb „punkty”) + premia za metę.
+  Tryb „monety”: nagrody to monety na przejazdy (saldo i wydatki, wiadomość tylko w drużynie), wynik = minuty +
+  meta.
+- **Pingi:** online automatycznie co `RevealInterval` (koordynator online). Offline uciekający dostają
+  przypomnienie i wysyłają pozycję systemowym „Udostępnij” (tekst + link OSM), a goniący wpisują ją dotknięciem
+  mapy. Offline każdy telefon zna tylko zdobycze własnej drużyny — tabela wyników mówi o tym wprost.
+- Na mapie Tag nie ma przystanków (zasłaniały cele) ani emoji w etykietach (Mapsui ich nie rysuje).
+- Powiadomienia systemowe (ping, koniec przewagi) — w etapie dopracowania.
+
 ## Build
 
 - **TFM-y MAUI** ustawiane centralnie (`MauiTargetFrameworks` w `Directory.Build.props`): Android zawsze,

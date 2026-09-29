@@ -140,6 +140,22 @@ internal static class Eventually
         await Async(() => condition() ? (object)true : null, what);
     }
 
+    public static async Task AsyncCheck(Func<Task<bool>> condition, string what)
+    {
+        var deadline = DateTime.UtcNow + Timeout;
+        while (DateTime.UtcNow < deadline)
+        {
+            if (await condition())
+            {
+                return;
+            }
+
+            await Task.Delay(25);
+        }
+
+        throw new TimeoutException($"Timed out waiting for: {what}");
+    }
+
     public static async Task<T> Async<T>(Func<T?> probe, string what)
         where T : class
     {

@@ -26,7 +26,9 @@ public sealed record LocationShareInfo(bool IsShared, IReadOnlyList<string> View
 /// <item>shares this device's position — only if the game's <see cref="LocationSharingPolicy"/> lets anybody see
 /// the local role, at the game's interval (the server enforces the same policy again);</item>
 /// <item>collects the positions of other devices the local role may see;</item>
-/// <item>ends the game on every device when one of them finishes it.</item>
+/// <item>ends the game on every device when one of them finishes it;</item>
+/// <item>follows role changes (e.g. runners and chasers swapping): sharing and visible positions switch to the
+/// new role at once, and positions seen under the old role are forgotten.</item>
 /// </list>
 /// Like track recording, the connection stays up after leaving the game screen: the game goes on outside.
 /// </summary>
@@ -112,6 +114,9 @@ public sealed class OnlineSessionCoordinator
         }
     }
 
+    /// <summary>The local role now (online it follows role changes even when the game is not on screen).</summary>
+    private string? CurrentRole => _link?.RoleId ?? _session?.LocalRoleId;
+
     public string RoleName(string roleId) =>
         _module?.Roles.FirstOrDefault(r => r.Id == roleId)?.DisplayName ?? roleId;
 
@@ -151,7 +156,7 @@ public sealed class OnlineSessionCoordinator
                 return;
             }
 
-            _sharing = SharingFor(_module, session);
+            _sharing = SharingFor(_module, session.Settings, _link.RoleId);
             _router.Use(_online);
             await _online.ConnectAsync(session.Id, session.LocalRoleId);
             RaiseChanged();
@@ -186,14 +191,14 @@ public sealed class OnlineSessionCoordinator
         }
     }
 
-    private LocationShareInfo SharingFor(IGameModule module, IGameSession session)
+    private LocationShareInfo SharingFor(IGameModule module, GameSettings settings, string roleId)
     {
         var policy = module.LocationSharing;
-        return policy.IsShared(session.LocalRoleId)
+        return policy.IsShared(roleId)
             ? new LocationShareInfo(
                 true,
-                policy.ViewersOf(session.LocalRoleId).Select(RoleName).ToList(),
-                module.GetLocationShareInterval(session.Settings),
+                policy.ViewersOf(roleId).Select(RoleName).ToList(),
+                module.GetLocationShareInterval(settings),
                 null)
             : LocationShareInfo.Private;
     }
@@ -219,7 +224,7 @@ public sealed class OnlineSessionCoordinator
                 Id = Guid.NewGuid(),
                 SessionId = _session.Id,
                 Type = SyncMessageTypes.Location,
-                SenderRoleId = _session.LocalRoleId,
+                SenderRoleId = CurrentRole ?? _session.LocalRoleId,
                 Timestamp = sample.Timestamp,
                 Audience = SyncAudience.OwnTeam, // the server adds the viewers allowed by the policy
                 PayloadJson = JsonSerializer.Serialize(new LocationPayload(sample.Point, sample.Timestamp, sample.AccuracyMeters), GameJson.Options),
@@ -236,7 +241,17 @@ public sealed class OnlineSessionCoordinator
     {
         var session = _session;
         var link = _link;
-        if (session is null || link is null || message.SessionId != session.Id || message.SenderDeviceId == link.DeviceId)
+        if (session is null || link is null || message.SessionId != session.Id)
+        {
+            return;
+        }
+
+        if (message.RoleChange is not null)
+        {
+            OnRolesChanged(session);
+        }
+
+        if (message.SenderDeviceId == link.DeviceId)
         {
             return;
         }
@@ -252,11 +267,41 @@ public sealed class OnlineSessionCoordinator
         }
     }
 
+    /// <summary>The transport has already moved the link to the new role; sharing and positions follow it.</summary>
+    private async void OnRolesChanged(IGameSession session)
+    {
+        try
+        {
+            if (_online.Link is not { } link || link.SessionId != session.Id || _module is not { } module
+                || link.RoleId == _link?.RoleId && link.RolesVersion == _link.RolesVersion)
+            {
+                return;
+            }
+
+            _link = link;
+            _sharing = SharingFor(module, session.Settings, link.RoleId);
+            lock (_gate)
+            {
+                _players.Clear();
+            }
+
+            RaiseChanged();
+            if (_sharing.IsShared)
+            {
+                await _tracking.EnsureRecordingAsync(session);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Following the role change failed");
+        }
+    }
+
     private void OnRemoteLocation(IGameSession session, SyncMessage message)
     {
         // The server already filters; checking again keeps the rule local and visible.
-        if (_module is not { } module || message.SenderDeviceId is not { } deviceId
-            || !module.LocationSharing.CanSee(session.LocalRoleId, message.SenderRoleId))
+        if (_module is not { } module || message.SenderDeviceId is not { } deviceId || CurrentRole is not { } role
+            || !module.LocationSharing.CanSee(role, message.SenderRoleId))
         {
             return;
         }
@@ -290,7 +335,7 @@ public sealed class OnlineSessionCoordinator
                 message.SenderRoleId,
                 payload.Point,
                 payload.Timestamp,
-                message.SenderRoleId == session.LocalRoleId);
+                message.SenderRoleId == role);
         }
 
         RaiseChanged();

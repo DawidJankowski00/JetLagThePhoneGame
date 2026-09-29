@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TransitGames.Games.Tag.Maui.ViewModels"
              xmlns:controls="clr-namespace:TransitGames.UI.Controls;assembly=TransitGames.UI"
-             xmlns:ui="clr-namespace:TransitGames.UI.Resources;assembly=TransitGames.UI"
              xmlns:res="clr-namespace:TransitGames.Games.Tag.Resources;assembly=TransitGames.Games.Tag"
              x:Class="TransitGames.Games.Tag.Maui.Pages.TagGamePage"
              x:DataType="vm:TagGameViewModel"
@@ -12,16 +11,60 @@
     <Grid RowDefinitions="Auto,*,Auto">
         <controls:SessionHeaderView BindingContext="{Binding Header}" />
 
-        <controls:GameMapView Grid.Row="1" Area="{Binding Header.Area}" Stations="{Binding Header.Stations}"
-                              OwnLocation="{Binding Header.OwnLocation}" Players="{Binding Header.Players}" />
+        <Grid Grid.Row="1">
+            <controls:GameMapView x:Name="Map" Area="{Binding Header.Area}"
+                                  OwnLocation="{Binding Header.OwnLocation}" Players="{Binding Header.Players}"
+                                  TapCommand="{Binding MapTappedCommand}" />
+            <!-- Legend: what the colours mean. -->
+            <Border VerticalOptions="Start" HorizontalOptions="Start" Margin="8" Padding="8,4"
+                    BackgroundColor="{AppThemeBinding Light=#E6FFFFFF, Dark=#E6212121}" StrokeThickness="0"
+                    StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="2">
+                    <HorizontalStackLayout Spacing="6">
+                        <BoxView WidthRequest="12" HeightRequest="12" Color="{StaticResource MapTarget}" CornerRadius="6" />
+                        <Label Text="{x:Static res:TagStrings.LegendTarget}" FontSize="11" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="6">
+                        <BoxView WidthRequest="12" HeightRequest="12" Color="{StaticResource MapTargetCaptured}" CornerRadius="6" />
+                        <Label Text="{x:Static res:TagStrings.LegendCaptured}" FontSize="11" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="6">
+                        <BoxView WidthRequest="12" HeightRequest="12" Color="{StaticResource MapOpponent}" CornerRadius="6" />
+                        <Label Text="{x:Static res:TagStrings.LegendRunners}" FontSize="11" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
 
-        <VerticalStackLayout Grid.Row="2" Padding="16,10" Spacing="8">
-            <Label Text="{x:Static res:TagStrings.RoleChaserDescription}" IsVisible="{Binding IsChaser}" Style="{StaticResource Caption}" />
-            <Label Text="{x:Static res:TagStrings.RoleRunnerDescription}" IsVisible="{Binding IsRunner}" Style="{StaticResource Caption}" />
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                <Button Text="{x:Static ui:UiStrings.LeaveGame}" Style="{StaticResource BigSecondaryButton}" FontSize="15" Padding="4,0"
+        <VerticalStackLayout Grid.Row="2" Padding="16,8,16,12" Spacing="8">
+            <Label Text="{Binding PhaseText}" FontSize="18" FontAttributes="Bold" />
+            <Label Text="{Binding RoundText}" Style="{StaticResource Caption}" />
+            <Label Text="{Binding StatusText}" Style="{StaticResource Caption}" FontSize="12" />
+            <Label Text="{Binding NoticeText}" IsVisible="{Binding HasNotice}" Style="{StaticResource HintBanner}" Margin="-16,0" />
+
+            <Button Text="{Binding NextRoundText}" IsVisible="{Binding IsTimeUp}" Style="{StaticResource BigButton}"
+                    Command="{Binding NextRoundCommand}" />
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding IsPlaying}">
+                <Button Text="{Binding TargetsButtonText}" Style="{StaticResource BigSecondaryButton}" FontSize="15" Padding="4,0"
+                        Command="{Binding TargetsCommand}" />
+                <Button Grid.Column="1" Text="{Binding CatchButtonText}" Style="{StaticResource BigButton}" FontSize="15" Padding="4,0"
+                        Command="{Binding CaughtCommand}" IsEnabled="{Binding CanCatch}" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding HasExtraRow}">
+                <Button Text="{Binding PingButtonText}" Style="{StaticResource BigSecondaryButton}" FontSize="15" Padding="4,0"
+                        Command="{Binding PingCommand}" IsVisible="{Binding ShowPing}" />
+                <Button Grid.Column="1" Text="{x:Static res:TagStrings.ButtonSpend}" Style="{StaticResource BigSecondaryButton}" FontSize="15" Padding="4,0"
+                        Command="{Binding SpendCommand}" IsVisible="{Binding ShowCoins}" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                <Button Text="{x:Static res:TagStrings.ButtonScoreboard}" Style="{StaticResource BigSecondaryButton}" FontSize="14" Padding="2,0"
+                        Command="{Binding ScoreboardCommand}" />
+                <Button Grid.Column="1" Text="{x:Static res:TagStrings.ButtonLeave}" Style="{StaticResource BigSecondaryButton}" FontSize="14" Padding="2,0"
                         Command="{Binding Header.LeaveCommand}" />
-                <Button Grid.Column="1" Text="{x:Static ui:UiStrings.FinishGame}" Style="{StaticResource BigButton}" FontSize="15" Padding="4,0"
+                <Button Grid.Column="2" Text="{x:Static res:TagStrings.ButtonFinish}" Style="{StaticResource BigButton}" FontSize="14" Padding="2,0"
                         Command="{Binding Header.FinishCommand}" />
             </Grid>
         </VerticalStackLayout>

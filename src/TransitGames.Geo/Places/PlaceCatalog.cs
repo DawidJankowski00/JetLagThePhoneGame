@@ -9,9 +9,8 @@ using TransitGames.Core.Persistence;
 using TransitGames.Core.Stations;
 using TransitGames.Geo.Areas;
 using TransitGames.Geo.Overpass;
-using TransitGames.Games.HideAndSeek.Questions;
 
-namespace TransitGames.Games.HideAndSeek.Places;
+namespace TransitGames.Geo.Places;
 
 /// <summary>
 /// Places of a category around a game area: the game's own stations, or points/districts downloaded from
@@ -44,12 +43,16 @@ public sealed class PlaceCatalog
         return row is null ? null : JsonSerializer.Deserialize<List<Place>>(row.Json, GameJson.Options);
     }
 
-    /// <summary>Cached places, downloading them first if needed (or when <paramref name="refresh"/>).</summary>
+    /// <summary>
+    /// Cached places, downloading them first if needed (or when <paramref name="refresh"/>). Places without a
+    /// name in OSM are called "<paramref name="unnamedLabel"/> (id)".
+    /// </summary>
     /// <exception cref="OverpassException">No Overpass server answered.</exception>
     public async Task<IReadOnlyList<Place>> GetAsync(
         GameArea area,
         IReadOnlyList<Station> stations,
         string categoryId,
+        string unnamedLabel,
         bool refresh = false,
         CancellationToken cancellationToken = default)
     {
@@ -66,7 +69,7 @@ public sealed class PlaceCatalog
 
         var places = category.Shape == PlaceShape.Area
             ? await DownloadDistrictsAsync(area, cancellationToken).ConfigureAwait(false)
-            : await DownloadPointsAsync(area, category, cancellationToken).ConfigureAwait(false);
+            : await DownloadPointsAsync(area, category, unnamedLabel, cancellationToken).ConfigureAwait(false);
 
         var db = await _database.GetAsync<PlaceSetRow>().ConfigureAwait(false);
         await db.InsertOrReplaceAsync(new PlaceSetRow
@@ -78,7 +81,7 @@ public sealed class PlaceCatalog
         return places;
     }
 
-    private async Task<List<Place>> DownloadPointsAsync(GameArea area, PlaceCategory category, CancellationToken cancellationToken)
+    private async Task<List<Place>> DownloadPointsAsync(GameArea area, PlaceCategory category, string unnamedLabel, CancellationToken cancellationToken)
     {
         var sb = new StringBuilder();
         sb.Append(CultureInfo.InvariantCulture, $"[out:json][timeout:60][bbox:{BoundingBox(area)}];\n(\n");
@@ -89,7 +92,7 @@ public sealed class PlaceCatalog
 
         sb.Append(");\nout center tags;");
         var response = await _overpass.QueryAsync(sb.ToString(), cancellationToken).ConfigureAwait(false);
-        return ParsePoints(response, QuestionTexts.CategoryName(category.Id));
+        return ParsePoints(response, unnamedLabel);
     }
 
     internal static List<Place> ParsePoints(OverpassResponse response, string fallbackName)
@@ -173,7 +176,7 @@ public sealed class PlaceCatalog
 
     private static string Key(GameArea area, string categoryId) => $"{area.Key}|{categoryId}";
 
-    [Table("hs_places")]
+    [Table("places")]
     internal sealed class PlaceSetRow
     {
         [PrimaryKey]

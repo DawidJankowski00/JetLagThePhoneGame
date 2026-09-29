@@ -14,6 +14,8 @@ public static class MapPalette
     public const string OwnPosition = "MapOwnPosition";
     public const string Target = "MapTarget";
     public const string TargetCaptured = "MapTargetCaptured";
+    public const string TargetZone = "MapTargetZone";
+    public const string FinalTarget = "MapFinalTarget";
     public const string Track = "MapTrack";
     public const string Teammate = "MapTeammate";
     public const string Opponent = "MapOpponent";

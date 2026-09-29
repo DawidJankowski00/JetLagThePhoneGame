@@ -1,36 +1,52 @@
 namespace TransitGames.Server.Hubs;
 
-/// <summary>Which devices currently have at least one open connection (in memory; empty after a restart).</summary>
+/// <summary>Open connections of every device (in memory; empty after a restart).</summary>
 public sealed class PresenceTracker
 {
-    private readonly Dictionary<Guid, int> _connections = [];
+    private readonly Dictionary<Guid, HashSet<string>> _connections = [];
     private readonly object _gate = new();
 
     /// <summary>Returns true when this is the device's first connection.</summary>
-    public bool Connected(Guid deviceId)
+    public bool Connected(Guid deviceId, string connectionId)
     {
         lock (_gate)
         {
-            var count = _connections.GetValueOrDefault(deviceId) + 1;
-            _connections[deviceId] = count;
-            return count == 1;
+            if (!_connections.TryGetValue(deviceId, out var connections))
+            {
+                _connections[deviceId] = connections = [];
+            }
+
+            connections.Add(connectionId);
+            return connections.Count == 1;
         }
     }
 
     /// <summary>Returns true when the device has no connection left.</summary>
-    public bool Disconnected(Guid deviceId)
+    public bool Disconnected(Guid deviceId, string connectionId)
     {
         lock (_gate)
         {
-            var count = _connections.GetValueOrDefault(deviceId) - 1;
-            if (count <= 0)
+            if (!_connections.TryGetValue(deviceId, out var connections))
+            {
+                return true;
+            }
+
+            connections.Remove(connectionId);
+            if (connections.Count == 0)
             {
                 _connections.Remove(deviceId);
                 return true;
             }
 
-            _connections[deviceId] = count;
             return false;
+        }
+    }
+
+    public IReadOnlyList<string> ConnectionsOf(Guid deviceId)
+    {
+        lock (_gate)
+        {
+            return _connections.TryGetValue(deviceId, out var connections) ? [.. connections] : [];
         }
     }
 

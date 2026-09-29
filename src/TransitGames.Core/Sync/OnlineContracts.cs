@@ -6,7 +6,7 @@ namespace TransitGames.Core.Sync;
 /// <summary>Wire contract between the app and TransitGames.Server. Bump <see cref="Version"/> on breaking changes.</summary>
 public static class OnlineProtocol
 {
-    public const int Version = 1;
+    public const int Version = 2;
 
     public const string HubPath = "/hubs/game";
 
@@ -78,7 +78,8 @@ public sealed record LobbyInfo(
     bool IsFinished);
 
 /// <summary>Credentials of one device in one game. The token authenticates the SignalR connection.</summary>
-public sealed record LobbyTicket(string Code, Guid SessionId, Guid DeviceId, string RoleId, string Token);
+/// <param name="RolesVersion">Roles version <paramref name="RoleId"/> belongs to (non-zero when joining after roles changed).</param>
+public sealed record LobbyTicket(string Code, Guid SessionId, Guid DeviceId, string RoleId, string Token, int RolesVersion = 0);
 
 public sealed record JoinLobbyResult(LobbyTicket Ticket, string GameId, string SettingsJson);
 

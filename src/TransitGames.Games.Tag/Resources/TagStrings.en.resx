@@ -4,10 +4,162 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="ButtonAddPing" xml:space="preserve"><value>📍 Add ping</value></data>
+  <data name="ButtonCapture" xml:space="preserve"><value>✅ Capture</value></data>
+  <data name="ButtonCaught" xml:space="preserve"><value>🙌 Caught!</value></data>
+  <data name="ButtonCaughtRunner" xml:space="preserve"><value>😱 We're caught</value></data>
+  <data name="ButtonEndRound" xml:space="preserve"><value>🏁 End the round</value></data>
+  <data name="ButtonFinish" xml:space="preserve"><value>🏁 Finish</value></data>
+  <data name="ButtonLeave" xml:space="preserve"><value>🚪 Leave</value></data>
+  <data name="ButtonNextRound" xml:space="preserve"><value>⏭ Next round</value></data>
+  <data name="ButtonPingCancel" xml:space="preserve"><value>✖ Cancel ping</value></data>
+  <data name="ButtonScoreboard" xml:space="preserve"><value>🏆 Scores</value></data>
+  <data name="ButtonSendPosition" xml:space="preserve"><value>📍 Send position</value></data>
+  <data name="ButtonSpend" xml:space="preserve"><value>💰 Spend coins</value></data>
+  <data name="ButtonTargets" xml:space="preserve"><value>🎯 Targets</value></data>
+  <data name="ButtonTargetsFormat" xml:space="preserve"><value>🎯 Targets {0}/{1}</value></data>
+  <data name="CaptureConfirmChallengeFormat" xml:space="preserve"><value>Target: {0}
+
+Challenge: {1}
+{2}
+
+Is the challenge done?</value></data>
+  <data name="CaptureConfirmFormat" xml:space="preserve"><value>Capture “{0}”? You have to be there.</value></data>
+  <data name="CaptureTitle" xml:space="preserve"><value>Capture target</value></data>
+  <data name="Category_airport" xml:space="preserve"><value>airport</value></data>
+  <data name="Category_cinema" xml:space="preserve"><value>cinema</value></data>
+  <data name="Category_hospital" xml:space="preserve"><value>hospital</value></data>
+  <data name="Category_library" xml:space="preserve"><value>library</value></data>
+  <data name="Category_museum" xml:space="preserve"><value>museum</value></data>
+  <data name="Category_park" xml:space="preserve"><value>park</value></data>
+  <data name="Category_station" xml:space="preserve"><value>station</value></data>
+  <data name="Category_theatre" xml:space="preserve"><value>theatre</value></data>
+  <data name="Category_university" xml:space="preserve"><value>university</value></data>
+  <data name="Category_zoo" xml:space="preserve"><value>zoo</value></data>
+  <data name="CaughtConfirmChaser" xml:space="preserve"><value>Did you catch the runners? The round ends and the teams swap roles: now you run.</value></data>
+  <data name="CaughtConfirmLast" xml:space="preserve"><value>Caught? This is the last round – the game ends.</value></data>
+  <data name="CaughtConfirmRunner" xml:space="preserve"><value>Did the chasers catch you? The round ends and the teams swap roles: now you chase.</value></data>
+  <data name="CaughtTitle" xml:space="preserve"><value>Caught</value></data>
+  <data name="ChallengeDone" xml:space="preserve"><value>Done</value></data>
+  <data name="ChallengeDoneQuestion" xml:space="preserve"><value>Did you complete the challenge?</value></data>
+  <data name="ChallengeInReachTitleFormat" xml:space="preserve"><value>🎯 You are at: {0}</value></data>
+  <data name="ChallengeLater" xml:space="preserve"><value>Later</value></data>
+  <data name="EditorAddName" xml:space="preserve"><value>Target name</value></data>
+  <data name="EditorAddTitle" xml:space="preserve"><value>New target</value></data>
+  <data name="EditorClear" xml:space="preserve"><value>🗑 Clear targets</value></data>
+  <data name="EditorClearConfirm" xml:space="preserve"><value>Remove all targets?</value></data>
+  <data name="EditorDone" xml:space="preserve"><value>✔ Done</value></data>
+  <data name="EditorModeFinal" xml:space="preserve"><value>Finish mode: tap the map to place the finish.</value></data>
+  <data name="EditorModeTargets" xml:space="preserve"><value>Tap the map to add a target; tap a target to remove it.</value></data>
+  <data name="EditorOutsideArea" xml:space="preserve"><value>A target must lie inside the game area.</value></data>
+  <data name="EditorRemoveFinal" xml:space="preserve"><value>Remove finish</value></data>
+  <data name="EditorRemoveFormat" xml:space="preserve"><value>Remove “{0}”?</value></data>
+  <data name="EditorRemoveTitle" xml:space="preserve"><value>Remove target</value></data>
+  <data name="EditorTitle" xml:space="preserve"><value>Targets on the map</value></data>
+  <data name="EditorToggleMode" xml:space="preserve"><value>🎯 / 🏁 Mode</value></data>
+  <data name="EndCaught" xml:space="preserve"><value>caught</value></data>
+  <data name="EndReachedFinal" xml:space="preserve"><value>reached the finish</value></data>
+  <data name="EndRunning" xml:space="preserve"><value>in progress</value></data>
+  <data name="EndTimeUp" xml:space="preserve"><value>survived</value></data>
+  <data name="EventCaught" xml:space="preserve"><value>Caught after {0}</value></data>
+  <data name="EventPingEntered" xml:space="preserve"><value>Runners' position (entered)</value></data>
+  <data name="EventReachedFinal" xml:space="preserve"><value>The runners reached the finish after {0}</value></data>
+  <data name="EventRoundStarted" xml:space="preserve"><value>Round {0}: {1} run</value></data>
+  <data name="EventTargetCaptured" xml:space="preserve"><value>Target captured: {0}</value></data>
+  <data name="EventTimeUp" xml:space="preserve"><value>Time is up – the runners survived {0}</value></data>
+  <data name="FinalTargetName" xml:space="preserve"><value>Finish</value></data>
+  <data name="FinalTargetStatus" xml:space="preserve"><value>Finish – reaching it ends the round with a bonus</value></data>
   <data name="GameDescription" xml:space="preserve"><value>Runners capture targets on the map, chasers try to catch them.</value></data>
   <data name="GameName" xml:space="preserve"><value>Tag</value></data>
+  <data name="LegendCaptured" xml:space="preserve"><value>captured target</value></data>
+  <data name="LegendRunners" xml:space="preserve"><value>runners (ping)</value></data>
+  <data name="LegendTarget" xml:space="preserve"><value>target</value></data>
+  <data name="MapPingFormat" xml:space="preserve"><value>Runners · {0:HH:mm}</value></data>
+  <data name="MinutesFormat" xml:space="preserve"><value>{0} min</value></data>
+  <data name="NoticeDraw" xml:space="preserve"><value>Game over: a draw!</value></data>
+  <data name="NoticePickPing" xml:space="preserve"><value>Tap the map where the runners are.</value></data>
+  <data name="NoticePingDueChaser" xml:space="preserve"><value>Ping time: ask the runners for their position and add it on the map.</value></data>
+  <data name="NoticePingDueRunner" xml:space="preserve"><value>Ping time: send your position to the chasers.</value></data>
+  <data name="NoticeTimeUp" xml:space="preserve"><value>Round time is up – the runners survived!</value></data>
+  <data name="NoticeWinnerFormat" xml:space="preserve"><value>Game over: {0} wins!</value></data>
+  <data name="PhaseChaseChaserFormat" xml:space="preserve"><value>🔎 You chase · {0} ({1} left)</value></data>
+  <data name="PhaseChaseRunnerFormat" xml:space="preserve"><value>🏃 You run · {0} ({1} left)</value></data>
+  <data name="PhaseGameOver" xml:space="preserve"><value>🏁 Game over</value></data>
+  <data name="PhaseHeadStartChaserFormat" xml:space="preserve"><value>⏳ Wait – the chase starts in {0}</value></data>
+  <data name="PhaseHeadStartRunnerFormat" xml:space="preserve"><value>🏃 Run! The chase starts in {0}</value></data>
+  <data name="PhaseTimeUp" xml:space="preserve"><value>⏱ Time is up</value></data>
+  <data name="PingNoLocation" xml:space="preserve"><value>No GPS position. Check location services.</value></data>
+  <data name="PingShareTextFormat" xml:space="preserve"><value>Tag – runners' position at {0:HH:mm}: {1}
+{2}</value></data>
+  <data name="PingTitle" xml:space="preserve"><value>Position ping</value></data>
+  <data name="RewardCoinsFormat" xml:space="preserve"><value>{0} coins</value></data>
+  <data name="RewardKindCoins" xml:space="preserve"><value>Coins for fares</value></data>
+  <data name="RewardKindPoints" xml:space="preserve"><value>Points for the score</value></data>
+  <data name="RewardPointsFormat" xml:space="preserve"><value>{0} pts</value></data>
   <data name="RoleChaser" xml:space="preserve"><value>Chaser</value></data>
   <data name="RoleChaserDescription" xml:space="preserve"><value>Follows location pings and catches the runners.</value></data>
   <data name="RoleRunner" xml:space="preserve"><value>Runner</value></data>
   <data name="RoleRunnerDescription" xml:space="preserve"><value>Captures targets and avoids being caught.</value></data>
+  <data name="RoundEndedFormat" xml:space="preserve"><value>{0}: {1} after {2}.</value></data>
+  <data name="RoundEndedGameOver" xml:space="preserve"><value>That was the last round. See the scores.</value></data>
+  <data name="RoundEndedNowChasersFormat" xml:space="preserve"><value>Roles swapped: now you chase. The chase starts in {0}.</value></data>
+  <data name="RoundEndedNowRunners" xml:space="preserve"><value>Roles swapped: now you run. Go!</value></data>
+  <data name="RoundEndedTitle" xml:space="preserve"><value>Round over</value></data>
+  <data name="RoundFormat" xml:space="preserve"><value>Round {0} of {1} · running: {2}</value></data>
+  <data name="RoundRowDetailsFormat" xml:space="preserve"><value>{0} · {1} · targets: {2} · +{3} pts</value></data>
+  <data name="RoundRowTitleFormat" xml:space="preserve"><value>Round {0}: {1} run</value></data>
+  <data name="ScoreboardRounds" xml:space="preserve"><value>Rounds</value></data>
+  <data name="ScoreboardTitle" xml:space="preserve"><value>Scores</value></data>
+  <data name="ScoreFormat" xml:space="preserve"><value>{0} pts</value></data>
+  <data name="ScoreOfflineHint" xml:space="preserve"><value>Offline game: this phone only knows the targets captured by its own team. Agree on the other team's points at the end.</value></data>
+  <data name="ScoreRulesCoins" xml:space="preserve"><value>Round score = minutes survived + finish bonus. Coins from targets pay for fares.</value></data>
+  <data name="ScoreRulesPoints" xml:space="preserve"><value>Round score = minutes survived + target points + finish bonus.</value></data>
+  <data name="SettingsAutoCapture" xml:space="preserve"><value>Capture targets automatically</value></data>
+  <data name="SettingsAutoCaptureHint" xml:space="preserve"><value>A target without a challenge is captured by itself when you enter its radius (GPS).</value></data>
+  <data name="SettingsCatchRadius" xml:space="preserve"><value>Catch distance</value></data>
+  <data name="SettingsCatchRadiusHint" xml:space="preserve"><value>A rule for the players: the chasers' position never reaches the runners, so the app does not check it.</value></data>
+  <data name="SettingsChallenges" xml:space="preserve"><value>Challenges at targets</value></data>
+  <data name="SettingsChallengesHint" xml:space="preserve"><value>A target is captured after doing its challenge on the spot (JSON list).</value></data>
+  <data name="SettingsDownloadingPlaces" xml:space="preserve"><value>Downloading places from OpenStreetMap…</value></data>
+  <data name="SettingsDraw" xml:space="preserve"><value>🎲 Draw targets</value></data>
+  <data name="SettingsEditOnMap" xml:space="preserve"><value>🗺 Edit on the map</value></data>
+  <data name="SettingsHeadStart" xml:space="preserve"><value>Head start</value></data>
+  <data name="SettingsNoFinal" xml:space="preserve"><value>no finish</value></data>
+  <data name="SettingsNoPlaces" xml:space="preserve"><value>There are no places of this category in the game area.</value></data>
+  <data name="SettingsPlacesFailed" xml:space="preserve"><value>Could not download the places (no network?). Try again or use stations.</value></data>
+  <data name="SettingsRevealInterval" xml:space="preserve"><value>Runners revealed every</value></data>
+  <data name="SettingsRewardKind" xml:space="preserve"><value>Target rewards</value></data>
+  <data name="SettingsRoundDuration" xml:space="preserve"><value>Round time</value></data>
+  <data name="SettingsRounds" xml:space="preserve"><value>Rounds (roles swap after each)</value></data>
+  <data name="SettingsTargetCount" xml:space="preserve"><value>Number of targets</value></data>
+  <data name="SettingsTargetRadius" xml:space="preserve"><value>Target radius</value></data>
+  <data name="SettingsTargets" xml:space="preserve"><value>Targets</value></data>
+  <data name="SettingsTargetsSummaryFormat" xml:space="preserve"><value>{0} targets ({1} with a challenge), {2} in total, {3}</value></data>
+  <data name="SettingsWithFinal" xml:space="preserve"><value>with a finish</value></data>
+  <data name="SourceManual" xml:space="preserve"><value>Picked by hand on the map</value></data>
+  <data name="SourcePlaces" xml:space="preserve"><value>Random places from the map (OSM)</value></data>
+  <data name="SourceStations" xml:space="preserve"><value>Random stations</value></data>
+  <data name="SpendAmountFormat" xml:space="preserve"><value>How many coins? You have {0}.</value></data>
+  <data name="SpendNote" xml:space="preserve"><value>What for? (e.g. tram 4)</value></data>
+  <data name="SpendTitle" xml:space="preserve"><value>Spend coins</value></data>
+  <data name="SpendTooMuch" xml:space="preserve"><value>You don't have that many coins.</value></data>
+  <data name="StatusCatchRadiusFormat" xml:space="preserve"><value>catch: {0}</value></data>
+  <data name="StatusCoinsFormat" xml:space="preserve"><value>💰 {0} coins</value></data>
+  <data name="StatusLastPingFormat" xml:space="preserve"><value>last ping {0:HH:mm}</value></data>
+  <data name="StatusNextPingFormat" xml:space="preserve"><value>ping at {0:HH:mm} (in {1})</value></data>
+  <data name="StatusNoPing" xml:space="preserve"><value>no ping yet</value></data>
+  <data name="StatusPointsFormat" xml:space="preserve"><value>🎯 {0} pts</value></data>
+  <data name="TargetActive" xml:space="preserve"><value>to capture</value></data>
+  <data name="TargetCapturedFormat" xml:space="preserve"><value>✓ captured at {0:HH:mm}</value></data>
+  <data name="TargetDefaultName" xml:space="preserve"><value>Target {0}</value></data>
+  <data name="TargetsHeaderChaserFormat" xml:space="preserve"><value>The runners captured {0} of {1} targets.</value></data>
+  <data name="TargetsHeaderRunnerFormat" xml:space="preserve"><value>Captured: {0} of {1}. A target is captured within {2}.</value></data>
+  <data name="TargetsTitle" xml:space="preserve"><value>Targets</value></data>
+  <data name="TeamDetailsFormat" xml:space="preserve"><value>survived {0} · targets: {1} · points: {2}</value></data>
+  <data name="TeamFirst" xml:space="preserve"><value>Team 1</value></data>
+  <data name="TeamSecond" xml:space="preserve"><value>Team 2</value></data>
+  <data name="TeamYouFormat" xml:space="preserve"><value>{0} (you)</value></data>
+  <data name="TimeUpConfirmLast" xml:space="preserve"><value>End the last round? The runners survived the whole time.</value></data>
+  <data name="TimeUpConfirmNext" xml:space="preserve"><value>Start the next round? The teams swap roles.</value></data>
+  <data name="TimeUpTitle" xml:space="preserve"><value>Time is up</value></data>
 </root>

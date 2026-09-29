@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using TransitGames.Core.Games;
 using TransitGames.Core.Sessions;
 using TransitGames.Core.Sync;
-using TransitGames.Games.HideAndSeek.Places;
+using TransitGames.Geo.Places;
 using TransitGames.Games.HideAndSeek.Sync;
 using TransitGames.Games.HideAndSeek.Resources;
 
@@ -38,7 +38,6 @@ public sealed class HideAndSeekModule : GameModule<HideAndSeekSettings, HideAndS
     public override void RegisterServices(IServiceCollection services)
     {
         services.AddSingleton<IGameMessageHandler, HideAndSeekMessageHandler>();
-        services.TryAddTransient<PlaceCatalog>();
     }
 }
 

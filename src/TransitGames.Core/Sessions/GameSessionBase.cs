@@ -2,6 +2,7 @@ using System.Text.Json;
 using TransitGames.Core.Events;
 using TransitGames.Core.Games;
 using TransitGames.Core.Resources;
+using TransitGames.Core.Sync;
 
 namespace TransitGames.Core.Sessions;
 
@@ -29,6 +30,7 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
         GameId = snapshot.GameId;
         Settings = settings;
         LocalRoleId = snapshot.LocalRoleId;
+        RolesVersion = snapshot.RolesVersion;
         Status = snapshot.Status;
         CreatedAt = snapshot.CreatedAt;
         State = JsonSerializer.Deserialize<TState>(snapshot.StateJson, GameJson.Options) ?? new TState();
@@ -38,7 +40,8 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
     public string GameId { get; }
     public TSettings Settings { get; }
     GameSettings IGameSession.Settings => Settings;
-    public string LocalRoleId { get; protected set; }
+    public string LocalRoleId { get; private set; }
+    public int RolesVersion { get; private set; }
     public SessionStatus Status { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
 
@@ -61,6 +64,31 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
         NotifyChanged();
     }
 
+    public void InitializeRolesVersion(int version)
+    {
+        if (Status != SessionStatus.Setup)
+        {
+            throw new InvalidOperationException("The roles version can only be set before the game starts.");
+        }
+
+        RolesVersion = version;
+    }
+
+    public bool ApplyRoleChange(RoleChange change, DateTimeOffset now)
+    {
+        if (change.FromVersion != RolesVersion)
+        {
+            return false;
+        }
+
+        var previous = LocalRoleId;
+        LocalRoleId = change.Apply(previous);
+        RolesVersion++;
+        OnRolesChanged(previous, now);
+        NotifyChanged();
+        return true;
+    }
+
     public void Finish(DateTimeOffset now)
     {
         if (Status == SessionStatus.Finished)
@@ -79,6 +107,7 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
         SessionId = Id,
         GameId = GameId,
         LocalRoleId = LocalRoleId,
+        RolesVersion = RolesVersion,
         Status = Status,
         CreatedAt = CreatedAt == default ? now : CreatedAt,
         UpdatedAt = now,
@@ -91,6 +120,11 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
     }
 
     protected virtual void OnFinished(DateTimeOffset now)
+    {
+    }
+
+    /// <summary>Called after <see cref="ApplyRoleChange"/> changed the local role (from <paramref name="previousRoleId"/>).</summary>
+    protected virtual void OnRolesChanged(string previousRoleId, DateTimeOffset now)
     {
     }
 

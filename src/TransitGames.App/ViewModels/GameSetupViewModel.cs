@@ -21,6 +21,7 @@ public sealed partial class GameSetupViewModel : ObservableObject
     private readonly OnlineGameService _onlineGames;
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
+    private readonly IServiceProvider _services;
     private readonly ILogger<GameSetupViewModel> _logger;
 
     public GameSetupViewModel(
@@ -31,6 +32,7 @@ public sealed partial class GameSetupViewModel : ObservableObject
         OnlineGameService onlineGames,
         IDialogService dialogs,
         INavigationService navigation,
+        IServiceProvider services,
         ILogger<GameSetupViewModel> logger)
     {
         _wizard = wizard;
@@ -40,6 +42,7 @@ public sealed partial class GameSetupViewModel : ObservableObject
         _onlineGames = onlineGames;
         _dialogs = dialogs;
         _navigation = navigation;
+        _services = services;
         _logger = logger;
         PlayOnline = onlinePreferences.IsConfigured;
     }
@@ -58,12 +61,15 @@ public sealed partial class GameSetupViewModel : ObservableObject
 
     public bool IsBusy => BusyText is not null;
 
-    /// <summary>The game's settings editor (created once per wizard run), or null.</summary>
+    /// <summary>The game's settings editor (created once per wizard run), or null. The area and stations are already set.</summary>
     public View? CreateSettingsView()
     {
         var module = _wizard.RequireModule();
         Summary = string.Format(UiStrings.GameSetupSummaryFormat, module.DisplayName, _wizard.Role?.DisplayName, _wizard.Stations.Count);
-        return _uiRegistry.Get(module.Id).CreateSettingsView(_wizard.RequireSettings());
+        var settings = _wizard.RequireSettings();
+        settings.Area = _wizard.RequireArea().ToDefinition();
+        settings.Stations = [.. _wizard.Stations];
+        return _uiRegistry.Get(module.Id).CreateSettingsView(settings, _services);
     }
 
     private bool CanStart() => BusyText is null;

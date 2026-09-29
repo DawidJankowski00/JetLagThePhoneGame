@@ -1,6 +1,6 @@
 using TransitGames.Core.Geography;
 
-namespace TransitGames.Games.HideAndSeek.Places;
+namespace TransitGames.Geo.Places;
 
 /// <summary>
 /// A point of interest used by questions (museum, park, station...). Area places (districts) also carry their

@@ -28,6 +28,9 @@ public sealed record SyncMessage
 
     /// <summary>Player name of the sending device; filled in by the server.</summary>
     public string? SenderName { get; init; }
+
+    /// <summary>Roles change caused by this message (e.g. a catch swapping runners and chasers), see <see cref="Sync.RoleChange"/>.</summary>
+    public RoleChange? RoleChange { get; init; }
 }
 
 public enum SyncConnectionState

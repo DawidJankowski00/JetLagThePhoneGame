@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.Games.Tag.Maui.ViewModels"
+             xmlns:res="clr-namespace:TransitGames.Games.Tag.Resources;assembly=TransitGames.Games.Tag"
+             x:Class="TransitGames.Games.Tag.Maui.Pages.TagTargetsPage"
+             x:DataType="vm:TagTargetsViewModel"
+             Title="{x:Static res:TagStrings.TargetsTitle}"
+             Style="{StaticResource PageBackground}">
+    <CollectionView ItemsSource="{Binding Targets}" SelectionMode="None" Margin="16,0">
+        <CollectionView.Header>
+            <Label Text="{Binding HeaderText}" Style="{StaticResource Caption}" Padding="0,12,0,8" />
+        </CollectionView.Header>
+        <CollectionView.ItemsLayout>
+            <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+        </CollectionView.ItemsLayout>
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="vm:TargetItem">
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="4">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="{Binding Name}" FontAttributes="Bold" FontSize="17" />
+                            <Label Grid.Column="1" Text="{Binding RewardText}" FontAttributes="Bold" />
+                        </Grid>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="{Binding StatusText}" Style="{StaticResource Caption}" FontSize="12" />
+                            <Label Grid.Column="1" Text="{Binding DistanceText}" Style="{StaticResource Caption}" FontSize="12" />
+                        </Grid>
+                        <VerticalStackLayout IsVisible="{Binding HasChallenge}" Spacing="2" Margin="0,4,0,0">
+                            <Label Text="{Binding ChallengeTitle, StringFormat='🎲 {0}'}" FontAttributes="Bold" />
+                            <Label Text="{Binding ChallengeText}" />
+                        </VerticalStackLayout>
+                        <Button Text="{x:Static res:TagStrings.ButtonCapture}" IsVisible="{Binding CanCapture}" Style="{StaticResource BigButton}"
+                                Margin="0,4,0,0"
+                                Command="{Binding CaptureCommand, Source={RelativeSource AncestorType={x:Type vm:TagTargetsViewModel}}, x:DataType=vm:TagTargetsViewModel}"
+                                CommandParameter="{Binding .}" />
+                    </VerticalStackLayout>
+                </Border>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+    </CollectionView>
+</ContentPage>

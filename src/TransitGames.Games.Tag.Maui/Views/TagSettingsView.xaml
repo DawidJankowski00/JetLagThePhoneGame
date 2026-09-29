@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.Games.Tag.Maui.ViewModels"
+             xmlns:res="clr-namespace:TransitGames.Games.Tag.Resources;assembly=TransitGames.Games.Tag"
+             x:Class="TransitGames.Games.Tag.Maui.Views.TagSettingsView"
+             x:DataType="vm:TagSettingsViewModel">
+    <VerticalStackLayout Spacing="12">
+        <Border Style="{StaticResource Card}">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{x:Static res:TagStrings.SettingsRounds}" FontAttributes="Bold" />
+                <Picker ItemsSource="{Binding RoundCounts}" SelectedItem="{Binding SelectedRounds}" />
+                <Label Text="{x:Static res:TagStrings.SettingsRoundDuration}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding RoundDurations}" SelectedItem="{Binding SelectedRoundDuration}" />
+                <Label Text="{x:Static res:TagStrings.SettingsHeadStart}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding HeadStarts}" SelectedItem="{Binding SelectedHeadStart}" />
+                <Label Text="{x:Static res:TagStrings.SettingsRevealInterval}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding RevealIntervals}" SelectedItem="{Binding SelectedRevealInterval}" />
+                <Label Text="{x:Static res:TagStrings.SettingsCatchRadius}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding CatchRadii}" SelectedItem="{Binding SelectedCatchRadius}" />
+                <Label Text="{x:Static res:TagStrings.SettingsCatchRadiusHint}" Style="{StaticResource Caption}" FontSize="12" />
+            </VerticalStackLayout>
+        </Border>
+
+        <Border Style="{StaticResource Card}">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{x:Static res:TagStrings.SettingsTargets}" FontAttributes="Bold" />
+                <Picker ItemsSource="{Binding Sources}" SelectedItem="{Binding SelectedSource}" />
+                <Picker ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" IsVisible="{Binding IsPlaces}" />
+                <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding CanDraw}">
+                    <Label Text="{x:Static res:TagStrings.SettingsTargetCount}" VerticalOptions="Center" />
+                    <Picker Grid.Column="1" ItemsSource="{Binding TargetCounts}" SelectedItem="{Binding SelectedTargetCount}" WidthRequest="80" />
+                </Grid>
+                <Label Text="{Binding TargetsSummary}" Style="{StaticResource Caption}" Margin="0,4,0,0" />
+                <Label Text="{Binding BusyText}" IsVisible="{Binding IsBusy}" Style="{StaticResource Caption}" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                    <Button Text="{x:Static res:TagStrings.SettingsDraw}" Style="{StaticResource ToolButton}" Command="{Binding DrawCommand}"
+                            IsVisible="{Binding CanDraw}" />
+                    <Button Grid.Column="1" Text="{x:Static res:TagStrings.SettingsEditOnMap}" Style="{StaticResource ToolButton}"
+                            Command="{Binding EditOnMapCommand}" />
+                </Grid>
+                <Label Text="{x:Static res:TagStrings.SettingsTargetRadius}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding TargetRadii}" SelectedItem="{Binding SelectedTargetRadius}" />
+                <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Label Text="{x:Static res:TagStrings.SettingsAutoCapture}" />
+                        <Label Text="{x:Static res:TagStrings.SettingsAutoCaptureHint}" Style="{StaticResource Caption}" FontSize="12" />
+                    </VerticalStackLayout>
+                    <Switch Grid.Column="1" IsToggled="{Binding AutoCapture}" VerticalOptions="Center" />
+                </Grid>
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Label Text="{x:Static res:TagStrings.SettingsChallenges}" />
+                        <Label Text="{x:Static res:TagStrings.SettingsChallengesHint}" Style="{StaticResource Caption}" FontSize="12" />
+                    </VerticalStackLayout>
+                    <Switch Grid.Column="1" IsToggled="{Binding ChallengesEnabled}" VerticalOptions="Center" />
+                </Grid>
+                <Label Text="{x:Static res:TagStrings.SettingsRewardKind}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding RewardKinds}" SelectedItem="{Binding SelectedRewardKind}" />
+            </VerticalStackLayout>
+        </Border>
+    </VerticalStackLayout>
+</ContentView>

@@ -30,6 +30,9 @@ internal sealed class LobbyRow
     public long CreatedAtTicks { get; set; }
     public long UpdatedAtTicks { get; set; }
     public bool IsFinished { get; set; }
+
+    /// <summary>Number of role changes so far (see <c>RoleChange</c>).</summary>
+    public int RolesVersion { get; set; }
 }
 
 [Table("devices")]
@@ -41,7 +44,9 @@ internal sealed class DeviceRow
     [Indexed]
     public Guid SessionId { get; set; }
 
+    /// <summary>Current role; its history is in <see cref="DeviceRoleRow"/>.</summary>
     public string RoleId { get; set; } = string.Empty;
+
     public string Name { get; set; } = string.Empty;
 
     /// <summary>SHA-256 of the device token; the token itself is only known to the device.</summary>
@@ -70,7 +75,32 @@ internal sealed class MessageRow
     /// <summary>Roles allowed to receive the message, as "|role1|role2|" (decided once, at publish time).</summary>
     public string RecipientRoles { get; set; } = string.Empty;
 
+    /// <summary>Roles version at publish time: <see cref="RecipientRoles"/> refers to the roles of that version.</summary>
+    public int RolesVersion { get; set; }
+
+    /// <summary>Addressed to every role, so visible to every device whatever its role history.</summary>
+    public bool ToAll { get; set; }
+
     public string Json { get; set; } = string.Empty;
+}
+
+/// <summary>The role a device had in a given roles version (a device that joined later has no rows for earlier versions).</summary>
+[Table("device_roles")]
+internal sealed class DeviceRoleRow
+{
+    [PrimaryKey, AutoIncrement]
+    public long Id { get; set; }
+
+    [Indexed(Name = "device_roles_device_version", Order = 1, Unique = true)]
+    public Guid DeviceId { get; set; }
+
+    [Indexed(Name = "device_roles_device_version", Order = 2, Unique = true)]
+    public int Version { get; set; }
+
+    [Indexed]
+    public Guid SessionId { get; set; }
+
+    public string RoleId { get; set; } = string.Empty;
 }
 
 /// <summary>SQLite persistence of the server: games survive a container restart.</summary>
@@ -93,7 +123,12 @@ public sealed class ServerStore : IAsyncDisposable
         _init = new Lazy<Task>(async () =>
         {
             await _connection.EnableWriteAheadLoggingAsync();
-            await _connection.CreateTablesAsync<LobbyRow, DeviceRow, MessageRow>();
+            await _connection.CreateTablesAsync<LobbyRow, DeviceRow, MessageRow, DeviceRoleRow>();
+
+            // Devices stored before role history existed: their role at version 0.
+            await _connection.ExecuteAsync(
+                "INSERT INTO device_roles (DeviceId, Version, SessionId, RoleId) SELECT Id, 0, SessionId, RoleId FROM devices " +
+                "WHERE Id NOT IN (SELECT DeviceId FROM device_roles)");
         });
     }
 

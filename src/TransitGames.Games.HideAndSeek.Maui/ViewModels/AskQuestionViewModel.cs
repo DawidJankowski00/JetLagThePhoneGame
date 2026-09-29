@@ -6,7 +6,7 @@ using TransitGames.Core.Geography;
 using TransitGames.Geo.Areas;
 using TransitGames.Geo.Overpass;
 using TransitGames.Games.HideAndSeek.Maui.Services;
-using TransitGames.Games.HideAndSeek.Places;
+using TransitGames.Geo.Places;
 using TransitGames.Games.HideAndSeek.Questions;
 using TransitGames.Games.HideAndSeek.Resources;
 using TransitGames.UI.Resources;

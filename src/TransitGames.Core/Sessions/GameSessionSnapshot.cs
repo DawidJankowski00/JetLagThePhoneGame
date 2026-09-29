@@ -6,6 +6,7 @@ public sealed record GameSessionSnapshot
     public required Guid SessionId { get; init; }
     public required string GameId { get; init; }
     public required string LocalRoleId { get; init; }
+    public int RolesVersion { get; init; }
     public required SessionStatus Status { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }
     public required DateTimeOffset UpdatedAt { get; init; }

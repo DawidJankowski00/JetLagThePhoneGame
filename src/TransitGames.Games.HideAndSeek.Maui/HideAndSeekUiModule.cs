@@ -27,7 +27,7 @@ public sealed class HideAndSeekUiModule : GameUiModule<HideAndSeekModule>
 
     public override string GetGameRoute(string roleId) => MainRoute;
 
-    public override View? CreateSettingsView(GameSettings settings) =>
+    public override View? CreateSettingsView(GameSettings settings, IServiceProvider services) =>
         settings is HideAndSeekSettings typed ? new HideAndSeekSettingsView(new HideAndSeekSettingsViewModel(typed)) : null;
 
     protected override void RegisterUiServices(IServiceCollection services)

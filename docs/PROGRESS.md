@@ -154,10 +154,35 @@ Tryb online powstał przed grami, żeby Hide and Seek i Tag od razu z niego korz
 - Testy: 166/166 (Core 27, Geo 61, Tracking 25, Sync 19, HideAndSeek 29 — w tym test własności podpowiedzi
   na 60 losowych rundach, Tag 4).
 
-**Następny krok — Etap 6: Tag**
-- Cele na mapie (ręcznie / losowane ze stacji / POI OSM), zdobywanie ręczne i automatyczne (geofencing),
-  nagrody, cel końcowy.
-- Pingi pozycji uciekających goniącym co `RevealInterval` (online automatycznie — gotowe w `OnlineSessionCoordinator`;
-  offline ręczny ping z wpisaniem pozycji).
-- „Złapany”: czas i miejsce, zamiana ról i kolejna runda (online: zmiana roli urządzenia na serwerze), tabela wyników.
-- Wyzwania w JSON.
+## ✅ Etap 6 — Tag (2026-09-29)
+
+**Działa:**
+- Logika (`TransitGames.Games.Tag`, bez MAUI):
+  - rundy z przewagą na start, czasem rundy i zamianą ról po każdej; drużyny 1/2 niezależne od ról;
+  - cele: losowane ze stacji albo miejsc OSM (rozrzucone, nagrody 5/10/15), ręczne, meta z premią;
+  - wyzwania w JSON (rozdawane celom lub jako cele z własnym miejscem);
+  - wynik: przetrwane minuty + punkty z celów + premia za metę; tryb monet na przejazdy;
+  - wiadomości `tag.capture`, `tag.round.end` (z `RoleChange`), `tag.spend` i idempotentny handler.
+- Core/serwer: zamiana ról w trakcie gry (`RoleChange`, `RolesVersion` w sesji, bilecie i łączu), serwer z historią
+  ról urządzeń, przenoszeniem połączeń między grupami i widocznością wg roli z chwili wysłania (protokół v2);
+  `PlaceCatalog` przeniesiony do `TransitGames.Geo`; `GeoPoint.DistanceTo`.
+- UI: ustawienia Tag w kreatorze (rundy, czasy, pingi, zasięgi, źródło i liczba celów, wyzwania, nagrody), edytor
+  celów i mety na mapie, ekran gry (cele i ich zasięg, pingi, faza i odliczanie, „Złapany”, następna runda, monety,
+  ręczne pingi offline), lista celów z wyzwaniami i zdobywaniem, tabela wyników, geofencing w tle.
+- Zweryfikowano na emulatorze (online, drugi telefon = bot-uciekający, serwer w Dockerze):
+  - kreator: 6 celów wylosowanych ze stacji z wyzwaniami, meta ustawiona w edytorze;
+  - goniący widzi pingi bota i zdobyty przez niego cel („Politechnika” na zielono, 1/6); przewaga blokuje „Złapany”;
+  - po przewadze goniący naciska „Złapany” → komunikat o końcu rundy i zamianie ról, emulator staje się
+    uciekającym i udostępnia pozycję; bot (teraz goniący) dostaje koniec rundy, zmienia rolę, przestaje wysyłać
+    pozycję i odbiera pozycję nowego uciekającego; tabela wyników 23 pkt (11 min + 12 pkt za cel) : 0;
+  - „Zakończ” kończy grę także u bota;
+  - offline jako uciekający (1 runda, bez przewagi, bez wyzwań): przypomnienie o pingu, przesunięcie GPS na
+    stację-cel → cel zdobyty automatycznie (geofencing), „Złapali nas” → koniec gry i zwycięzca;
+  - znalezione i poprawione: przystanki zasłaniały cele (usunięte z mapy Tag), emoji w etykietach mapy,
+    podwójny komunikat o końcu rundy.
+- Testy: 188/188 (Core 29, Geo 62, Tracking 25, Sync 25 — w tym 6 testów zamiany ról na serwerze, HideAndSeek 28,
+  Tag 19); cała solucja buduje się bez ostrzeżeń.
+
+**Następny krok — Etap 7: Dopracowanie**
+- Powiadomienia (koniec czasu ukrycia, nowe pytanie, ping, koniec przewagi), historia gier z osią czasu i wynikami,
+  podgląd tras, przegląd tłumaczeń i trybu ciemnego, dokumentacja użytkownika.

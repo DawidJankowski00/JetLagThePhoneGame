@@ -20,12 +20,21 @@ public sealed class LobbyException(int statusCode, string code, string message) 
 /// <summary>An authenticated device (resolved from its token).</summary>
 public sealed record DeviceIdentity(Guid DeviceId, Guid SessionId, string RoleId, string Name);
 
-/// <summary>Result of publishing: <see cref="IsNew"/> is false for a retried message that was already stored.</summary>
-public sealed record PublishResult(SequencedMessage Message, IReadOnlyList<string> RecipientRoles, bool IsNew);
+/// <summary>A device whose role changed when a message with a <see cref="RoleChange"/> was published.</summary>
+public sealed record RoleMove(Guid DeviceId, string OldRoleId, string NewRoleId);
+
+/// <summary>
+/// Result of publishing: <see cref="IsNew"/> is false for a retried message that was already stored;
+/// <see cref="RoleMoves"/> lists devices whose role the message changed.
+/// </summary>
+public sealed record PublishResult(SequencedMessage Message, IReadOnlyList<string> RecipientRoles, bool IsNew, IReadOnlyList<RoleMove> RoleMoves);
 
 /// <summary>
 /// Games ("lobbies"), their devices and messages. The server is game-agnostic: it only knows role ids and the
 /// location sharing rules sent by the host, and enforces those rules for <see cref="SyncMessageTypes.Location"/>.
+/// Roles can change during a game (<see cref="RoleChange"/>); every message remembers the roles version it was
+/// sent under, and a device sees it only if its role <em>at that version</em> was a recipient — so after runners and
+/// chasers swap, nobody catches up on positions they were not allowed to see when they were sent.
 /// </summary>
 public sealed class LobbyService
 {
@@ -73,7 +82,7 @@ public sealed class LobbyService
                 CreatedAtTicks = now,
                 UpdatedAtTicks = now,
             });
-            return await AddDeviceAsync(code, request.SessionId, request.RoleId, request.PlayerName);
+            return await AddDeviceAsync(code, request.SessionId, 0, request.RoleId, request.PlayerName);
         }
         finally
         {
@@ -110,7 +119,9 @@ public sealed class LobbyService
         await _writeLock.WaitAsync();
         try
         {
-            var ticket = await AddDeviceAsync(lobby.Code, lobby.SessionId, request.RoleId, request.PlayerName);
+            // Re-read under the lock: the roles version may have changed since the lookup above.
+            lobby = await GetLobbyAsync(code);
+            var ticket = await AddDeviceAsync(lobby.Code, lobby.SessionId, lobby.RolesVersion, request.RoleId, request.PlayerName);
             return new JoinLobbyResult(ticket, lobby.GameId, lobby.SettingsJson);
         }
         finally
@@ -132,6 +143,14 @@ public sealed class LobbyService
         return device is null ? null : new DeviceIdentity(device.Id, device.SessionId, device.RoleId, device.Name);
     }
 
+    /// <summary>The device as it is now (its role may have changed since its connection was authenticated).</summary>
+    public async Task<DeviceIdentity?> GetDeviceAsync(Guid deviceId)
+    {
+        var db = await _store.GetAsync();
+        var device = await db.FindAsync<DeviceRow>(deviceId);
+        return device is null ? null : new DeviceIdentity(device.Id, device.SessionId, device.RoleId, device.Name);
+    }
+
     public async Task<IReadOnlyList<SyncPeer>> GetPeersAsync(Guid sessionId, IReadOnlyCollection<Guid> connectedDevices)
     {
         var db = await _store.GetAsync();
@@ -149,43 +168,58 @@ public sealed class LobbyService
             throw Invalid("Message id and type are required.");
         }
 
-        var lobby = await GetLobbyBySessionAsync(sender.SessionId);
-
-        // Identity comes from the token, never from the client's claims.
-        var stamped = message with
-        {
-            SessionId = sender.SessionId,
-            SenderRoleId = sender.RoleId,
-            SenderDeviceId = sender.DeviceId,
-            SenderName = sender.Name,
-        };
-        var recipients = RecipientRoles(lobby, stamped);
         var db = await _store.GetAsync();
-
         await _writeLock.WaitAsync();
         try
         {
             var existing = await db.Table<MessageRow>().Where(m => m.MessageId == message.Id).FirstOrDefaultAsync();
             if (existing is not null)
             {
-                return new PublishResult(ToSequenced(existing), Split(existing.RecipientRoles), IsNew: false);
+                return new PublishResult(ToSequenced(existing), Split(existing.RecipientRoles), IsNew: false, []);
+            }
+
+            var lobby = await GetLobbyBySessionAsync(sender.SessionId);
+            var device = await db.FindAsync<DeviceRow>(sender.DeviceId)
+                ?? throw new LobbyException(StatusCodes.Status404NotFound, OnlineErrorCodes.LobbyNotFound, "Unknown device.");
+
+            // Identity comes from the token and the current role, never from the client's claims.
+            var stamped = message with
+            {
+                SessionId = device.SessionId,
+                SenderRoleId = device.RoleId,
+                SenderDeviceId = device.Id,
+                SenderName = device.Name,
+            };
+            var recipients = RecipientRoles(lobby, stamped);
+            var allRoles = Roles(lobby).Select(r => r.Id).ToList();
+            var toAll = allRoles.All(recipients.Contains);
+
+            // A role change is applied once, for the version it was made for, and only when everybody sees it.
+            var change = stamped.RoleChange;
+            if (change is not null && (change.FromVersion != lobby.RolesVersion || !change.IsPermutationOf(allRoles) || !toAll))
+            {
+                change = null;
+                stamped = stamped with { RoleChange = null };
             }
 
             var row = new MessageRow
             {
                 MessageId = stamped.Id,
                 SessionId = stamped.SessionId,
-                SenderDeviceId = sender.DeviceId,
+                SenderDeviceId = device.Id,
                 Type = stamped.Type,
                 RecipientRoles = Join(recipients),
+                RolesVersion = lobby.RolesVersion,
+                ToAll = toAll,
                 Json = JsonSerializer.Serialize(stamped, GameJson.Options),
             };
             await db.InsertAsync(row);
 
+            var moves = change is null ? [] : await ApplyRoleChangeAsync(db, lobby, change);
             lobby.UpdatedAtTicks = _time.GetUtcNow().UtcTicks;
             lobby.IsFinished |= stamped.Type == SyncMessageTypes.SessionFinished;
             await db.UpdateAsync(lobby);
-            return new PublishResult(new SequencedMessage(row.Sequence, stamped), recipients, IsNew: true);
+            return new PublishResult(new SequencedMessage(row.Sequence, stamped), recipients, IsNew: true, moves);
         }
         finally
         {
@@ -193,29 +227,49 @@ public sealed class LobbyService
         }
     }
 
-    /// <summary>Messages the device may see, published by other devices after <paramref name="afterSequence"/>.</summary>
+    /// <summary>
+    /// Messages the device may see, published by other devices after <paramref name="afterSequence"/>: those for
+    /// everybody, and those addressed to the role the device had when they were sent.
+    /// </summary>
     public async Task<IReadOnlyList<SequencedMessage>> GetMessagesAsync(DeviceIdentity device, long afterSequence)
     {
         var db = await _store.GetAsync();
         var rows = await db.QueryAsync<MessageRow>(
-            "SELECT * FROM messages WHERE SessionId = ? AND Sequence > ? AND SenderDeviceId <> ? AND RecipientRoles LIKE ? ORDER BY Sequence",
-            device.SessionId, afterSequence, device.DeviceId, RoleLike(device.RoleId));
+            """
+            SELECT m.* FROM messages m
+            WHERE m.SessionId = ? AND m.Sequence > ? AND m.SenderDeviceId <> ?
+              AND (m.ToAll = 1 OR EXISTS (
+                SELECT 1 FROM device_roles r
+                WHERE r.DeviceId = ? AND r.Version = m.RolesVersion AND m.RecipientRoles LIKE '%|' || r.RoleId || '|%'))
+            ORDER BY m.Sequence
+            """,
+            device.SessionId, afterSequence, device.DeviceId, device.DeviceId);
         return rows.Select(ToSequenced).ToList();
     }
 
-    /// <summary>The newest location of every other device whose location <paramref name="device"/> may see.</summary>
+    /// <summary>
+    /// The newest location of every other device whose location <paramref name="device"/> may see — sent under the
+    /// current roles only: positions from before a role change describe the previous round.
+    /// </summary>
     public async Task<IReadOnlyList<SequencedMessage>> GetLatestLocationsAsync(DeviceIdentity device)
     {
         var db = await _store.GetAsync();
+        var current = await db.FindAsync<DeviceRow>(device.DeviceId);
+        var lobby = await db.Table<LobbyRow>().Where(l => l.SessionId == device.SessionId).FirstOrDefaultAsync();
+        if (current is null || lobby is null)
+        {
+            return [];
+        }
+
         var rows = await db.QueryAsync<MessageRow>(
             """
             SELECT * FROM messages WHERE Sequence IN (
                 SELECT MAX(Sequence) FROM messages
-                WHERE SessionId = ? AND Type = ? AND SenderDeviceId <> ? AND RecipientRoles LIKE ?
+                WHERE SessionId = ? AND Type = ? AND SenderDeviceId <> ? AND RolesVersion = ? AND RecipientRoles LIKE ?
                 GROUP BY SenderDeviceId)
             ORDER BY Sequence
             """,
-            device.SessionId, SyncMessageTypes.Location, device.DeviceId, RoleLike(device.RoleId));
+            device.SessionId, SyncMessageTypes.Location, device.DeviceId, lobby.RolesVersion, RoleLike(current.RoleId));
         return rows.Select(ToSequenced).ToList();
     }
 
@@ -230,6 +284,7 @@ public sealed class LobbyService
             foreach (var lobby in stale)
             {
                 await db.ExecuteAsync("DELETE FROM messages WHERE SessionId = ?", lobby.SessionId);
+                await db.ExecuteAsync("DELETE FROM device_roles WHERE SessionId = ?", lobby.SessionId);
                 await db.ExecuteAsync("DELETE FROM devices WHERE SessionId = ?", lobby.SessionId);
                 await db.DeleteAsync(lobby);
             }
@@ -259,7 +314,25 @@ public sealed class LobbyService
             : Roles(lobby).Select(r => r.Id).ToList();
     }
 
-    private async Task<LobbyTicket> AddDeviceAsync(string code, Guid sessionId, string roleId, string playerName)
+    /// <summary>Moves every device of the game to its new role and starts the next roles version. Under the write lock.</summary>
+    private static async Task<IReadOnlyList<RoleMove>> ApplyRoleChangeAsync(SQLite.SQLiteAsyncConnection db, LobbyRow lobby, RoleChange change)
+    {
+        var version = lobby.RolesVersion + 1;
+        var moves = new List<RoleMove>();
+        foreach (var device in await db.Table<DeviceRow>().Where(d => d.SessionId == lobby.SessionId).ToListAsync())
+        {
+            var newRole = change.Apply(device.RoleId);
+            moves.Add(new RoleMove(device.Id, device.RoleId, newRole));
+            device.RoleId = newRole;
+            await db.UpdateAsync(device);
+            await db.InsertAsync(new DeviceRoleRow { DeviceId = device.Id, Version = version, SessionId = lobby.SessionId, RoleId = newRole });
+        }
+
+        lobby.RolesVersion = version;
+        return moves;
+    }
+
+    private async Task<LobbyTicket> AddDeviceAsync(string code, Guid sessionId, int rolesVersion, string roleId, string playerName)
     {
         var name = playerName.Trim();
         name = name.Length == 0 ? "?" : name[..Math.Min(name.Length, MaxPlayerNameLength)];
@@ -275,7 +348,8 @@ public sealed class LobbyService
         };
         var db = await _store.GetAsync();
         await db.InsertAsync(device);
-        return new LobbyTicket(code, sessionId, device.Id, roleId, token);
+        await db.InsertAsync(new DeviceRoleRow { DeviceId = device.Id, Version = rolesVersion, SessionId = sessionId, RoleId = roleId });
+        return new LobbyTicket(code, sessionId, device.Id, roleId, token, rolesVersion);
     }
 
     private async Task<string> NewCodeAsync()

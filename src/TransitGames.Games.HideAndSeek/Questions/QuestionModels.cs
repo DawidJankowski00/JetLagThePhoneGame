@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 using TransitGames.Core.Geography;
-using TransitGames.Games.HideAndSeek.Places;
+using TransitGames.Geo.Places;
 
 namespace TransitGames.Games.HideAndSeek.Questions;
 
