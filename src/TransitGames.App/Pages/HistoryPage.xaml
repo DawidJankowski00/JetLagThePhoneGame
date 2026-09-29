@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.App.ViewModels"
+             xmlns:res="clr-namespace:TransitGames.UI.Resources;assembly=TransitGames.UI"
+             x:Class="TransitGames.App.Pages.HistoryPage"
+             x:DataType="vm:HistoryViewModel"
+             Title="{x:Static res:UiStrings.HistoryTitle}"
+             Style="{StaticResource PageBackground}">
+    <Grid>
+        <Label Text="{x:Static res:UiStrings.HistoryEmpty}" IsVisible="{Binding IsEmpty}"
+               HorizontalOptions="Center" VerticalOptions="Center" Style="{StaticResource Caption}" />
+        <CollectionView ItemsSource="{Binding Items}" SelectionMode="None" Margin="16,8">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:HistoryItem">
+                    <Border Style="{StaticResource Card}">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding Title}" FontSize="18" FontAttributes="Bold" />
+                                <Label Text="{Binding Subtitle}" Style="{StaticResource Caption}" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="1" Text="{Binding Status}" VerticalOptions="Center"
+                                   Style="{StaticResource Caption}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

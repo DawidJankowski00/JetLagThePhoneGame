@@ -1,0 +1,16 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <NeutralLanguage>pl</NeutralLanguage>
+
+    <!-- Target frameworks shared by all MAUI projects.
+         Android always; iOS on macOS or when explicitly requested with -p:EnableIos=true
+         (iOS cannot be fully built on Windows without a paired Mac). -->
+    <MauiTargetFrameworks>net10.0-android</MauiTargetFrameworks>
+    <MauiTargetFrameworks Condition="'$(EnableIos)' == 'true' Or $([MSBuild]::IsOSPlatform('osx'))">$(MauiTargetFrameworks);net10.0-ios</MauiTargetFrameworks>
+  </PropertyGroup>
+</Project>

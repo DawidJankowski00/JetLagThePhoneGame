@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="GameDescription" xml:space="preserve"><value>Uciekający zdobywają cele na mapie, goniący próbują ich złapać.</value></data>
+  <data name="GameName" xml:space="preserve"><value>Berek</value></data>
+  <data name="RoleChaser" xml:space="preserve"><value>Goniący</value></data>
+  <data name="RoleChaserDescription" xml:space="preserve"><value>Śledzi pingi pozycji i łapie uciekających.</value></data>
+  <data name="RoleRunner" xml:space="preserve"><value>Uciekający</value></data>
+  <data name="RoleRunnerDescription" xml:space="preserve"><value>Zdobywa cele i unika złapania.</value></data>
+</root>

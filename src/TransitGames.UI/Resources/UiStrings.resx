@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AppTitle" xml:space="preserve"><value>Transit Games</value></data>
+  <data name="Cancel" xml:space="preserve"><value>Anuluj</value></data>
+  <data name="ChooseRole" xml:space="preserve"><value>Twoja rola</value></data>
+  <data name="ElapsedLabel" xml:space="preserve"><value>Czas gry</value></data>
+  <data name="Error" xml:space="preserve"><value>Błąd</value></data>
+  <data name="FinishGame" xml:space="preserve"><value>Zakończ grę</value></data>
+  <data name="FinishGameMessage" xml:space="preserve"><value>Gra zostanie zapisana w historii i nie będzie można jej wznowić.</value></data>
+  <data name="FinishGameTitle" xml:space="preserve"><value>Zakończyć grę?</value></data>
+  <data name="HistoryEmpty" xml:space="preserve"><value>Nie rozegrano jeszcze żadnej gry.</value></data>
+  <data name="HistoryTitle" xml:space="preserve"><value>Historia gier</value></data>
+  <data name="LanguageSystem" xml:space="preserve"><value>Systemowy</value></data>
+  <data name="LeaveGame" xml:space="preserve"><value>Wyjdź (gra zostanie zapisana)</value></data>
+  <data name="MinPlayersFormat" xml:space="preserve"><value>Min. drużyn: {0}</value></data>
+  <data name="NewGameTitle" xml:space="preserve"><value>Nowa gra</value></data>
+  <data name="No" xml:space="preserve"><value>Nie</value></data>
+  <data name="Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="RestartRequired" xml:space="preserve"><value>Zmiana języka zostanie zastosowana po ponownym uruchomieniu aplikacji.</value></data>
+  <data name="ResumeGameFormat" xml:space="preserve"><value>Wznów: {0}</value></data>
+  <data name="RoleLabel" xml:space="preserve"><value>Rola</value></data>
+  <data name="SelectRoleFirst" xml:space="preserve"><value>Wybierz rolę.</value></data>
+  <data name="SettingsLanguage" xml:space="preserve"><value>Język</value></data>
+  <data name="SettingsTheme" xml:space="preserve"><value>Motyw</value></data>
+  <data name="SettingsTitle" xml:space="preserve"><value>Ustawienia</value></data>
+  <data name="StartGame" xml:space="preserve"><value>Rozpocznij grę</value></data>
+  <data name="StartSubtitle" xml:space="preserve"><value>Terenowe gry komunikacyjne</value></data>
+  <data name="StartTitle" xml:space="preserve"><value>Wybierz grę</value></data>
+  <data name="StatusFinished" xml:space="preserve"><value>Zakończona</value></data>
+  <data name="StatusRunning" xml:space="preserve"><value>W trakcie</value></data>
+  <data name="StatusSetup" xml:space="preserve"><value>Przygotowanie</value></data>
+  <data name="TabHistory" xml:space="preserve"><value>Historia</value></data>
+  <data name="TabSettings" xml:space="preserve"><value>Ustawienia</value></data>
+  <data name="TabStart" xml:space="preserve"><value>Gry</value></data>
+  <data name="TabTracks" xml:space="preserve"><value>Trasy GPS</value></data>
+  <data name="ThemeDark" xml:space="preserve"><value>Ciemny</value></data>
+  <data name="ThemeLight" xml:space="preserve"><value>Jasny</value></data>
+  <data name="ThemeSystem" xml:space="preserve"><value>Systemowy</value></data>
+  <data name="TracksEmpty" xml:space="preserve"><value>Brak nagranych tras.</value></data>
+  <data name="TracksTitle" xml:space="preserve"><value>Trasy GPS</value></data>
+  <data name="Yes" xml:space="preserve"><value>Tak</value></data>
+</root>

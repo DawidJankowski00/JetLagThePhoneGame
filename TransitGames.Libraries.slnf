@@ -1,0 +1,16 @@
+{
+  "solution": {
+    "path": "TransitGames.sln",
+    "projects": [
+      "src\\TransitGames.Core\\TransitGames.Core.csproj",
+      "src\\TransitGames.Geo\\TransitGames.Geo.csproj",
+      "src\\TransitGames.Tracking\\TransitGames.Tracking.csproj",
+      "src\\TransitGames.Games.HideAndSeek\\TransitGames.Games.HideAndSeek.csproj",
+      "src\\TransitGames.Games.Tag\\TransitGames.Games.Tag.csproj",
+      "tests\\TransitGames.Core.Tests\\TransitGames.Core.Tests.csproj",
+      "tests\\TransitGames.Geo.Tests\\TransitGames.Geo.Tests.csproj",
+      "tests\\TransitGames.Games.HideAndSeek.Tests\\TransitGames.Games.HideAndSeek.Tests.csproj",
+      "tests\\TransitGames.Games.Tag.Tests\\TransitGames.Games.Tag.Tests.csproj"
+    ]
+  }
+}

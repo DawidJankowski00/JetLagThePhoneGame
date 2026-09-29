@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.Games.Tag.Maui.ViewModels"
+             xmlns:controls="clr-namespace:TransitGames.UI.Controls;assembly=TransitGames.UI"
+             xmlns:ui="clr-namespace:TransitGames.UI.Resources;assembly=TransitGames.UI"
+             xmlns:res="clr-namespace:TransitGames.Games.Tag.Resources;assembly=TransitGames.Games.Tag"
+             x:Class="TransitGames.Games.Tag.Maui.Pages.TagGamePage"
+             x:DataType="vm:TagGameViewModel"
+             Shell.NavBarIsVisible="False"
+             Style="{StaticResource PageBackground}">
+    <Grid RowDefinitions="Auto,*,Auto">
+        <controls:SessionHeaderView BindingContext="{Binding Header}" />
+
+        <VerticalStackLayout Grid.Row="1" Padding="24" Spacing="12" VerticalOptions="Center">
+            <Label Text="{x:Static res:TagStrings.RoleChaserDescription}" IsVisible="{Binding IsChaser}"
+                   HorizontalTextAlignment="Center" FontSize="18" />
+            <Label Text="{x:Static res:TagStrings.RoleRunnerDescription}" IsVisible="{Binding IsRunner}"
+                   HorizontalTextAlignment="Center" FontSize="18" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Grid.Row="2" Padding="16" Spacing="8">
+            <Button Text="{x:Static ui:UiStrings.FinishGame}" Style="{StaticResource BigButton}"
+                    Command="{Binding Header.FinishCommand}" />
+            <Button Text="{x:Static ui:UiStrings.LeaveGame}" Style="{StaticResource BigSecondaryButton}"
+                    Command="{Binding Header.LeaveCommand}" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

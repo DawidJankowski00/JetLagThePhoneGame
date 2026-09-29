@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="GameDescription" xml:space="preserve"><value>Ukrywający chowają się w strefie wokół stacji, szukający zawężają obszar pytaniami.</value></data>
+  <data name="GameName" xml:space="preserve"><value>Chowany</value></data>
+  <data name="RoleHider" xml:space="preserve"><value>Ukrywający</value></data>
+  <data name="RoleHiderDescription" xml:space="preserve"><value>Wybiera stację, ukrywa się i odpowiada na pytania.</value></data>
+  <data name="RoleSeeker" xml:space="preserve"><value>Szukający</value></data>
+  <data name="RoleSeekerDescription" xml:space="preserve"><value>Zadaje pytania i eliminuje obszary na mapie.</value></data>
+</root>

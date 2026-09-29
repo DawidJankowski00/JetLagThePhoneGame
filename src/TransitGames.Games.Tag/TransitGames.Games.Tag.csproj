@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TransitGames.Core\TransitGames.Core.csproj" />
+    <ProjectReference Include="..\TransitGames.Geo\TransitGames.Geo.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="TransitGames.Games.Tag.Tests" />
+  </ItemGroup>
+
+</Project>

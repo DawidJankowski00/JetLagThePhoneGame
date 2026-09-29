@@ -1,0 +1,23 @@
+<Project>
+  <!--
+    Strongly typed resources without Visual Studio designer files:
+    every neutral "Resources/*.resx" (no culture suffix) gets a generated public class
+    named after the file, in namespace $(RootNamespace).Resources.
+    Culture-specific files (Strings.en.resx; add more cultures here) are only compiled into satellite assemblies.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\*.resx">
+      <StronglyTypedLanguage>CSharp</StronglyTypedLanguage>
+      <StronglyTypedNamespace>$(RootNamespace).Resources</StronglyTypedNamespace>
+      <StronglyTypedClassName>%(Filename)</StronglyTypedClassName>
+      <StronglyTypedFileName>$(IntermediateOutputPath)%(Filename).Designer.cs</StronglyTypedFileName>
+      <PublicClass>true</PublicClass>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\*.en.resx">
+      <StronglyTypedLanguage />
+      <StronglyTypedNamespace />
+      <StronglyTypedClassName />
+      <StronglyTypedFileName />
+    </EmbeddedResource>
+  </ItemGroup>
+</Project>

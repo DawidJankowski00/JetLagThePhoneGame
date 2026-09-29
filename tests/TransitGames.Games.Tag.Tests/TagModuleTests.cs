@@ -1,0 +1,30 @@
+using TransitGames.Core.Games;
+
+namespace TransitGames.Games.Tag.Tests;
+
+public class TagModuleTests
+{
+    private static readonly DateTimeOffset Now = new(2026, 9, 1, 12, 0, 0, TimeSpan.Zero);
+
+    [Fact]
+    public void ExposesRunnerAndChaserRoles()
+    {
+        var module = new TagModule();
+
+        Assert.Equal([TagRoles.Runner, TagRoles.Chaser], module.Roles.Select(r => r.Id));
+    }
+
+    [Fact]
+    public void Settings_SurviveSnapshotRoundTrip()
+    {
+        IGameModule module = new TagModule();
+        var settings = new TagSettings { CatchRadiusMeters = 80, RevealInterval = TimeSpan.FromMinutes(10) };
+        var session = module.CreateSession(settings, TagRoles.Chaser);
+        session.Start(Now);
+
+        var restored = (TagSession)module.RestoreSession(session.CreateSnapshot(Now));
+
+        Assert.Equal(80, restored.Settings.CatchRadiusMeters);
+        Assert.Equal(TimeSpan.FromMinutes(10), restored.Settings.RevealInterval);
+    }
+}

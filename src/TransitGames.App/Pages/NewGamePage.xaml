@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.App.ViewModels"
+             xmlns:core="clr-namespace:TransitGames.Core.Games;assembly=TransitGames.Core"
+             xmlns:res="clr-namespace:TransitGames.UI.Resources;assembly=TransitGames.UI"
+             x:Class="TransitGames.App.Pages.NewGamePage"
+             x:DataType="vm:NewGameViewModel"
+             Title="{Binding Title}"
+             Style="{StaticResource PageBackground}">
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView>
+            <VerticalStackLayout Padding="16" Spacing="12">
+                <Label Text="{Binding Description}" Style="{StaticResource Caption}" />
+                <Label Text="{x:Static res:UiStrings.ChooseRole}" FontSize="20" FontAttributes="Bold" Margin="0,8,0,0" />
+                <CollectionView ItemsSource="{Binding Roles}" SelectionMode="Single"
+                                SelectedItem="{Binding SelectedRole}">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="core:GameRole">
+                            <Border Style="{StaticResource Card}">
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup Name="CommonStates">
+                                        <VisualState Name="Normal" />
+                                        <VisualState Name="Selected">
+                                            <VisualState.Setters>
+                                                <Setter Property="Stroke" Value="{StaticResource Primary}" />
+                                                <Setter Property="StrokeThickness" Value="3" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <VerticalStackLayout Spacing="4">
+                                    <Label Text="{Binding DisplayName}" FontSize="18" FontAttributes="Bold" />
+                                    <Label Text="{Binding Description}" Style="{StaticResource Caption}" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+        <Button Grid.Row="1" Margin="16" Text="{x:Static res:UiStrings.StartGame}"
+                Style="{StaticResource BigButton}" Command="{Binding StartCommand}" />
+    </Grid>
+</ContentPage>

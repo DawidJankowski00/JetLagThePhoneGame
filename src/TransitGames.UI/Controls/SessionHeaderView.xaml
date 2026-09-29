@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.UI.ViewModels"
+             xmlns:res="clr-namespace:TransitGames.UI.Resources"
+             x:Class="TransitGames.UI.Controls.SessionHeaderView"
+             x:DataType="vm:ActiveSessionViewModel">
+    <Grid ColumnDefinitions="*,Auto" Padding="16,10" ColumnSpacing="12"
+          BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+        <VerticalStackLayout Spacing="2">
+            <Label Text="{Binding GameName}" FontSize="18" FontAttributes="Bold" TextColor="White" />
+            <Label TextColor="White" FontSize="14">
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span Text="{x:Static res:UiStrings.RoleLabel}" />
+                        <Span Text=": " />
+                        <Span Text="{Binding RoleName}" FontAttributes="Bold" />
+                    </FormattedString>
+                </Label.FormattedText>
+            </Label>
+        </VerticalStackLayout>
+        <VerticalStackLayout Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center">
+            <Label Text="{x:Static res:UiStrings.ElapsedLabel}" TextColor="White" FontSize="12" HorizontalOptions="End" />
+            <Label Text="{Binding ElapsedText}" TextColor="White" FontSize="22" FontAttributes="Bold"
+                   FontFamily="monospace" HorizontalOptions="End" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentView>
