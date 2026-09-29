@@ -2,8 +2,10 @@ using Microsoft.Extensions.DependencyInjection;
 using TransitGames.Core.Events;
 using TransitGames.Core.Games;
 using TransitGames.Core.Notifications;
+using TransitGames.Core.Persistence;
 using TransitGames.Core.Sessions;
 using TransitGames.Core.Sync;
+using TransitGames.Games.Tag.Legacy;
 using TransitGames.Games.Tag.Resources;
 using TransitGames.Games.Tag.Sync;
 
@@ -13,14 +15,14 @@ public sealed class TagModule : GameModule<TagSettings, TagSession>
 {
     public const string GameId = "tag";
 
-    /// <summary>Keeps the pending reminders well under the iOS limit of 64 even with a short ping interval.</summary>
-    private const int MaxPlannedPings = 24;
-
     public override string Id => GameId;
     public override string DisplayName => TagStrings.GameName;
     public override string Description => TagStrings.GameDescription;
     public override string Icon => "🏃";
     public override int MinPlayers => 2;
+
+    /// <summary>Every player has their own coins, destination and turns: all devices share one state online.</summary>
+    public override bool RequiresOnline => true;
 
     public override IReadOnlyList<GameRole> Roles { get; } =
     [
@@ -28,11 +30,11 @@ public sealed class TagModule : GameModule<TagSettings, TagSession>
         new(TagRoles.Chaser, TagStrings.RoleChaser, TagStrings.RoleChaserDescription),
     ];
 
-    /// <summary>Chasers may see the runners (pings); the chasers' location is never shared.</summary>
+    /// <summary>Chasers may see the runner (pings); the chasers' location is never shared.</summary>
     public override LocationSharingPolicy LocationSharing { get; } =
         new([new LocationSharingRule(TagRoles.Chaser, TagRoles.Runner)]);
 
-    /// <summary>Runners are revealed to the chasers every <see cref="TagSettings.RevealInterval"/>, not live.</summary>
+    /// <summary>The runner is revealed to the chasers every <see cref="TagSettings.RevealInterval"/>, not live.</summary>
     protected override TimeSpan GetLocationShareInterval(TagSettings settings) => settings.RevealInterval;
 
     protected override TagSession CreateSession(TagSettings settings, string localRoleId, Guid sessionId) =>
@@ -41,58 +43,51 @@ public sealed class TagModule : GameModule<TagSettings, TagSession>
     protected override TagSession RestoreSession(GameSessionSnapshot snapshot, TagSettings settings) =>
         new(snapshot, settings);
 
-    public override void RegisterServices(IServiceCollection services) =>
+    public override void RegisterServices(IServiceCollection services)
+    {
         services.AddSingleton<IGameMessageHandler, TagMessageHandler>();
+        services.AddSingleton<IGameSessionMigration, LegacyTagMigration>();
+    }
 
-    /// <summary>
-    /// Reminders of the current round: end of the head start, end of the round time and — offline, where pings are
-    /// sent by hand — every ping.
-    /// </summary>
+    /// <summary>End of the head start and the time limit of the game.</summary>
     protected override IReadOnlyList<GameNotification> PlanNotifications(TagSession session, bool isOnline, DateTimeOffset now)
     {
-        var round = session.CurrentRound;
-        if (session.Status != SessionStatus.Running || round.EndedAt is not null || session.Phase(now) is TagPhase.GameOver or TagPhase.TimeUp)
+        if (session.Status != SessionStatus.Running || session.CurrentTurn is not { } turn
+            || session.Phase(now) is TagPhase.GameOver or TagPhase.TimeUp or TagPhase.Setup)
         {
             return [];
         }
 
         var plan = new List<GameNotification>();
-        var prefix = $"r{round.Index}.";
-        if (session.HeadStartEndsAt > now)
+        if (session.HeadStartEndsAt is { } headStartEnd && headStartEnd > now)
         {
             plan.Add(new(
-                prefix + "headstart",
+                $"t{turn.Index}.headstart",
                 TagStrings.NotifyHeadStartTitle,
-                session.IsRunner ? TagStrings.NotifyHeadStartRunner : TagStrings.NotifyHeadStartChaser,
-                session.HeadStartEndsAt));
+                session.IsLocalRunner ? TagStrings.NotifyHeadStartRunner : TagStrings.NotifyHeadStartChaser,
+                headStartEnd));
         }
 
-        var interval = session.Settings.RevealInterval;
-        if (!isOnline && interval > TimeSpan.Zero && session.NextRevealAt(now) is { } first)
+        if (session.GameEndsAt is { } end && end > now)
         {
-            var body = session.IsRunner ? TagStrings.NotifyPingRunner : TagStrings.NotifyPingChaser;
-            for (var due = first; due < session.RoundEndsAt && plan.Count <= MaxPlannedPings; due += interval)
-            {
-                var index = (due - round.StartedAt).Ticks / interval.Ticks;
-                plan.Add(new($"{prefix}ping{index}", TagStrings.NotifyPingTitle, body, due));
-            }
+            plan.Add(new("timeup", TagStrings.NotifyTimeUpTitle, TagStrings.NotifyTimeUpBody, end));
         }
 
-        plan.Add(new(prefix + "timeup", TagStrings.NotifyTimeUpTitle, TagStrings.NotifyTimeUpBody, session.RoundEndsAt));
         return plan;
     }
 
-    /// <summary>Captures (also automatic ones on the runners' phone) and round changes; manual pings are local.</summary>
+    /// <summary>Catches, new turns, the end of the game, and — for the runner — catch requests.</summary>
     public override GameNotification? NotificationFor(GameEvent gameEvent, string localRoleId) => gameEvent.Type switch
     {
-        TagEventTypes.TargetCaptured => new("target." + gameEvent.Id, gameEvent.Title, gameEvent.Details ?? TagStrings.GameName),
-        TagEventTypes.Caught or TagEventTypes.TimeUp or TagEventTypes.ReachedFinal =>
-            new("round.end", TagStrings.NotifyRoundEndTitle, gameEvent.Title),
-        TagEventTypes.RoundStarted => new("round.start", TagStrings.NotifyRoundStartTitle, gameEvent.Title),
+        TagEventTypes.Caught => new("caught", TagStrings.NotifyCaughtTitle, gameEvent.Title),
+        TagEventTypes.TurnStarted => new("turn", TagStrings.NotifyTurnTitle, gameEvent.Title),
+        TagEventTypes.GameEnded => new("end", TagStrings.NotifyGameEndedTitle, gameEvent.Title),
+        TagEventTypes.CatchRequested when localRoleId == TagRoles.Runner => new("catch.request." + gameEvent.Id, TagStrings.NotifyCatchRequestTitle, gameEvent.Title),
+        TagEventTypes.CardDrawn when localRoleId == TagRoles.Chaser => new("card." + gameEvent.Id, TagStrings.NotifyCardTitle, gameEvent.Title),
         _ => null,
     };
 
-    /// <summary>Chasers: the runners' online ping arrived.</summary>
+    /// <summary>Chasers: the runner's ping arrived.</summary>
     public override GameNotification? NotificationForLocation(string senderRoleId, string localRoleId) =>
         senderRoleId == TagRoles.Runner && localRoleId == TagRoles.Chaser
             ? new("ping", TagStrings.NotifyPingReceivedTitle, TagStrings.NotifyPingReceivedBody)
@@ -100,29 +95,27 @@ public sealed class TagModule : GameModule<TagSettings, TagSession>
 
     protected override GameResult DescribeResult(TagSession session, DateTimeOffset now)
     {
-        var board = session.Scoreboard(now);
-        var first = board.Teams.First(t => t.Team == TagTeam.First).Score;
-        var second = board.Teams.First(t => t.Team == TagTeam.Second).Score;
-        var local = session.LocalTeam;
-        var over = session.Status == SessionStatus.Finished || session.Phase(now) == TagPhase.GameOver;
-        var headline = !over ? string.Format(TagStrings.ResultStandingFormat, first, second)
-            : board.Leader is { } leader ? string.Format(TagStrings.ResultWinnerFormat, TagTexts.TeamName(leader, local), first, second)
-            : string.Format(TagStrings.ResultDrawFormat, first, second);
+        if (session.LegacyResult is { } legacy)
+        {
+            return legacy;
+        }
 
-        var teams = board.Teams.Select(t => new GameResultLine(
-            TagTexts.TeamName(t.Team, local),
-            string.Format(TagStrings.ScoreFormat, t.Score) + " · "
-                + string.Format(TagStrings.TeamDetailsFormat, TagTexts.Duration(t.Survived), t.Captures, t.Points)));
-        var rounds = board.Rounds.Select(r => new GameResultLine(
-            string.Format(TagStrings.RoundRowTitleFormat, r.Index + 1, TagTexts.TeamName(r.Runners, local)),
-            string.Format(
-                TagStrings.RoundRowDetailsFormat,
-                TagTexts.Duration(r.Survived),
-                TagTexts.RoundEnd(r),
-                r.Captures,
-                r.TargetPoints + r.FinalBonus)
-                + " · " + string.Format(TagStrings.ScoreFormat, r.Score)));
-        return new GameResult(headline, [.. teams, .. rounds]);
+        if (!session.IsStarted)
+        {
+            return new GameResult(TagStrings.ResultNotStarted, []);
+        }
+
+        var results = session.Results(now);
+        var ranking = results.Ranking.Select((r, i) => new GameResultLine(
+            string.Format(TagStrings.RankRowFormat, i + 1, r.Player.Name) + (r.IsWinner ? " 🏆" : string.Empty),
+            r.DistanceMeters is { } distance
+                ? string.Format(TagStrings.RankDistanceFormat, r.Player.Destination?.Name ?? string.Empty, TagTexts.Distance(distance))
+                : r.Player.Destination?.Name ?? string.Empty));
+        var turns = results.Turns.Select(t => new GameResultLine(
+            string.Format(TagStrings.TurnRowTitleFormat, t.Index + 1, t.Runner.Name),
+            string.Format(TagStrings.TurnRowDetailsFormat, TagTexts.Duration(t.Duration), TagTexts.TurnEnd(t), t.Spent, t.Earned + t.Bonus)));
+        var balances = session.Players.Select(p => new GameResultLine(p.Name, TagTexts.Coins(session.Balance(p.Id))));
+        return new GameResult(TagTexts.Headline(results), [.. ranking, .. turns, .. balances]);
     }
 }
 

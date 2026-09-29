@@ -1,0 +1,81 @@
+{
+  // Cards the runner draws. Texts are our own.
+  // type: "challenge" (reward after doing it) or "curse" (reward at once + a handicap).
+  // reward: coins. timeLimitMinutes (optional): time to do a challenge.
+  // Curses: duration = "untilEndOfTurn" | "wholeGame" | "minutes:N";
+  //         restriction (optional, enforced by the app):
+  //           { "kind": "banTransport", "modes": ["metro"] }       — these means of transport are forbidden
+  //           { "kind": "onlyTransport", "modes": ["bus", "tram"] } — only these are allowed
+  //           { "kind": "fareMultiplier", "factor": 2 }            — fares cost N times more
+  //           { "kind": "noDraw" }                                 — no drawing while the curse lasts
+  //         A curse without a restriction is an honour rule; the app only shows it.
+  // Modes: bus, tram, metro, train, ferry, other.
+  "cards": [
+    { "id": "ch-sign-photo", "type": "challenge", "reward": 4, "timeLimitMinutes": 15,
+      "title": { "pl": "Tabliczka z nazwą", "en": "Name plate" },
+      "description": { "pl": "Zrób zdjęcie tabliczki z nazwą ulicy, która zaczyna się na tę samą literę co twoje imię.", "en": "Take a photo of a street sign starting with the same letter as your first name." } },
+    { "id": "ch-timetable", "type": "challenge", "reward": 3, "timeLimitMinutes": 10,
+      "title": { "pl": "Rozkład z pamięci", "en": "Timetable by heart" },
+      "description": { "pl": "Podejdź do najbliższego przystanku, zapamiętaj trzy odjazdy i wyrecytuj je w nagraniu, stojąc tyłem do tablicy.", "en": "Go to the nearest stop, memorise three departures and recite them on a recording with your back to the board." } },
+    { "id": "ch-five-colours", "type": "challenge", "reward": 3, "timeLimitMinutes": 10,
+      "title": { "pl": "Pięć kolorów", "en": "Five colours" },
+      "description": { "pl": "Sfotografuj pięć pojazdów komunikacji w pięciu różnych kolorach.", "en": "Photograph five public transport vehicles in five different colours." } },
+    { "id": "ch-passer-by", "type": "challenge", "reward": 5, "timeLimitMinutes": 15,
+      "title": { "pl": "Rada przechodnia", "en": "A passer-by's advice" },
+      "description": { "pl": "Zapytaj przechodnia o najciekawsze miejsce w okolicy i zrób tam zdjęcie.", "en": "Ask a passer-by for the most interesting place nearby and take a photo there." } },
+    { "id": "ch-sketch", "type": "challenge", "reward": 4, "timeLimitMinutes": 10,
+      "title": { "pl": "Szkic w biegu", "en": "Quick sketch" },
+      "description": { "pl": "Narysuj w 3 minuty budynek, który widzisz, i wyślij zdjęcie rysunku goniącym.", "en": "Draw a building in sight within 3 minutes and send a photo of the drawing to the chasers." } },
+    { "id": "ch-count-stops", "type": "challenge", "reward": 3,
+      "title": { "pl": "Licznik przystanków", "en": "Stop counter" },
+      "description": { "pl": "Podczas najbliższego przejazdu zapisz nazwy wszystkich mijanych przystanków.", "en": "On your next ride, note the names of all the stops you pass." } },
+    { "id": "ch-oldest-date", "type": "challenge", "reward": 4, "timeLimitMinutes": 20,
+      "title": { "pl": "Najstarsza data", "en": "Oldest date" },
+      "description": { "pl": "Znajdź najstarszą datę na budynku, tablicy lub pomniku w promieniu 300 m i zrób jej zdjęcie.", "en": "Find the oldest date on a building, plaque or monument within 300 m and take a photo of it." } },
+    { "id": "ch-rhyme", "type": "challenge", "reward": 3, "timeLimitMinutes": 10,
+      "title": { "pl": "Rymowanka", "en": "Rhyme" },
+      "description": { "pl": "Ułóż czterowiersz o miejscu, w którym stoisz, i nagraj go.", "en": "Make up a four-line rhyme about where you stand and record it." } },
+    { "id": "ch-map-photo", "type": "challenge", "reward": 2, "timeLimitMinutes": 15,
+      "title": { "pl": "Plan sieci", "en": "Network map" },
+      "description": { "pl": "Znajdź papierowy plan sieci komunikacji i zrób mu zdjęcie.", "en": "Find a printed transit network map and take a photo of it." } },
+    { "id": "ch-longest-name", "type": "challenge", "reward": 5, "timeLimitMinutes": 30,
+      "title": { "pl": "Najdłuższa nazwa", "en": "Longest name" },
+      "description": { "pl": "Dojedź na przystanek, którego nazwa ma co najmniej 20 liter, i zrób zdjęcie tablicy.", "en": "Get to a stop whose name has at least 20 letters and take a photo of its sign." } },
+    { "id": "ch-bench", "type": "challenge", "reward": 2, "timeLimitMinutes": 5,
+      "title": { "pl": "Chwila przerwy", "en": "Short break" },
+      "description": { "pl": "Usiądź na ławce i nie ruszaj się z niej przez 3 minuty.", "en": "Sit down on a bench and stay there for 3 minutes." } },
+    { "id": "ch-selfie-vehicle", "type": "challenge", "reward": 3, "timeLimitMinutes": 20,
+      "title": { "pl": "Selfie z pojazdem", "en": "Vehicle selfie" },
+      "description": { "pl": "Zrób selfie z pojazdem, którego numer boczny kończy się na 7.", "en": "Take a selfie with a vehicle whose fleet number ends in 7." } },
+
+    { "id": "cu-no-timetables", "type": "curse", "reward": 6, "duration": "untilEndOfTurn",
+      "title": { "pl": "Bez rozkładów", "en": "No timetables" },
+      "description": { "pl": "Do końca tury nie możesz używać telefonu do sprawdzania rozkładów ani wyszukiwania połączeń.", "en": "Until the end of your turn you may not use your phone to check timetables or plan journeys." } },
+    { "id": "cu-surface-only", "type": "curse", "reward": 7, "duration": "untilEndOfTurn",
+      "restriction": { "kind": "onlyTransport", "modes": ["bus", "tram"] },
+      "title": { "pl": "Tylko naziemnie", "en": "Surface only" },
+      "description": { "pl": "Do końca tury możesz jeździć tylko autobusami i tramwajami.", "en": "Until the end of your turn you may only ride buses and trams." } },
+    { "id": "cu-double-fares", "type": "curse", "reward": 5, "duration": "minutes:45",
+      "restriction": { "kind": "fareMultiplier", "factor": 2 },
+      "title": { "pl": "Podwójne ceny", "en": "Double fares" },
+      "description": { "pl": "Przez 45 minut każdy przejazd kosztuje 2× więcej.", "en": "For 45 minutes every ride costs twice as much." } },
+    { "id": "cu-no-metro", "type": "curse", "reward": 4, "duration": "minutes:30",
+      "restriction": { "kind": "banTransport", "modes": ["metro"] },
+      "title": { "pl": "Metro zamknięte", "en": "Metro closed" },
+      "description": { "pl": "Przez 30 minut nie możesz jeździć metrem.", "en": "For 30 minutes you may not ride the metro." } },
+    { "id": "cu-no-draw", "type": "curse", "reward": 4, "duration": "minutes:20",
+      "restriction": { "kind": "noDraw" },
+      "title": { "pl": "Zamknięta talia", "en": "Deck locked" },
+      "description": { "pl": "Przez 20 minut nie możesz losować kolejnych kart.", "en": "For 20 minutes you may not draw another card." } },
+    { "id": "cu-backwards", "type": "curse", "reward": 3, "duration": "untilEndOfTurn",
+      "title": { "pl": "Tyłem do kierunku", "en": "Facing backwards" },
+      "description": { "pl": "Do końca tury w pojazdach siedzisz lub stoisz tyłem do kierunku jazdy.", "en": "Until the end of your turn you sit or stand facing backwards in vehicles." } },
+    { "id": "cu-expensive-trains", "type": "curse", "reward": 8, "duration": "wholeGame",
+      "restriction": { "kind": "banTransport", "modes": ["train"] },
+      "title": { "pl": "Bez pociągów", "en": "No trains" },
+      "description": { "pl": "Do końca gry, gdy uciekasz, nie możesz jeździć pociągami.", "en": "For the rest of the game you may not take trains while you are the runner." } },
+    { "id": "cu-slow-walk", "type": "curse", "reward": 3, "duration": "minutes:15",
+      "title": { "pl": "Spacerkiem", "en": "Stroll" },
+      "description": { "pl": "Przez 15 minut nie wolno ci biec.", "en": "For 15 minutes you may not run." } }
+  ]
+}

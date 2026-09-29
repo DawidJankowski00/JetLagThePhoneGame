@@ -17,6 +17,12 @@ public interface IGameSession
     /// <summary>How many times the roles changed in this game (see <see cref="Sync.RoleChange"/>).</summary>
     int RolesVersion { get; }
 
+    /// <summary>Online: this device's id in the game (see <see cref="Sync.SyncMessage.SenderDeviceId"/>); null offline.</summary>
+    Guid? LocalDeviceId { get; }
+
+    /// <summary>This device created the game (offline games: always).</summary>
+    bool IsHost { get; }
+
     SessionStatus Status { get; }
 
     DateTimeOffset CreatedAt { get; }
@@ -34,6 +40,9 @@ public interface IGameSession
 
     /// <summary>For a device joining a game whose roles already changed: the version its chosen role belongs to.</summary>
     void InitializeRolesVersion(int version);
+
+    /// <summary>Online game: which device this is and whether it created the game. Only before the game starts.</summary>
+    void InitializeDevice(Guid deviceId, bool isHost);
 
     /// <summary>Applies <paramref name="change"/> to the local role if it was made for the current version.</summary>
     /// <returns>True when the roles changed.</returns>

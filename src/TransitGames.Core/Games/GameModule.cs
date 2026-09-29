@@ -16,6 +16,9 @@ public abstract class GameModule<TSettings, TSession> : IGameModule
     public abstract string Description { get; }
     public abstract string Icon { get; }
     public abstract int MinPlayers { get; }
+
+    /// <summary>Default: offline play is possible.</summary>
+    public virtual bool RequiresOnline => false;
     public abstract IReadOnlyList<GameRole> Roles { get; }
 
     /// <summary>Default: every role's location is private.</summary>

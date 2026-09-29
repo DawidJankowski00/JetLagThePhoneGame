@@ -10,8 +10,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Built-in challenges (own texts), configurable JSON. -->
-    <EmbeddedResource Include="Challenges\challenges.json" LogicalName="challenges.json" />
+    <!-- Built-in deck of Challenge and Curse cards (own texts), configurable JSON. -->
+    <EmbeddedResource Include="Cards\cards.json" LogicalName="cards.json" />
   </ItemGroup>
 
   <ItemGroup>

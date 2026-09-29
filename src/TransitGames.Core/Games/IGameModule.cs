@@ -23,6 +23,9 @@ public interface IGameModule
 
     int MinPlayers { get; }
 
+    /// <summary>The game can only be played online (every player needs the shared state), e.g. Tag.</summary>
+    bool RequiresOnline { get; }
+
     IReadOnlyList<GameRole> Roles { get; }
 
     /// <summary>Which role may see whose location. Anything not listed stays private.</summary>

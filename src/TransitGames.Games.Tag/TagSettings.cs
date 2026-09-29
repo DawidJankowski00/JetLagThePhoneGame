@@ -1,82 +1,93 @@
 using TransitGames.Core.Games;
-using TransitGames.Games.Tag.Challenges;
-using TransitGames.Games.Tag.Targets;
+using TransitGames.Games.Tag.Cards;
+using TransitGames.Games.Tag.Coins;
+using TransitGames.Games.Tag.Destinations;
+using TransitGames.Games.Tag.Players;
 
 namespace TransitGames.Games.Tag;
 
-/// <summary>Where the targets of the game come from (the list itself is <see cref="TagSettings.Targets"/>).</summary>
-public enum TargetSource
+/// <summary>What the new runner gets at the start of every turn after the first (game setting).</summary>
+public enum TurnBonusMode
 {
-    /// <summary>Random, spread-out stations of the game.</summary>
-    Stations,
+    /// <summary>A fixed number of coins (<see cref="TagSettings.TurnBonus"/>).</summary>
+    Fixed,
 
-    /// <summary>Random, spread-out OpenStreetMap places of a category (parks, museums...).</summary>
-    Places,
-
-    /// <summary>Placed by hand on the map.</summary>
-    Manual,
+    /// <summary>Tops the balance up to <see cref="TagSettings.TopUpMinimum"/> (nothing when it is already there).</summary>
+    TopUp,
 }
 
-/// <summary>What target rewards are: points added to the score, or coins the runners spend on fares.</summary>
-public enum RewardKind
-{
-    Points,
-    Coins,
-}
-
+/// <summary>
+/// Rules of a game of Tag. Fixed when the host creates the game; everything decided later (players, destinations,
+/// start point, runners) travels in sync messages.
+/// </summary>
 public sealed class TagSettings : GameSettings
 {
-    /// <summary>Maximum length of a round; runners not caught by then survived the whole round.</summary>
-    public TimeSpan RoundDuration { get; set; } = TimeSpan.FromHours(2);
+    /// <summary>Settings of the first Tag version (teams, targets) have no <see cref="RulesVersion"/>; see Legacy.</summary>
+    public const int CurrentRulesVersion = 2;
 
-    /// <summary>At the start of every round the chasers wait this long before chasing.</summary>
-    public TimeSpan HeadStart { get; set; } = TimeSpan.FromMinutes(10);
+    public int RulesVersion { get; set; } = CurrentRulesVersion;
 
-    /// <summary>How often the runners' position is revealed to the chasers.</summary>
+    /// <summary>A game of the first Tag version, migrated for the history: read-only, only its stored result is shown.</summary>
+    public bool IsLegacy { get; set; }
+
+    /// <summary>Game time limit from the start; then the destination nearest to the runner wins.</summary>
+    public TimeSpan GameDuration { get; set; } = TimeSpan.FromHours(3);
+
+    /// <summary>At the start of every turn the chasers wait this long.</summary>
+    public TimeSpan HeadStart { get; set; } = TimeSpan.FromMinutes(30);
+
+    /// <summary>How often the runner's position is revealed to the chasers.</summary>
     public TimeSpan RevealInterval { get; set; } = TimeSpan.FromMinutes(15);
 
-    /// <summary>
-    /// Distance at which a runner counts as caught. A rule for the players: the chasers' position is never sent to
-    /// the runners, so no device can check it.
-    /// </summary>
+    /// <summary>Distance at which the runner counts as caught — a rule for the players (chasers' positions are never sent).</summary>
     public double CatchRadiusMeters { get; set; } = 50;
 
-    /// <summary>Runners closer than this to a target may capture it (automatically, when <see cref="AutoCapture"/>).</summary>
-    public double TargetRadiusMeters { get; set; } = 150;
+    /// <summary>Coins every player has at the start (X).</summary>
+    public int StartingCoins { get; set; } = 20;
 
-    /// <summary>Number of rounds; teams swap roles after each (2 = each team runs once).</summary>
-    public int Rounds { get; set; } = 2;
+    public TurnBonusMode TurnBonusMode { get; set; } = TurnBonusMode.Fixed;
 
-    /// <summary>Capture targets without a challenge (and reach the final target) as soon as the runners' GPS is in range.</summary>
-    public bool AutoCapture { get; set; } = true;
+    /// <summary>Coins for the new runner at the start of every later turn (<see cref="TurnBonusMode.Fixed"/>, &gt; 0).</summary>
+    public int TurnBonus { get; set; } = 10;
 
-    public RewardKind RewardKind { get; set; } = RewardKind.Points;
+    /// <summary>Balance the new runner is topped up to (<see cref="TurnBonusMode.TopUp"/>).</summary>
+    public int TopUpMinimum { get; set; } = 15;
 
-    /// <summary>Coins the runners have at the start of their round (<see cref="RewardKind.Coins"/>).</summary>
-    public int StartingCoins { get; set; } = 10;
+    public NextRunnerMode NextRunner { get; set; } = NextRunnerMode.Random;
 
-    /// <summary>Points for reaching the final target.</summary>
-    public int FinalBonus { get; set; } = 30;
+    public DestinationMode DestinationMode { get; set; } = DestinationMode.SelfPick;
 
-    public TargetSource TargetSource { get; set; } = TargetSource.Stations;
+    /// <summary>Drawn destinations: minimum distance from the start.</summary>
+    public double DestinationMinDistanceMeters { get; set; } = 2000;
 
-    /// <summary>Place category for <see cref="TargetSource.Places"/> (see TransitGames.Geo.Places.PlaceCategories).</summary>
-    public string PlaceCategoryId { get; set; } = "park";
+    /// <summary>Drawn destinations: maximum distance from the start (0 = no limit).</summary>
+    public double DestinationMaxDistanceMeters { get; set; } = 10000;
 
-    /// <summary>How many targets to draw (stations, places).</summary>
-    public int TargetCount { get; set; } = 6;
+    /// <summary>Drawn destinations: minimum distance between two of them.</summary>
+    public double DestinationMinSpacingMeters { get; set; } = 1000;
 
-    /// <summary>Give targets a challenge from the challenge list (to be done on the spot to capture them).</summary>
-    public bool ChallengesEnabled { get; set; } = true;
+    /// <summary>Everybody sees all destinations; false = each player sees only their own until the game ends.</summary>
+    public bool DestinationsVisible { get; set; } = true;
 
-    /// <summary>Custom challenge list (JSON, same format as the built-in <c>Challenges/challenges.json</c>); null = built-in.</summary>
-    public string? ChallengesJson { get; set; }
+    /// <summary>The runner has reached their destination within this distance (then confirms it).</summary>
+    public double DestinationRadiusMeters { get; set; } = 100;
 
-    /// <summary>Targets of the game, the same in every round. Each carries its challenge, so all devices agree.</summary>
-    public List<TagTarget> Targets { get; set; } = [];
+    public FareModel FareModel { get; set; } = FareModel.PerKm;
 
-    /// <summary>Optional final target the runners try to reach; reaching it ends their round with a bonus.</summary>
-    public TagTarget? FinalTarget { get; set; }
+    /// <summary>Coins per km by means of transport (<see cref="FareModel.PerKm"/>).</summary>
+    public Dictionary<TransportMode, double> PerKmRates { get; set; } = new(FareCalculator.DefaultPerKmRates);
 
-    public ChallengeDeck LoadChallenges() => ChallengesJson is null ? ChallengeDeck.BuiltIn : ChallengeDeck.Parse(ChallengesJson);
+    /// <summary>Coins per ride by means of transport (<see cref="FareModel.FixedPerRide"/>).</summary>
+    public Dictionary<TransportMode, int> FixedFares { get; set; } = new(FareCalculator.DefaultFixedFares);
+
+    /// <summary>After giving up a challenge (or letting it expire) the runner may not draw for this long.</summary>
+    public TimeSpan DrawCooldown { get; set; } = TimeSpan.FromMinutes(10);
+
+    /// <summary>Custom deck (JSON, same format as the built-in <c>Cards/cards.json</c>); null = built-in.</summary>
+    public string? CardsJson { get; set; }
+
+    public DestinationRules DestinationRules =>
+        new(DestinationMinDistanceMeters, DestinationMaxDistanceMeters, DestinationMinSpacingMeters);
+
+    public CardDeck LoadCards() => CardsJson is null ? CardDeck.BuiltIn : CardDeck.Parse(CardsJson);
 }

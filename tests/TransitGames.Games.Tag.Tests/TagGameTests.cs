@@ -1,320 +1,323 @@
-using System.Text.Json;
-using NetTopologySuite.Geometries;
-using TransitGames.Core.Games;
-using TransitGames.Core.Geography;
-using TransitGames.Core.Sync;
-using TransitGames.Games.Tag.Challenges;
+using TransitGames.Games.Tag.Players;
 using TransitGames.Games.Tag.Sync;
-using TransitGames.Games.Tag.Targets;
-using TransitGames.Geo.Areas;
-using TransitGames.Geo.Projection;
 
 namespace TransitGames.Games.Tag.Tests;
 
-internal static class TagTestData
+public class TagStartTests
 {
-    public static readonly DateTimeOffset Start = new(2026, 9, 1, 12, 0, 0, TimeSpan.Zero);
-    public static readonly GeoPoint Center = new(52.2297, 21.0122);
-    public static readonly LocalProjection Projection = LocalProjection.CenteredOn(Center);
+    private static readonly DateTimeOffset Start = TagTable.Start;
 
-    /// <summary>A 6 × 6 km square around <see cref="Center"/>.</summary>
-    public static GameArea Area() =>
-        GameArea.Create("Test", Projection.Unproject(GeometryFactories.Local.ToGeometry(new Envelope(-3000, 3000, -3000, 3000))), GameAreaSource.Drawn);
-
-    public static GeoPoint At(double east, double north) => Projection.Unproject(new Coordinate(east, north));
-
-    public static TagSettings Settings(Action<TagSettings>? change = null)
+    [Fact]
+    public void The_start_draws_one_runner_and_every_device_agrees()
     {
-        var settings = new TagSettings
+        var table = new TagTable(players: 4);
+
+        table.StartGame(seed: 7);
+
+        var runnerId = table.Host.CurrentTurn!.RunnerId;
+        Assert.Contains(runnerId, table.Ids);
+        foreach (var device in table.Devices)
         {
-            RoundDuration = TimeSpan.FromMinutes(60),
-            HeadStart = TimeSpan.FromMinutes(10),
-            RevealInterval = TimeSpan.FromMinutes(15),
-            TargetRadiusMeters = 100,
-            Rounds = 2,
-            Targets =
-            [
-                new TagTarget("t1", "Park", At(1000, 0), 10),
-                new TagTarget("t2", "Muzeum", At(-1000, 0), 5),
-            ],
-            FinalTarget = new TagTarget("final", "Meta", At(0, 2500), 0),
-            StartedAt = Start,
-        };
-        change?.Invoke(settings);
-        return settings;
-    }
-
-    public static TagSession NewSession(string role, TagSettings? settings = null)
-    {
-        IGameModule module = new TagModule();
-        var session = (TagSession)module.CreateSession(settings ?? Settings(), role, Guid.NewGuid());
-        session.Start(Start);
-        return session;
-    }
-
-    /// <summary>What the app does with a message: the game's handler, then the role change it carries.</summary>
-    public static void Deliver(TagSession session, SyncMessage message)
-    {
-        var json = JsonSerializer.Deserialize<SyncMessage>(JsonSerializer.Serialize(message, GameJson.Options), GameJson.Options)!;
-        new TagMessageHandler().Handle(session, json);
-        if (json.RoleChange is { } change)
-        {
-            session.ApplyRoleChange(change, json.Timestamp);
+            Assert.Equal(runnerId, device.CurrentTurn!.RunnerId);
+            Assert.Equal(device.LocalPlayerId == runnerId ? TagRoles.Runner : TagRoles.Chaser, device.LocalRoleId);
+            Assert.Equal(1, device.RolesVersion);
+            Assert.Equal(4, device.Players.Count);
+            Assert.All(device.Players, p => Assert.Equal(20, device.Balance(p.Id)));
+            Assert.Equal(TagTestData.Center, device.CurrentTurn.StartPoint);
         }
+
+        Assert.Single(table.Devices, d => d.IsLocalRunner);
+    }
+
+    [Fact]
+    public void The_first_runner_is_random_over_many_games()
+    {
+        var players = Enumerable.Range(0, 3).Select(_ => Guid.NewGuid()).ToList();
+        var random = new Random(3);
+
+        var picked = Enumerable.Range(0, 300).Select(_ => RunnerSelection.PickFirst(players, random)).ToList();
+
+        Assert.All(players, p => Assert.InRange(picked.Count(x => x == p), 60, 140));
+    }
+
+    [Fact]
+    public void The_host_cannot_start_while_a_player_has_no_destination()
+    {
+        var table = new TagTable(players: 2);
+        table.Send(TagMessages.SetDestination(table.Host, new DestinationPayload(table.Ids[0], table.DestinationOf(0), "D1"), Start));
+
+        var start = table.Host.CreateStart(Start, TagTestData.Center, [.. table.Ids.Select(id => (id, table.Name(id)))], new Random(1));
+
+        Assert.Null(start);
+        Assert.Null(table.Devices[1].CreateStart(Start, TagTestData.Center, [.. table.Ids.Select(id => (id, "x"))], new Random(1))); // not the host
+    }
+
+    [Fact]
+    public void Self_picked_destinations_can_only_be_set_by_their_player()
+    {
+        var table = new TagTable(players: 2);
+
+        Assert.True(table.Devices[1].CanSetDestination(table.Ids[1]));
+        Assert.False(table.Devices[1].CanSetDestination(table.Ids[0]));
+        Assert.False(table.Host.CanSetDestination(table.Ids[1]));
     }
 }
 
-public class TagRoundTests
+public class TagCatchTests
 {
-    private static readonly DateTimeOffset Start = TagTestData.Start;
+    private static readonly DateTimeOffset Start = TagTable.Start;
 
     [Fact]
-    public void A_round_goes_from_head_start_to_chase_to_time_up()
+    public void Chasers_cannot_chase_during_the_head_start()
     {
-        var session = TagTestData.NewSession(TagRoles.Runner);
+        var table = new TagTable();
+        table.StartGame(runner: table.Ids[1]);
+        var chaser = table.Host;
 
-        Assert.Equal(TagTeam.First, session.CurrentRound.Runners);
-        Assert.Equal(TagPhase.HeadStart, session.Phase(Start.AddMinutes(5)));
-        Assert.Equal(TagPhase.Chase, session.Phase(Start.AddMinutes(10)));
-        Assert.Equal(TagPhase.TimeUp, session.Phase(Start.AddMinutes(60)));
-        Assert.False(session.CanEndByCatch(Start.AddMinutes(5))); // chasers still wait
-        Assert.True(session.CanEndByCatch(Start.AddMinutes(20)));
+        Assert.Equal(TagPhase.HeadStart, chaser.Phase(Start.AddMinutes(29)));
+        Assert.True(chaser.IsChaseLocked(Start.AddMinutes(29)));
+        Assert.False(chaser.CanRequestCatch(Start.AddMinutes(29)));
+        Assert.False(table.Runner.CanConfirmCatch(Start.AddMinutes(29)));
+        Assert.False(chaser.CanConfirmCatch(Start.AddMinutes(29))); // not even the host
+        Assert.Throws<InvalidOperationException>(() => table.Runner.CreateCatch(Start.AddMinutes(10), table.Ids[0], TagTestData.Center, new Random(1)));
+
+        Assert.Equal(TagPhase.Chase, chaser.Phase(Start.AddMinutes(30)));
+        Assert.True(chaser.CanRequestCatch(Start.AddMinutes(30)));
+        Assert.True(table.Runner.CanConfirmCatch(Start.AddMinutes(30)));
+        Assert.False(table.Runner.CanRequestCatch(Start.AddMinutes(30)));
     }
 
     [Fact]
-    public void Catch_ends_the_round_and_swaps_roles_on_both_devices()
+    public void The_runner_moves_immediately_and_may_ride_and_draw_during_the_head_start()
     {
-        var runner = TagTestData.NewSession(TagRoles.Runner);
-        var chaser = TagTestData.NewSession(TagRoles.Chaser);
-        var caughtAt = Start.AddMinutes(42);
+        var table = new TagTable();
+        table.StartGame(runner: table.Ids[1]);
 
-        var message = TagMessages.EndRound(chaser, chaser.CreateRoundEnd(RoundEndReason.Caught, caughtAt, TagTestData.At(10, 10)));
-        TagTestData.Deliver(chaser, message);
-        TagTestData.Deliver(runner, message);
-
-        Assert.Equal(TagRoles.Chaser, runner.LocalRoleId);
-        Assert.Equal(TagRoles.Runner, chaser.LocalRoleId);
-        Assert.Equal(TagTeam.First, runner.LocalTeam); // teams stay, roles swap
-        Assert.Equal(TagTeam.Second, chaser.LocalTeam);
-        foreach (var session in new[] { runner, chaser })
-        {
-            var first = session.Rounds[0];
-            Assert.Equal((caughtAt, RoundEndReason.Caught), (first.EndedAt!.Value, first.EndReason!.Value));
-            Assert.Null(first.EndPoint); // sent by a chaser: no position
-            Assert.Equal((1, TagTeam.Second, caughtAt), (session.CurrentRound.Index, session.CurrentRound.Runners, session.CurrentRound.StartedAt));
-            Assert.Equal(TagPhase.HeadStart, session.Phase(caughtAt.AddMinutes(1)));
-        }
+        Assert.Equal(DrawBlock.None, table.Runner.DrawBlockReason(Start.AddMinutes(1)));
+        Assert.True(table.Runner.QuoteRide(Coins.TransportMode.Bus, Start.AddMinutes(1)).IsAllowed);
     }
 
     [Fact]
-    public void Two_catch_reports_of_the_same_round_count_once()
+    public void After_a_catch_the_catcher_runs_next_when_the_setting_says_so()
     {
-        var runner = TagTestData.NewSession(TagRoles.Runner);
-        var chaser = TagTestData.NewSession(TagRoles.Chaser);
-        var fromRunner = TagMessages.EndRound(runner, runner.CreateRoundEnd(RoundEndReason.Caught, Start.AddMinutes(30), TagTestData.At(5, 5)));
-        var fromChaser = TagMessages.EndRound(chaser, chaser.CreateRoundEnd(RoundEndReason.Caught, Start.AddMinutes(31), null));
+        var table = new TagTable(players: 4, s => s.NextRunner = NextRunnerMode.Catcher);
+        table.StartGame(runner: table.Ids[0]);
+        var caughtAt = Start.AddMinutes(50);
+        var catchPoint = TagTestData.At(700, -300);
 
-        foreach (var session in new[] { runner, chaser })
+        table.Catch(caughtAt, catcher: table.Ids[2], catchPoint);
+
+        foreach (var device in table.Devices)
         {
-            TagTestData.Deliver(session, fromRunner);
-            TagTestData.Deliver(session, fromChaser);
-            Assert.Equal(2, session.Rounds.Count);
-            Assert.Equal(1, session.RolesVersion);
+            var (first, second) = (device.Turns[0], device.Turns[1]);
+            Assert.Equal((TurnEndReason.Caught, table.Ids[2], caughtAt), (first.EndReason!.Value, first.CatcherId!.Value, first.EndedAt!.Value));
+            Assert.Equal(table.Ids[2], second.RunnerId);
+            Assert.Equal(caughtAt, second.StartedAt);
+            Assert.Equal(catchPoint, second.StartPoint); // the next turn starts where the catch happened
+            Assert.Equal(TagPhase.HeadStart, device.Phase(caughtAt.AddMinutes(29))); // the chasers wait again
         }
 
-        Assert.Equal(TagRoles.Chaser, runner.LocalRoleId);
-        Assert.Equal(TagTestData.At(5, 5), runner.Rounds[0].EndPoint); // runners may report where
+        Assert.Equal(TagRoles.Chaser, table.Of(table.Ids[0]).LocalRoleId); // caught runner chases now
+        Assert.Equal(TagRoles.Runner, table.Of(table.Ids[2]).LocalRoleId);
+        Assert.Equal(TagRoles.Chaser, table.Of(table.Ids[1]).LocalRoleId);
+        Assert.Equal(TagRoles.Chaser, table.Of(table.Ids[3]).LocalRoleId);
     }
 
     [Fact]
-    public void The_last_round_ends_the_game_without_swapping()
+    public void Random_next_runner_is_always_one_of_the_chasers()
     {
-        var session = TagTestData.NewSession(TagRoles.Runner, TagTestData.Settings(s => s.Rounds = 1));
+        var players = Enumerable.Range(0, 4).Select(_ => Guid.NewGuid()).ToList();
+        var random = new Random(5);
 
-        var message = TagMessages.EndRound(session, session.CreateRoundEnd(RoundEndReason.TimeUp, Start.AddMinutes(90), null));
-        TagTestData.Deliver(session, message);
+        var picks = Enumerable.Range(0, 200)
+            .Select(_ => RunnerSelection.PickNext(players, players[0], players[1], NextRunnerMode.Random, random))
+            .ToList();
 
-        Assert.Null(message.RoleChange);
-        Assert.Equal(TagRoles.Runner, session.LocalRoleId);
-        Assert.Equal(TagPhase.GameOver, session.Phase(Start.AddMinutes(91)));
-        Assert.Equal(Start.AddMinutes(60), session.Rounds[0].EndedAt); // time up counts until the round limit only
+        Assert.DoesNotContain(players[0], picks);
+        Assert.All(players.Skip(1), p => Assert.Contains(p, picks)); // not always the catcher
+        Assert.Equal(players[2], RunnerSelection.PickNext(players, players[0], players[2], NextRunnerMode.Catcher, random));
+        Assert.NotEqual(players[0], RunnerSelection.PickNext(players, players[0], null, NextRunnerMode.Catcher, random)); // catcher unknown: random chaser
     }
 
     [Fact]
-    public void A_device_joining_after_a_swap_keeps_its_role_while_catching_up()
+    public void Coins_are_kept_across_turns_and_the_new_runner_gets_the_turn_bonus()
     {
-        // Joins as a runner after round 1 ended: that makes it team 2.
-        IGameModule module = new TagModule();
-        var joined = (TagSession)module.CreateSession(TagTestData.Settings(), TagRoles.Runner, Guid.NewGuid());
-        joined.InitializeRolesVersion(1);
-        joined.Start(Start.AddMinutes(50));
-        Assert.Equal(TagTeam.Second, joined.LocalTeam);
+        var table = new TagTable(players: 3, s => s.NextRunner = NextRunnerMode.Catcher);
+        table.StartGame(runner: table.Ids[0]);
+        var runner = table.Runner;
+        var ride = runner.CreateRideStart(Coins.TransportMode.Train, Start.AddMinutes(5)); // 2 up front
+        table.Send(TagMessages.StartRide(runner, ride));
+        table.Send(TagMessages.EndRide(runner, runner.CreateRideEnd(runner.OpenRide(runner.LocalPlayerId)!, 3000, Start.AddMinutes(15)))); // 6 in total
 
-        var host = TagTestData.NewSession(TagRoles.Chaser);
-        TagTestData.Deliver(joined, TagMessages.EndRound(host, host.CreateRoundEnd(RoundEndReason.Caught, Start.AddMinutes(40), null)));
+        table.Catch(Start.AddMinutes(40), catcher: table.Ids[1]);
 
-        Assert.Equal(TagRoles.Runner, joined.LocalRoleId);
-        Assert.Equal((1, TagTeam.Second), (joined.CurrentRound.Index, joined.CurrentRound.Runners));
+        foreach (var device in table.Devices)
+        {
+            Assert.Equal(14, device.Balance(table.Ids[0])); // the caught runner keeps what is left
+            Assert.Equal(30, device.Balance(table.Ids[1])); // 20 + bonus 10
+            Assert.Equal(20, device.Balance(table.Ids[2])); // untouched
+        }
+
+        var bonus = Assert.Single(table.Host.Transactions, t => t.Kind == CoinTransactionKind.TurnBonus);
+        Assert.Equal((table.Ids[1], 1), (bonus.PlayerId, bonus.Turn));
     }
 
     [Fact]
-    public void Reveal_times_follow_the_interval_from_the_round_start()
+    public void Top_up_mode_fills_the_balance_to_the_minimum()
     {
-        var session = TagTestData.NewSession(TagRoles.Runner);
+        var table = new TagTable(players: 3, s =>
+        {
+            s.NextRunner = NextRunnerMode.Catcher;
+            s.TurnBonusMode = TurnBonusMode.TopUp;
+            s.TopUpMinimum = 25;
+            s.StartingCoins = 8;
+        });
+        table.StartGame(runner: table.Ids[0]);
 
-        Assert.Equal(Start.AddMinutes(15), session.NextRevealAt(Start.AddMinutes(1)));
-        Assert.Equal(Start.AddMinutes(30), session.NextRevealAt(Start.AddMinutes(15)));
+        table.Catch(Start.AddMinutes(40), catcher: table.Ids[1]);
+        Assert.Equal(25, table.Host.Balance(table.Ids[1]));
+
+        table.Catch(Start.AddMinutes(80), catcher: table.Ids[0]);
+        Assert.Equal(25, table.Host.Balance(table.Ids[0])); // 8 → 25
+
+        Assert.Equal(0, table.Host.TurnBonusFor(30)); // already above: nothing
     }
 
     [Fact]
-    public void State_survives_a_snapshot_round_trip()
+    public void The_host_can_force_a_catch_and_two_confirmations_of_one_turn_count_once()
     {
-        IGameModule module = new TagModule();
-        var session = TagTestData.NewSession(TagRoles.Runner);
-        TagTestData.Deliver(session, TagMessages.CaptureTarget(session, new CapturePayload(0, "t1", Start.AddMinutes(20))));
-        TagTestData.Deliver(session, TagMessages.EndRound(session, session.CreateRoundEnd(RoundEndReason.Caught, Start.AddMinutes(30), null)));
+        var table = new TagTable(players: 3, s => s.NextRunner = NextRunnerMode.Catcher);
+        table.StartGame(runner: table.Ids[2]);
+        var at = Start.AddMinutes(45);
 
-        var restored = (TagSession)module.RestoreSession(session.CreateSnapshot(Start.AddMinutes(31)));
+        var forced = table.Host.CreateCatch(at, table.Ids[1], TagTestData.At(10, 10), new Random(1));
+        var byRunner = table.Runner.CreateCatch(at.AddSeconds(20), table.Ids[0], TagTestData.At(20, 20), new Random(1));
+        table.Send(TagMessages.ConfirmCatch(table.Host, forced, table.Ids[2]));
+        table.Send(TagMessages.ConfirmCatch(table.Of(table.Ids[2]), byRunner, table.Ids[2]));
 
-        Assert.Equal((TagRoles.Chaser, 1), (restored.LocalRoleId, restored.RolesVersion));
-        Assert.Equal(2, restored.Rounds.Count);
-        Assert.Equal("t1", Assert.Single(restored.Rounds[0].Captures).TargetId);
-        Assert.Equal("Park", restored.Settings.Targets[0].Name);
+        Assert.True(forced.Forced);
+        Assert.False(byRunner.Forced);
+        foreach (var device in table.Devices)
+        {
+            Assert.Equal(2, device.Turns.Count);
+            Assert.Equal(table.Ids[1], device.CurrentTurn!.RunnerId);
+            Assert.True(device.Turns[0].Forced);
+        }
+
+        Assert.Equal(TagRoles.Runner, table.Of(table.Ids[1]).LocalRoleId);
+        Assert.Single(table.Devices, d => d.LocalRoleId == TagRoles.Runner);
+    }
+
+    [Fact]
+    public void A_chaser_asks_and_the_runner_sees_the_request()
+    {
+        var table = new TagTable();
+        table.StartGame(runner: table.Ids[0]);
+        var chaser = table.Of(table.Ids[1]);
+
+        table.Send(TagMessages.RequestCatch(chaser, new CatchRequestPayload(0, Guid.NewGuid(), chaser.LocalPlayerId, Start.AddMinutes(35))));
+
+        var request = Assert.Single(table.Runner.PendingCatchRequests);
+        Assert.Equal(table.Ids[1], request.ChaserId);
+        table.Catch(Start.AddMinutes(36), request.ChaserId);
+        Assert.Empty(table.Host.PendingCatchRequests); // belongs to the ended turn
     }
 }
 
-public class TagTargetTests
+public class TagEndTests
 {
-    private static readonly DateTimeOffset Start = TagTestData.Start;
+    private static readonly DateTimeOffset Start = TagTable.Start;
 
     [Fact]
-    public void Targets_are_captured_once_per_round_and_only_during_it()
+    public void Reaching_the_own_destination_wins()
     {
-        var session = TagTestData.NewSession(TagRoles.Runner);
-        Assert.True(session.CanCapture("t1", Start.AddMinutes(20)));
+        var table = new TagTable();
+        table.StartGame(runner: table.Ids[1]);
+        var runner = table.Runner;
+        var near = TagTestData.At(3000 + 60, 40); // ~72 m from D2 (radius 100 m)
 
-        var capture = TagMessages.CaptureTarget(session, new CapturePayload(0, "t1", Start.AddMinutes(20)));
-        TagTestData.Deliver(session, capture);
-        TagTestData.Deliver(session, capture);
-        TagTestData.Deliver(session, TagMessages.CaptureTarget(session, new CapturePayload(0, "unknown", Start.AddMinutes(21))));
+        Assert.False(runner.CanReportArrival(TagTestData.At(3000 + 300, 0), Start.AddMinutes(20)));
+        Assert.False(runner.CanReportArrival(table.DestinationOf(0), Start.AddMinutes(20))); // someone else's destination
+        Assert.True(runner.CanReportArrival(near, Start.AddMinutes(20)));
+        table.Send(TagMessages.ReportArrival(runner, runner.CreateArrival(Start.AddMinutes(20))));
 
-        Assert.Equal(10, Assert.Single(session.CurrentRound.Captures).Reward);
-        Assert.False(session.CanCapture("t1", Start.AddMinutes(22)));
-        Assert.Equal(["t2"], session.ActiveTargets.Select(t => t.Id));
-
-        // Next round: every target is available again, for the other team.
-        TagTestData.Deliver(session, TagMessages.EndRound(session, session.CreateRoundEnd(RoundEndReason.Caught, Start.AddMinutes(30), null)));
-        Assert.Equal(["t1", "t2"], session.ActiveTargets.Select(t => t.Id));
-        Assert.False(session.CanCapture("t1", Start.AddMinutes(31))); // chasers now
-    }
-
-    [Fact]
-    public void Targets_in_reach_and_the_final_target_use_the_target_radius()
-    {
-        var session = TagTestData.NewSession(TagRoles.Runner);
-
-        Assert.Equal(["t1"], session.TargetsInReach(TagTestData.At(1050, 30)).Select(t => t.Id));
-        Assert.Empty(session.TargetsInReach(TagTestData.At(1200, 0)));
-        Assert.True(session.IsAtFinal(TagTestData.At(0, 2450)));
-        Assert.False(session.IsAtFinal(TagTestData.At(0, 2000)));
-    }
-
-    [Fact]
-    public void Score_is_minutes_survived_plus_target_points_plus_final_bonus()
-    {
-        var session = TagTestData.NewSession(TagRoles.Runner, TagTestData.Settings(s => s.FinalBonus = 30));
-        TagTestData.Deliver(session, TagMessages.CaptureTarget(session, new CapturePayload(0, "t1", Start.AddMinutes(15))));
-        TagTestData.Deliver(session, TagMessages.EndRound(session, session.CreateRoundEnd(RoundEndReason.ReachedFinal, Start.AddMinutes(45), null)));
-        TagTestData.Deliver(session, TagMessages.EndRound(session, session.CreateRoundEnd(RoundEndReason.Caught, Start.AddMinutes(45 + 20), null)));
-
-        var board = session.Scoreboard(Start.AddMinutes(100));
-
-        Assert.Equal(45 + 10 + 30, board.Teams.Single(t => t.Team == TagTeam.First).Score);
-        Assert.Equal(20, board.Teams.Single(t => t.Team == TagTeam.Second).Score);
-        Assert.Equal(TagTeam.First, board.Leader);
-        Assert.Equal([RoundEndReason.ReachedFinal, RoundEndReason.Caught], board.Rounds.Select(r => r.Reason!.Value));
-    }
-
-    [Fact]
-    public void In_coins_mode_rewards_are_coins_to_spend_not_points()
-    {
-        var session = TagTestData.NewSession(TagRoles.Runner, TagTestData.Settings(s =>
+        foreach (var device in table.Devices)
         {
-            s.RewardKind = RewardKind.Coins;
-            s.StartingCoins = 4;
-        }));
-        TagTestData.Deliver(session, TagMessages.CaptureTarget(session, new CapturePayload(0, "t2", Start.AddMinutes(15))));
-        var spend = TagMessages.SpendCoins(session, new SpendPayload(0, Guid.NewGuid(), 3, "Tramwaj", Start.AddMinutes(16)));
-        TagTestData.Deliver(session, spend);
-        TagTestData.Deliver(session, spend);
-
-        Assert.Equal(4 + 5 - 3, session.CoinBalance);
-        Assert.Equal(SyncAudience.OwnTeam, spend.Audience);
-        Assert.Equal(0, session.Scoreboard(Start.AddMinutes(20)).Rounds[0].TargetPoints);
-    }
-
-    [Fact]
-    public void Generated_targets_are_inside_spread_and_deterministic()
-    {
-        var area = TagTestData.Area();
-        var candidates = new List<TargetCandidate>();
-        for (var e = -4000; e <= 4000; e += 250)
-        {
-            for (var n = -4000; n <= 4000; n += 250)
-            {
-                candidates.Add(new TargetCandidate($"s{e}_{n}", $"S {e} {n}", TagTestData.At(e, n)));
-            }
+            var results = device.Results(Start.AddMinutes(30));
+            Assert.Equal(TagPhase.GameOver, device.Phase(Start.AddMinutes(21)));
+            Assert.Equal(GameEndReason.ReachedDestination, results.Reason);
+            Assert.Equal(table.Ids[1], Assert.Single(results.Winners).Id);
+            Assert.Equal(TurnEndReason.ReachedDestination, results.Turns[0].Reason);
+            Assert.Equal(TimeSpan.FromMinutes(20), results.Turns[0].Duration);
         }
-
-        var targets = TargetGenerator.Generate(candidates, area, 6, seed: 7);
-
-        Assert.Equal(6, targets.Count);
-        Assert.All(targets, t => Assert.True(area.Contains(t.Location)));
-        var closest = targets.SelectMany(a => targets.Where(b => b != a).Select(b => a.Location.DistanceTo(b.Location))).Min();
-        Assert.True(closest >= 1000, $"targets too close: {closest:F0} m");
-        Assert.All(targets, t => Assert.Contains(t.Reward, TargetGenerator.RewardSteps));
-        Assert.Equal(targets.Select(t => t.Id), TargetGenerator.Generate(candidates, area, 6, seed: 7).Select(t => t.Id));
     }
 
     [Fact]
-    public void With_few_candidates_all_of_them_become_targets()
+    public void At_the_time_limit_the_destination_nearest_to_the_runner_wins()
     {
-        var area = TagTestData.Area();
-        var candidates = new[] { new TargetCandidate("a", "A", TagTestData.At(0, 0)), new TargetCandidate("b", "B", TagTestData.At(50, 0)) };
+        var table = new TagTable(players: 3);
+        table.StartGame(runner: table.Ids[0]);
+        var limit = Start.AddHours(2);
+        var runnerThere = TagTestData.At(3900, 0); // D1 at 2 km, D2 at 3 km, D3 at 4 km
 
-        Assert.Equal(2, TargetGenerator.Generate(candidates, area, 5, seed: 1).Count);
+        Assert.Equal(TagPhase.TimeUp, table.Host.Phase(limit));
+        Assert.True(table.Runner.CanSettleTimeUp(limit.AddSeconds(5)));
+        table.Send(TagMessages.EndGame(table.Runner, new EndPayload(limit.AddSeconds(5), runnerThere, EndPointSource.Gps)));
+
+        var results = table.Devices[2].Results(limit.AddMinutes(1));
+        Assert.Equal(table.Ids[2], Assert.Single(results.Winners).Id); // the winner may be a chaser
+        Assert.Equal([table.Ids[2], table.Ids[1], table.Ids[0]], results.Ranking.Select(r => r.Player.Id));
+        Assert.InRange(results.Ranking[0].DistanceMeters!.Value, 95, 105);
+        Assert.InRange(results.Ranking[2].DistanceMeters!.Value, 1890, 1910);
+        Assert.Equal(limit, table.Host.End!.At); // ends at the limit, not when the message was sent
+        Assert.Equal(TurnEndReason.TimeUp, results.Turns[0].Reason);
     }
 
     [Fact]
-    public void Challenges_are_handed_out_and_located_ones_become_targets()
+    public void Destinations_equally_far_from_the_runner_draw()
     {
-        var area = TagTestData.Area();
-        var inside = TagTestData.At(500, 500);
-        var deck = ChallengeDeck.Parse($$"""
-            { "challenges": [
-              { "id": "a", "reward": 2, "title": { "pl": "A" }, "text": { "pl": "Zrób A" } },
-              { "id": "here", "reward": 4, "title": { "pl": "Tu" }, "text": { "pl": "Zrób to tutaj" },
-                "location": { "latitude": {{inside.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}}, "longitude": {{inside.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture)}}, "name": "Pomnik" } },
-              { "id": "far", "reward": 4, "title": { "pl": "Daleko" }, "text": { "pl": "Poza obszarem" },
-                "location": { "latitude": 10, "longitude": 10 } }
-            ] }
-            """);
-        var targets = new[] { new TagTarget("t1", "T1", TagTestData.At(0, 0), 5) };
+        var table = new TagTable(players: 3);
+        var runnerAt = new Core.Geography.GeoPoint(52.25, 21.0);
 
-        var result = TargetGenerator.WithChallenges(targets, area, deck, new Random(1));
+        // D2 and D3 lie symmetrically north and south of where the runner ends, D1 further away.
+        table.StartGame(runner: table.Ids[0], destinations: i => new Core.Geography.GeoPoint(52.25 + (i == 0 ? 0.05 : i == 1 ? 0.02 : -0.02), 21.0));
+        table.Send(TagMessages.EndGame(table.Host, new EndPayload(Start.AddHours(2), runnerAt, EndPointSource.Manual)));
 
-        Assert.Equal(("a", 7), (result[0].Challenge!.Id, result[0].Reward));
-        var located = Assert.Single(result, t => t.Id == "challenge/here");
-        Assert.Equal(("Pomnik", 14), (located.Name, located.Reward));
-        Assert.DoesNotContain(result, t => t.Id == "challenge/far");
+        var results = table.Host.Results(Start.AddHours(3));
+        Assert.True(results.IsDraw);
+        Assert.Equal([table.Ids[1], table.Ids[2]], results.Winners.Select(w => w.Id).Order());
+        Assert.Equal(EndPointSource.Manual, results.PointSource);
+        Assert.Contains("P2", TagTexts.Headline(results));
+        Assert.Contains("P3", TagTexts.Headline(results));
     }
 
     [Fact]
-    public void Built_in_challenges_load_and_invalid_lists_are_rejected()
+    public void Only_the_runner_or_the_host_settles_a_game_whose_time_is_up()
     {
-        Assert.True(ChallengeDeck.BuiltIn.Challenges.Count >= 5);
-        Assert.All(ChallengeDeck.BuiltIn.Challenges, c => Assert.False(string.IsNullOrEmpty(c.LocalizedText)));
-        Assert.Throws<JsonException>(() => ChallengeDeck.Parse("""{ "challenges": [] }"""));
-        Assert.Throws<JsonException>(() => ChallengeDeck.Parse("""{ "challenges": [ { "id": "x", "reward": 1, "title": {}, "text": {} } ] }"""));
+        var table = new TagTable(players: 3);
+        table.StartGame(runner: table.Ids[1]);
+        var limit = Start.AddHours(2);
+
+        Assert.False(table.Runner.CanSettleTimeUp(limit.AddMinutes(-1)));
+        Assert.True(table.Host.CanSettleTimeUp(limit));
+        Assert.False(table.Devices[2].CanSettleTimeUp(limit));
+    }
+
+    [Fact]
+    public void The_results_list_every_turn_with_coins_spent_and_earned()
+    {
+        var table = new TagTable(players: 2);
+        table.StartGame(runner: table.Ids[0]);
+        var runner = table.Runner;
+        table.Send(TagMessages.StartRide(runner, runner.CreateRideStart(Coins.TransportMode.Bus, Start.AddMinutes(1))));
+        table.Draw("cu-honour", Start.AddMinutes(10));
+        table.Catch(Start.AddMinutes(45), table.Ids[1]); // closes the open ride: only the advance is paid
+
+        var results = table.Host.Results(Start.AddMinutes(60));
+        var (first, second) = (results.Turns[0], results.Turns[1]);
+        Assert.Equal((1, 1, 0, TimeSpan.FromMinutes(45)), (first.Spent, first.Earned, first.Bonus, first.Duration));
+        Assert.Equal("P2", first.Catcher!.Name);
+        Assert.Equal((10, true, TimeSpan.FromMinutes(15)), (second.Bonus, second.IsRunning, second.Duration));
+        Assert.Null(results.Reason);
     }
 }

@@ -31,6 +31,8 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
         Settings = settings;
         LocalRoleId = snapshot.LocalRoleId;
         RolesVersion = snapshot.RolesVersion;
+        LocalDeviceId = snapshot.LocalDeviceId;
+        IsHost = snapshot.IsHost;
         Status = snapshot.Status;
         CreatedAt = snapshot.CreatedAt;
         // Games finished before the time was stored: their last save is when they ended.
@@ -44,6 +46,8 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
     GameSettings IGameSession.Settings => Settings;
     public string LocalRoleId { get; private set; }
     public int RolesVersion { get; private set; }
+    public Guid? LocalDeviceId { get; private set; }
+    public bool IsHost { get; private set; } = true;
     public SessionStatus Status { get; private set; }
     public DateTimeOffset CreatedAt { get; private set; }
     public DateTimeOffset? FinishedAt { get; private set; }
@@ -77,6 +81,17 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
         RolesVersion = version;
     }
 
+    public void InitializeDevice(Guid deviceId, bool isHost)
+    {
+        if (Status != SessionStatus.Setup)
+        {
+            throw new InvalidOperationException("The device can only be set before the game starts.");
+        }
+
+        LocalDeviceId = deviceId;
+        IsHost = isHost;
+    }
+
     public bool ApplyRoleChange(RoleChange change, DateTimeOffset now)
     {
         if (change.FromVersion != RolesVersion)
@@ -85,7 +100,7 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
         }
 
         var previous = LocalRoleId;
-        LocalRoleId = change.Apply(previous);
+        LocalRoleId = change.Apply(previous, LocalDeviceId);
         RolesVersion++;
         OnRolesChanged(previous, now);
         NotifyChanged();
@@ -112,6 +127,8 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
         GameId = GameId,
         LocalRoleId = LocalRoleId,
         RolesVersion = RolesVersion,
+        LocalDeviceId = LocalDeviceId,
+        IsHost = IsHost,
         Status = Status,
         CreatedAt = CreatedAt == default ? now : CreatedAt,
         UpdatedAt = now,

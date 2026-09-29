@@ -11,10 +11,24 @@ namespace TransitGames.Core.Sync;
 /// <param name="Mapping">Old role id → new role id; roles not listed stay.</param>
 public sealed record RoleChange(int FromVersion, IReadOnlyDictionary<string, string> Mapping)
 {
+    /// <summary>
+    /// Device id → new role id, for games where single players change roles (Tag: the caught runner becomes a chaser,
+    /// one chaser becomes the runner). Takes precedence over <see cref="Mapping"/>; devices not listed follow it.
+    /// </summary>
+    public IReadOnlyDictionary<Guid, string>? Devices { get; init; }
+
     public static RoleChange Swap(int fromVersion, string first, string second) =>
         new(fromVersion, new Dictionary<string, string> { [first] = second, [second] = first });
 
+    /// <summary>Gives the listed devices new roles; everybody else keeps theirs.</summary>
+    public static RoleChange Assign(int fromVersion, IReadOnlyDictionary<Guid, string> devices) =>
+        new(fromVersion, new Dictionary<string, string>()) { Devices = devices };
+
     public string Apply(string roleId) => Mapping.TryGetValue(roleId, out var next) ? next : roleId;
+
+    /// <summary>The new role of device <paramref name="deviceId"/> (unknown offline) that has <paramref name="roleId"/> now.</summary>
+    public string Apply(string roleId, Guid? deviceId) =>
+        deviceId is { } id && Devices is { } devices && devices.TryGetValue(id, out var assigned) ? assigned : Apply(roleId);
 
     /// <summary>True when the mapping only permutes <paramref name="roleIds"/> (no role disappears or appears).</summary>
     public bool IsPermutationOf(IEnumerable<string> roleIds)
@@ -23,5 +37,18 @@ public sealed record RoleChange(int FromVersion, IReadOnlyDictionary<string, str
         return Mapping.Count > 0
             && Mapping.Keys.All(roles.Contains)
             && Mapping.Keys.ToHashSet(StringComparer.Ordinal).SetEquals(Mapping.Values);
+    }
+
+    /// <summary>
+    /// True when the change is well-formed for a game with <paramref name="roleIds"/>: a permutation of roles, and/or
+    /// device assignments to known roles — at least one of the two.
+    /// </summary>
+    public bool IsValidFor(IEnumerable<string> roleIds)
+    {
+        var roles = roleIds.ToHashSet(StringComparer.Ordinal);
+        var hasDevices = Devices is { Count: > 0 };
+        return (Mapping.Count > 0 || hasDevices)
+            && (Mapping.Count == 0 || IsPermutationOf(roles))
+            && (!hasDevices || Devices!.Values.All(roles.Contains));
     }
 }

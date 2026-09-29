@@ -158,6 +158,39 @@ public sealed class OnlineSupportTests : IDisposable
         Assert.False(RoleChange.Swap(0, "a", "x").IsPermutationOf(["a", "b"]));
     }
 
+    [Fact]
+    public void Device_assignments_override_the_role_mapping_for_the_listed_devices()
+    {
+        var runner = Guid.NewGuid();
+        var change = RoleChange.Assign(3, new Dictionary<Guid, string> { [runner] = "a" });
+
+        Assert.Equal("a", change.Apply("b", runner));
+        Assert.Equal("b", change.Apply("b", Guid.NewGuid()));
+        Assert.Equal("b", change.Apply("b", null)); // offline: no device id
+        Assert.True(change.IsValidFor(["a", "b"]));
+        Assert.False(RoleChange.Assign(0, new Dictionary<Guid, string> { [runner] = "x" }).IsValidFor(["a", "b"]));
+        Assert.False(RoleChange.Assign(0, new Dictionary<Guid, string>()).IsValidFor(["a", "b"]));
+        Assert.True(RoleChange.Swap(0, "a", "b").IsValidFor(["a", "b"]));
+    }
+
+    [Fact]
+    public async Task A_session_knows_its_device_and_applies_assignments_to_it()
+    {
+        var db = new AppDatabase(new DatabaseOptions(_file.Path));
+        var store = new SqliteGameSessionStore(db);
+        var manager = new GameSessionManager(new GameRegistry([new TestModule()]), store, new SqliteGameEventLog(db), _clock);
+        var device = Guid.NewGuid();
+        var session = await manager.StartNewAsync(TestModule.GameId, new TestSettings(), "b", Guid.NewGuid(), deviceId: device, isHost: false);
+
+        session.ApplyRoleChange(RoleChange.Assign(0, new Dictionary<Guid, string> { [device] = "a" }), _clock.UtcNow);
+        await manager.SaveAsync();
+        var saved = (await store.LoadAsync(session.Id))!;
+
+        Assert.Equal(("a", 1), (session.LocalRoleId, session.RolesVersion));
+        Assert.Equal((device, false), (saved.LocalDeviceId!.Value, saved.IsHost));
+        Assert.True((await manager.StartNewAsync(TestModule.GameId, new TestSettings(), "a")).IsHost); // offline games are hosted
+    }
+
     private sealed class PointHandler : IGameMessageHandler
     {
         public string GameId => TestModule.GameId;

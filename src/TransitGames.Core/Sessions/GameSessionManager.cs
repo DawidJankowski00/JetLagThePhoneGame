@@ -42,11 +42,25 @@ public sealed class GameSessionManager
 
     /// <param name="sessionId">Id shared by all devices of an online game; a new one when null.</param>
     /// <param name="rolesVersion">Roles version of an online game joined after its roles changed.</param>
-    public async Task<IGameSession> StartNewAsync(string gameId, GameSettings settings, string localRoleId, Guid? sessionId = null, int rolesVersion = 0)
+    /// <param name="deviceId">Online: this device's id in the game.</param>
+    /// <param name="isHost">Online: this device created the game.</param>
+    public async Task<IGameSession> StartNewAsync(
+        string gameId,
+        GameSettings settings,
+        string localRoleId,
+        Guid? sessionId = null,
+        int rolesVersion = 0,
+        Guid? deviceId = null,
+        bool isHost = true)
     {
         var module = _registry.Get(gameId);
         var session = module.CreateSession(settings, localRoleId, sessionId);
         session.InitializeRolesVersion(rolesVersion);
+        if (deviceId is { } id)
+        {
+            session.InitializeDevice(id, isHost);
+        }
+
         Attach(session);
         session.Start(_clock.UtcNow);
         await SaveAsync().ConfigureAwait(false);
