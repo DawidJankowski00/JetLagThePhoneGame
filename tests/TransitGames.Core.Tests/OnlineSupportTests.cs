@@ -63,6 +63,18 @@ public sealed class OnlineSupportTests : IDisposable
     }
 
     [Fact]
+    public async Task Joining_device_counts_time_from_the_hosts_start()
+    {
+        var db = new AppDatabase(new DatabaseOptions(_file.Path));
+        var manager = new GameSessionManager(new GameRegistry([new TestModule()]), new SqliteGameSessionStore(db), new SqliteGameEventLog(db), _clock);
+        var hostStart = _clock.UtcNow.AddMinutes(-7);
+
+        var joined = await manager.StartNewAsync(TestModule.GameId, new TestSettings { StartedAt = hostStart }, "b");
+
+        Assert.Equal(hostStart, joined.CreatedAt);
+    }
+
+    [Fact]
     public async Task Session_that_was_left_can_be_finished_by_id()
     {
         var db = new AppDatabase(new DatabaseOptions(_file.Path));
@@ -82,6 +94,52 @@ public sealed class OnlineSupportTests : IDisposable
         Assert.Null(await manager.TryResumeAsync());
         Assert.Equal([session.Id], finished);
         Assert.Contains(await log.GetEventsAsync(session.Id), e => e.Type == Events.GameEventTypes.SessionFinished);
+    }
+
+    [Fact]
+    public async Task Dispatcher_applies_game_messages_also_to_a_session_that_is_not_on_screen()
+    {
+        var db = new AppDatabase(new DatabaseOptions(_file.Path));
+        var store = new SqliteGameSessionStore(db);
+        var manager = new GameSessionManager(new GameRegistry([new TestModule()]), store, new SqliteGameEventLog(db), _clock);
+        var local = new LocalGameSyncService();
+        _ = new GameSyncDispatcherProbe(local, manager);
+
+        var session = await manager.StartNewAsync(TestModule.GameId, new TestSettings(), "a");
+        await local.PublishAsync(Message("point") with { SessionId = session.Id });
+        Assert.Equal(1, ((TestSession)session).Score);
+
+        manager.Close();
+        await local.PublishAsync(Message("point") with { SessionId = session.Id });
+        await local.PublishAsync(Message(SyncMessageTypes.Location) with { SessionId = session.Id }); // app message: ignored
+
+        // Applying to a saved session is asynchronous (load, change, save).
+        var score = 0;
+        for (var attempt = 0; attempt < 100 && score != 2; attempt++)
+        {
+            await Task.Delay(20);
+            score = ((TestSession)new TestModule().RestoreSession((await store.LoadAsync(session.Id))!)).Score;
+        }
+
+        Assert.Equal(2, score);
+    }
+
+    private sealed class PointHandler : IGameMessageHandler
+    {
+        public string GameId => TestModule.GameId;
+
+        public void Handle(IGameSession session, SyncMessage message)
+        {
+            if (message.Type == "point")
+            {
+                ((TestSession)session).AddPoint();
+            }
+        }
+    }
+
+    private sealed class GameSyncDispatcherProbe(IGameSyncService sync, GameSessionManager manager)
+    {
+        public GameMessageDispatcher Dispatcher { get; } = new(sync, manager, [new PointHandler()]);
     }
 
     [Fact]

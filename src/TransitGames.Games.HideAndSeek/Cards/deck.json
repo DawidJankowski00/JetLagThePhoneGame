@@ -1,0 +1,37 @@
+{
+  // Hiders' deck. Texts are our own. kind: TimeBonus (adds minutes to the hiders' result),
+  // Curse (a rule the seekers must follow), PowerUp (effect: "veto" = refuse to answer one question,
+  // "draw" = draw more cards). count = copies in the deck.
+  "cards": [
+    { "id": "bonus-3", "kind": "TimeBonus", "minutes": 3, "count": 6,
+      "title": { "pl": "Premia czasowa +3 min", "en": "Time bonus +3 min" },
+      "text": { "pl": "Zagraj w dowolnym momencie. Do wyniku ukrywających dolicz 3 minuty.", "en": "Play at any time. Add 3 minutes to the hiders' result." } },
+    { "id": "bonus-5", "kind": "TimeBonus", "minutes": 5, "count": 4,
+      "title": { "pl": "Premia czasowa +5 min", "en": "Time bonus +5 min" },
+      "text": { "pl": "Zagraj w dowolnym momencie. Do wyniku ukrywających dolicz 5 minut.", "en": "Play at any time. Add 5 minutes to the hiders' result." } },
+    { "id": "bonus-10", "kind": "TimeBonus", "minutes": 10, "count": 2,
+      "title": { "pl": "Premia czasowa +10 min", "en": "Time bonus +10 min" },
+      "text": { "pl": "Zagraj w dowolnym momencie. Do wyniku ukrywających dolicz 10 minut.", "en": "Play at any time. Add 10 minutes to the hiders' result." } },
+    { "id": "curse-quiet", "kind": "Curse", "count": 2,
+      "title": { "pl": "Klątwa ciszy", "en": "Curse of silence" },
+      "text": { "pl": "Przez 10 minut szukający nie mogą zadawać pytań.", "en": "For 10 minutes the seekers may not ask questions." } },
+    { "id": "curse-walk", "kind": "Curse", "count": 2,
+      "title": { "pl": "Klątwa spaceru", "en": "Curse of the stroll" },
+      "text": { "pl": "Przez 15 minut szukający poruszają się tylko pieszo.", "en": "For 15 minutes the seekers may only walk." } },
+    { "id": "curse-detour", "kind": "Curse", "count": 2,
+      "title": { "pl": "Klątwa objazdu", "en": "Curse of the detour" },
+      "text": { "pl": "Zanim szukający zadadzą kolejne pytanie, muszą przejechać jeden przystanek w przeciwną stronę.", "en": "Before their next question the seekers must ride one stop in the opposite direction." } },
+    { "id": "curse-coin", "kind": "Curse", "count": 1,
+      "title": { "pl": "Klątwa monety", "en": "Curse of the coin" },
+      "text": { "pl": "Przed następnym pytaniem szukający rzucają monetą. Reszka: pytanie przepada.", "en": "Before their next question the seekers toss a coin. Tails: the question is lost." } },
+    { "id": "curse-landmark", "kind": "Curse", "count": 1,
+      "title": { "pl": "Klątwa zabytku", "en": "Curse of the landmark" },
+      "text": { "pl": "Szukający muszą zrobić sobie zdjęcie przy dowolnym pomniku, zanim zadadzą kolejne pytanie.", "en": "The seekers must take a selfie at any monument before their next question." } },
+    { "id": "power-veto", "kind": "PowerUp", "effect": "veto", "count": 2,
+      "title": { "pl": "Weto", "en": "Veto" },
+      "text": { "pl": "Odmów odpowiedzi na jedno pytanie. Szukający nic nie wykluczają.", "en": "Refuse to answer one question. The seekers eliminate nothing." } },
+    { "id": "power-draw", "kind": "PowerUp", "effect": "draw", "count": 2,
+      "title": { "pl": "Dobierz dwie", "en": "Draw two" },
+      "text": { "pl": "Dobierz od razu dwie karty z talii.", "en": "Draw two cards from the deck right away." } }
+  ]
+}

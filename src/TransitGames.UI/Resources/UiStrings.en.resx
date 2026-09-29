@@ -33,6 +33,9 @@
   <data name="FinishGame" xml:space="preserve"><value>Finish game</value></data>
   <data name="FinishGameMessage" xml:space="preserve"><value>The game will be saved to history and cannot be resumed.</value></data>
   <data name="FinishGameTitle" xml:space="preserve"><value>Finish the game?</value></data>
+  <data name="GameSetupNoOptions" xml:space="preserve"><value>This game has no further settings.</value></data>
+  <data name="GameSetupSummaryFormat" xml:space="preserve"><value>{0} · {1} · stations: {2}</value></data>
+  <data name="GameSetupTitle" xml:space="preserve"><value>Game settings</value></data>
   <data name="HistoryEmpty" xml:space="preserve"><value>No games played yet.</value></data>
   <data name="HistoryTitle" xml:space="preserve"><value>Game history</value></data>
   <data name="InvalidGeoJsonFormat" xml:space="preserve"><value>Invalid GeoJSON file: {0}</value></data>

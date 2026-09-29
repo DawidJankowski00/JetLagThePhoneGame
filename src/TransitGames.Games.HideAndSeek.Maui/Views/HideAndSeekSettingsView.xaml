@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.Games.HideAndSeek.Maui.ViewModels"
+             xmlns:res="clr-namespace:TransitGames.Games.HideAndSeek.Resources;assembly=TransitGames.Games.HideAndSeek"
+             x:Class="TransitGames.Games.HideAndSeek.Maui.Views.HideAndSeekSettingsView"
+             x:DataType="vm:HideAndSeekSettingsViewModel">
+    <VerticalStackLayout Spacing="12">
+        <Border Style="{StaticResource Card}">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{x:Static res:HideAndSeekStrings.SettingsSize}" FontAttributes="Bold" />
+                <Picker ItemsSource="{Binding Sizes}" SelectedItem="{Binding SelectedSize}" />
+                <Label Text="{x:Static res:HideAndSeekStrings.SettingsHidingTime}" FontAttributes="Bold" Margin="0,8,0,0" />
+                <Picker ItemsSource="{Binding HidingTimes}" SelectedItem="{Binding SelectedHidingTime}" />
+            </VerticalStackLayout>
+        </Border>
+        <Border Style="{StaticResource Card}">
+            <VerticalStackLayout Spacing="4">
+                <Label Text="{x:Static res:HideAndSeekStrings.SettingsQuestions}" FontAttributes="Bold" />
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding QuestionTypes}" Spacing="2">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:QuestionTypeToggle">
+                            <Grid ColumnDefinitions="*,Auto">
+                                <VerticalStackLayout VerticalOptions="Center">
+                                    <Label Text="{Binding Name}" />
+                                    <Label Text="{Binding Details}" Style="{StaticResource Caption}" FontSize="12" />
+                                </VerticalStackLayout>
+                                <Switch Grid.Column="1" IsToggled="{Binding IsEnabled}" VerticalOptions="Center" />
+                            </Grid>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+                <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Label Text="{x:Static res:HideAndSeekStrings.SettingsCards}" />
+                        <Label Text="{x:Static res:HideAndSeekStrings.SettingsCardsHint}" Style="{StaticResource Caption}" FontSize="12" />
+                    </VerticalStackLayout>
+                    <Switch Grid.Column="1" IsToggled="{Binding CardsEnabled}" VerticalOptions="Center" />
+                </Grid>
+            </VerticalStackLayout>
+        </Border>
+    </VerticalStackLayout>
+</ContentView>

@@ -84,6 +84,48 @@ public sealed class GameSessionManager
     }
 
     /// <summary>
+    /// Applies a change to the session with the given id — the current one, or a saved one that is not on screen
+    /// (e.g. a message from the other team arrives while the player is on another tab). Returns false when the
+    /// session is unknown. Saved sessions are restored, changed, saved; their events go to the event log.
+    /// </summary>
+    public async Task<bool> MutateAsync(Guid sessionId, Action<IGameSession> change)
+    {
+        if (Current is { } current && current.Id == sessionId)
+        {
+            change(current); // persisted through StateChanged
+            return true;
+        }
+
+        await _saveLock.WaitAsync().ConfigureAwait(false);
+        try
+        {
+            var snapshot = await _store.LoadAsync(sessionId).ConfigureAwait(false);
+            if (snapshot is null || !_registry.TryGet(snapshot.GameId, out var module) || module is null)
+            {
+                return false;
+            }
+
+            var session = module.RestoreSession(snapshot);
+            session.EventRaised += OnEventRaised;
+            try
+            {
+                change(session);
+            }
+            finally
+            {
+                session.EventRaised -= OnEventRaised;
+            }
+
+            await _store.SaveAsync(session.CreateSnapshot(_clock.UtcNow)).ConfigureAwait(false);
+            return true;
+        }
+        finally
+        {
+            _saveLock.Release();
+        }
+    }
+
+    /// <summary>
     /// Finishes the session with the given id: the current one, or one that was left (e.g. the other device ended
     /// an online game while this device was on another screen). Unknown or already finished sessions are ignored.
     /// </summary>

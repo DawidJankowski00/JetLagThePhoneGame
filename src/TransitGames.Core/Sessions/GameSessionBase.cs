@@ -54,7 +54,7 @@ public abstract class GameSessionBase<TSettings, TState> : IGameSession
             return;
         }
 
-        CreatedAt = CreatedAt == default ? now : CreatedAt;
+        CreatedAt = CreatedAt == default ? Settings.StartedAt ?? now : CreatedAt;
         Status = SessionStatus.Running;
         OnStarted(now);
         Raise(GameEvent.Create(Id, now, GameEventTypes.SessionStarted, CoreStrings.SessionStarted));

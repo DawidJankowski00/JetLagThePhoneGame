@@ -4,10 +4,138 @@
   <resheader name="version"><value>2.0</value></resheader>
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="AddQuestionButton" xml:space="preserve"><value>Add the question</value></data>
+  <data name="AddReceivedQuestion" xml:space="preserve"><value>➕ Add a received question</value></data>
+  <data name="AnswerCloser" xml:space="preserve"><value>Closer</value></data>
+  <data name="AnswerColder" xml:space="preserve"><value>Colder (farther)</value></data>
+  <data name="AnswerDifferent" xml:space="preserve"><value>No, different</value></data>
+  <data name="AnswerFarther" xml:space="preserve"><value>Farther</value></data>
+  <data name="AnswerHotter" xml:space="preserve"><value>Hotter (closer)</value></data>
+  <data name="AnswerOutOfRange" xml:space="preserve"><value>Out of range</value></data>
+  <data name="AnswerPending" xml:space="preserve"><value>Waiting for the answer</value></data>
+  <data name="AnswerPhotoSent" xml:space="preserve"><value>Photo sent</value></data>
+  <data name="AnswerRadarNo" xml:space="preserve"><value>No, farther</value></data>
+  <data name="AnswerRadarYes" xml:space="preserve"><value>Yes, within</value></data>
+  <data name="AnswerSame" xml:space="preserve"><value>Yes, the same</value></data>
+  <data name="AnswerVetoed" xml:space="preserve"><value>Vetoed – no answer</value></data>
+  <data name="AnswerWithVeto" xml:space="preserve"><value>🛑 Veto (play the card)</value></data>
+  <data name="AskButton" xml:space="preserve"><value>Ask the question</value></data>
+  <data name="AskCategory" xml:space="preserve"><value>Kind of place</value></data>
+  <data name="AskConfirm" xml:space="preserve"><value>Ask</value></data>
+  <data name="AskDownloadingFormat" xml:space="preserve"><value>Downloading from OpenStreetMap: {0}…</value></data>
+  <data name="AskLocating" xml:space="preserve"><value>Getting the position…</value></data>
+  <data name="AskLocationCorrected" xml:space="preserve"><value>📍 Position set on the map</value></data>
+  <data name="AskLocationGps" xml:space="preserve"><value>📍 GPS position (tap the map to correct it)</value></data>
+  <data name="AskMatching" xml:space="preserve"><value>Is your nearest “{0}” the same as ours ({1})?</value></data>
+  <data name="AskMatchingDistrict" xml:space="preserve"><value>Are you in the same district as us ({0})?</value></data>
+  <data name="AskMeasuring" xml:space="preserve"><value>Are you closer to your nearest “{0}” than we are to ours ({1})?</value></data>
+  <data name="AskNoLocation" xml:space="preserve"><value>No position: turn on GPS or tap the map.</value></data>
+  <data name="AskPhoto" xml:space="preserve"><value>Send us a photo: {0}</value></data>
+  <data name="AskPreparing" xml:space="preserve"><value>Preparing the question…</value></data>
+  <data name="AskRadar" xml:space="preserve"><value>Are you within {0} of us?</value></data>
+  <data name="AskRadius" xml:space="preserve"><value>Radius</value></data>
+  <data name="AskTapSeekers" xml:space="preserve"><value>Tap the map where the seekers were when they asked.</value></data>
+  <data name="AskTentacles" xml:space="preserve"><value>Which “{0}” within {1} of us are you closest to?</value></data>
+  <data name="AskThermometer" xml:space="preserve"><value>We moved {0}. Are we closer to you now?</value></data>
+  <data name="AskTitle" xml:space="preserve"><value>Question</value></data>
+  <data name="AskUseGps" xml:space="preserve"><value>GPS</value></data>
+  <data name="BonusFormat" xml:space="preserve"><value>(+{0} min bonus)</value></data>
+  <data name="ButtonAsk" xml:space="preserve"><value>❓ Ask</value></data>
+  <data name="ButtonCards" xml:space="preserve"><value>🃏 Cards</value></data>
+  <data name="ButtonCardsFormat" xml:space="preserve"><value>🃏 Cards ({0})</value></data>
+  <data name="ButtonCardsNewFormat" xml:space="preserve"><value>🃏 Cards ({0}) • new!</value></data>
+  <data name="ButtonFinish" xml:space="preserve"><value>🏁 Finish</value></data>
+  <data name="ButtonFound" xml:space="preserve"><value>🎯 Found</value></data>
+  <data name="ButtonLeave" xml:space="preserve"><value>🚪 Leave</value></data>
+  <data name="ButtonQuestions" xml:space="preserve"><value>📜 Questions</value></data>
+  <data name="ButtonQuestionsFormat" xml:space="preserve"><value>📜 Questions ({0})</value></data>
+  <data name="ButtonQuestionsNewFormat" xml:space="preserve"><value>📜 Questions ({0}) • {1} open</value></data>
+  <data name="CardKindBonus" xml:space="preserve"><value>time bonus</value></data>
+  <data name="CardKindCurse" xml:space="preserve"><value>curse</value></data>
+  <data name="CardKindPowerUp" xml:space="preserve"><value>power-up</value></data>
+  <data name="CardsTitle" xml:space="preserve"><value>Hiders' cards</value></data>
+  <data name="Category_airport" xml:space="preserve"><value>airport</value></data>
+  <data name="Category_cinema" xml:space="preserve"><value>cinema</value></data>
+  <data name="Category_district" xml:space="preserve"><value>district</value></data>
+  <data name="Category_hospital" xml:space="preserve"><value>hospital</value></data>
+  <data name="Category_library" xml:space="preserve"><value>library</value></data>
+  <data name="Category_museum" xml:space="preserve"><value>museum</value></data>
+  <data name="Category_park" xml:space="preserve"><value>park</value></data>
+  <data name="Category_station" xml:space="preserve"><value>station</value></data>
+  <data name="Category_theatre" xml:space="preserve"><value>theatre</value></data>
+  <data name="Category_university" xml:space="preserve"><value>university</value></data>
+  <data name="Category_zoo" xml:space="preserve"><value>zoo</value></data>
+  <data name="CurseWarning" xml:space="preserve"><value>The curse is shown to the seekers right away.</value></data>
+  <data name="DeckLeftFormat" xml:space="preserve"><value>Cards left in the deck: {0}. Tap a card to play it.</value></data>
+  <data name="EnterAnswerFormat" xml:space="preserve"><value>Answer: {0}</value></data>
+  <data name="EventFound" xml:space="preserve"><value>Hiders found</value></data>
+  <data name="FoundConfirmHider" xml:space="preserve"><value>Did the seekers find you? The round ends and the hiding time is recorded.</value></data>
+  <data name="FoundConfirmSeeker" xml:space="preserve"><value>Did you find the hiders? The round ends and the hiding time is recorded.</value></data>
+  <data name="FoundTitle" xml:space="preserve"><value>Found!</value></data>
   <data name="GameDescription" xml:space="preserve"><value>Hiders hide in a zone around a station, seekers narrow the area down with questions.</value></data>
   <data name="GameName" xml:space="preserve"><value>Hide and Seek</value></data>
+  <data name="HandEmpty" xml:space="preserve"><value>No cards yet. You get them for answering questions.</value></data>
+  <data name="HintFormat" xml:space="preserve"><value>💡 GPS hint: {0}</value></data>
+  <data name="KeepCardsFormat" xml:space="preserve"><value>Keep {0} of the {1} cards drawn</value></data>
+  <data name="Later" xml:space="preserve"><value>Later</value></data>
+  <data name="LegendEliminated" xml:space="preserve"><value>eliminated</value></data>
+  <data name="LegendExcluded" xml:space="preserve"><value>excluded station</value></data>
+  <data name="LegendPossible" xml:space="preserve"><value>possible hiding area</value></data>
+  <data name="MinutesFormat" xml:space="preserve"><value>{0} min</value></data>
+  <data name="NoDistrictHere" xml:space="preserve"><value>Your position is not inside any OpenStreetMap district.</value></data>
+  <data name="NoPlacesFormat" xml:space="preserve"><value>No “{0}” found around the game area.</value></data>
+  <data name="NoPlacesInRadiusFormat" xml:space="preserve"><value>There is no “{0}” within {1}. Choose a larger radius.</value></data>
+  <data name="NoticeAnswerFormat" xml:space="preserve"><value>❗ Answer: {0} ({1} left)</value></data>
+  <data name="NoticeChooseCards" xml:space="preserve"><value>🃏 Choose the cards you earned</value></data>
+  <data name="NoticeCurseFormat" xml:space="preserve"><value>😈 {0}: {1}</value></data>
+  <data name="NoticeWaitingFormat" xml:space="preserve"><value>⏳ Waiting for the answer: {0}</value></data>
+  <data name="Overdue" xml:space="preserve"><value>overdue!</value></data>
+  <data name="PendingCardsFormat" xml:space="preserve"><value>Choose your earned cards ({0})</value></data>
+  <data name="PhaseFoundFormat" xml:space="preserve"><value>🏁 Found after {0}</value></data>
+  <data name="PhaseHidingHiderFormat" xml:space="preserve"><value>🏃 Time to hide: {0}</value></data>
+  <data name="PhaseHidingSeekerFormat" xml:space="preserve"><value>⏳ The hiders are hiding: {0}</value></data>
+  <data name="PhaseSeekingHiderFormat" xml:space="preserve"><value>🙈 Hidden for: {0}</value></data>
+  <data name="PhaseSeekingSeekerFormat" xml:space="preserve"><value>🔍 Seeking: {0}</value></data>
+  <data name="PhotoAnswerPrompt" xml:space="preserve"><value>A note about the photo you sent (optional).</value></data>
+  <data name="PhotoSubject" xml:space="preserve"><value>What should the photo show?</value></data>
+  <data name="PhotoSubjectMissing" xml:space="preserve"><value>Enter what the photo should show.</value></data>
+  <data name="PhotoSubjectPlaceholder" xml:space="preserve"><value>e.g. the nearest stop, the view straight up</value></data>
+  <data name="PlayCard" xml:space="preserve"><value>Play</value></data>
+  <data name="PlayedCardsTitle" xml:space="preserve"><value>Cards played by the hiders</value></data>
+  <data name="QuestionMatching" xml:space="preserve"><value>Matching</value></data>
+  <data name="QuestionMeasuring" xml:space="preserve"><value>Measuring</value></data>
+  <data name="QuestionPhoto" xml:space="preserve"><value>Photo</value></data>
+  <data name="QuestionRadar" xml:space="preserve"><value>Radar</value></data>
+  <data name="QuestionsEmpty" xml:space="preserve"><value>No questions asked yet.</value></data>
+  <data name="QuestionsHintHider" xml:space="preserve"><value>Tap a question to answer it. The hint is computed from your GPS — check it before sending.</value></data>
+  <data name="QuestionsTitle" xml:space="preserve"><value>Questions</value></data>
+  <data name="QuestionTentacles" xml:space="preserve"><value>Tentacles</value></data>
+  <data name="QuestionThermometer" xml:space="preserve"><value>Thermometer</value></data>
+  <data name="RemoveQuestion" xml:space="preserve"><value>🗑 Remove the question</value></data>
+  <data name="RemoveQuestionConfirm" xml:space="preserve"><value>Remove the question from the history? The area is recomputed without it.</value></data>
+  <data name="ResultFormat" xml:space="preserve"><value>Hidden for: {0}</value></data>
   <data name="RoleHider" xml:space="preserve"><value>Hider</value></data>
   <data name="RoleHiderDescription" xml:space="preserve"><value>Picks a station, hides and answers questions.</value></data>
   <data name="RoleSeeker" xml:space="preserve"><value>Seeker</value></data>
   <data name="RoleSeekerDescription" xml:space="preserve"><value>Asks questions and eliminates areas on the map.</value></data>
+  <data name="RuleFormat" xml:space="preserve"><value>For answering, hiders draw {0} and keep {1} · time to answer: {2} min</value></data>
+  <data name="SettingsCards" xml:space="preserve"><value>Hiders' cards</value></data>
+  <data name="SettingsCardsHint" xml:space="preserve"><value>Time bonuses, curses and power-ups for answers.</value></data>
+  <data name="SettingsHidingTime" xml:space="preserve"><value>Hiding time</value></data>
+  <data name="SettingsQuestions" xml:space="preserve"><value>Available questions</value></data>
+  <data name="SettingsSize" xml:space="preserve"><value>Game size (hiding zone radius)</value></data>
+  <data name="SizeLargeFormat" xml:space="preserve"><value>Large · {0}</value></data>
+  <data name="SizeMediumFormat" xml:space="preserve"><value>Medium · {0}</value></data>
+  <data name="SizeSmallFormat" xml:space="preserve"><value>Small · {0}</value></data>
+  <data name="StationChooseFormat" xml:space="preserve"><value>Hide at “{0}”? The seekers will not see this choice.</value></data>
+  <data name="StationHint" xml:space="preserve"><value>Choose a station: tap it on the map or draw one.</value></data>
+  <data name="StationRandom" xml:space="preserve"><value>🎲 Random</value></data>
+  <data name="StationRandomFormat" xml:space="preserve"><value>Drawn: {0}. Hide here?</value></data>
+  <data name="StationsLeftFormat" xml:space="preserve"><value>{0} of {1} stations left</value></data>
+  <data name="StationTitle" xml:space="preserve"><value>Your station</value></data>
+  <data name="ThermometerNoStart" xml:space="preserve"><value>Save the start point, travel a bit, then ask from the new place.</value></data>
+  <data name="ThermometerSetStart" xml:space="preserve"><value>📌 Save the start here</value></data>
+  <data name="ThermometerStartFormat" xml:space="preserve"><value>Start saved · {0} from here</value></data>
+  <data name="ThermometerTooShort" xml:space="preserve"><value>Save the start first and move at least 50 m away from it.</value></data>
+  <data name="VetoHowTo" xml:space="preserve"><value>A veto is played when answering a question (the “Veto” option in the question list).</value></data>
 </root>

@@ -122,13 +122,42 @@ Tryb online powstał przed grami, żeby Hide and Seek i Tag od razu z niego korz
 - Testy: 137/137 (Core 25, Geo 61, Tracking 25, Sync 19 — w tym serwer w pamięci: prywatność pozycji,
   podszywanie się pod rolę, nadrabianie po restarcie, kolejka offline; HideAndSeek 3, Tag 4).
 
-**Następny krok — Etap 5: Hide and Seek**
-- Logika:
-  - strefy ukrycia wokół stacji;
-  - pytania (radar, termometr, dopasowanie, mierzenie, macki, zdjęcie) jako `IQuestion.Apply` z testami
-    geometrii; obszar = funkcja listy pytań (cofanie/edycja);
-  - licznik „zostało X z Y stacji”.
-- Pytania i odpowiedzi jako wiadomości `IGameSyncService` (online automatycznie, offline przez ręczne wpisanie).
-- Mapa szukających: obszar wyeliminowany i możliwy, wykluczone stacje. Ekran ukrywającego: podpowiedź
-  odpowiedzi liczona z GPS, karty z talii JSON.
-- Zdarzenia z lokalizacją (pytania) trafiają do eksportu jako waypointy.
+## ✅ Etap 5 — Hide and Seek (2026-09-29)
+
+**Działa:**
+- Logika (`TransitGames.Games.HideAndSeek`, bez MAUI):
+  - pytania `IQuestion` (`Apply` + `SuggestAnswer`): radar, termometr, dopasowanie (Woronoj; dzielnice przez
+    zawieranie), mierzenie (suma kół), macki (koło ∩ Woronoj kandydatów), zdjęcie;
+  - `EliminationEngine`: obszar = funkcja listy pytań, strefy ukrycia, „zostało X z Y stacji”;
+  - `PlaceCatalog`: miejsca z OSM (10 kategorii + stacje gry + dzielnice) z pamięcią podręczną;
+  - sesja: fazy (ukrywanie/szukanie/znalezieni), wynik z premiami, stacja ukrywających, termometr;
+  - karty: talia JSON (premie, klątwy, weto, „dobierz dwie”), dobieranie N/zostaw K za odpowiedź;
+  - wiadomości `hs.*` i `HideAndSeekMessageHandler` (idempotentny).
+- Core: `GameSessionManager.MutateAsync`, `IGameMessageHandler` + `GameMessageDispatcher`,
+  `GameSettings.StartedAt` (wspólny czas startu gry online).
+- UI:
+  - kreator: krok „Ustawienia gry” (rozmiar, czas na ukrycie, dostępne pytania z nagrodami, karty, online);
+  - mapa: strefy możliwe, obszar wykluczony, stacje wykluczone na szaro, legenda, strefa ukrywających;
+  - szukający: zadawanie pytań (GPS z korektą na mapie, pobieranie miejsc, termometr ze startem), historia
+    z wpisywaniem/korektą odpowiedzi i usuwaniem, klątwy na ekranie, „znalezieni”;
+  - ukrywający: odliczanie, wybór stacji (mapa/losowanie), pytania z podpowiedzią z GPS i wetem, wybór kart,
+    zagrywanie kart, „dodaj otrzymane pytanie” offline.
+- Zweryfikowano na emulatorze (online, drugi telefon = bot-ukrywający na bibliotece gry):
+  - dołączenie kodem jako szukający; odliczanie i blokada pytań w czasie ukrywania;
+  - radar 1 km → bot odpowiedział z podpowiedzi „Nie” → strefa środkowa wycięta;
+  - dopasowanie „stacja” → „Nie, inne” → stacja Centrum wykluczona (7 z 8), bot zagrał premię +5 min;
+  - mierzenie „muzeum” → muzea pobrane z OSM, koła 127 m wycięte ze stref;
+  - „znalezieni” → koniec rundy na obu telefonach.
+  - offline jako ukrywający: kreator z ustawieniami, wybór stacji z mapy, dodanie otrzymanego pytania, poprawna
+    podpowiedź z GPS, odpowiedź → „zostaw 1 z 2 kart” → karta na ręce.
+  - Znaleziony i poprawiony błąd: telefon dołączający liczył czas ukrycia od chwili dołączenia.
+- Testy: 166/166 (Core 27, Geo 61, Tracking 25, Sync 19, HideAndSeek 29 — w tym test własności podpowiedzi
+  na 60 losowych rundach, Tag 4).
+
+**Następny krok — Etap 6: Tag**
+- Cele na mapie (ręcznie / losowane ze stacji / POI OSM), zdobywanie ręczne i automatyczne (geofencing),
+  nagrody, cel końcowy.
+- Pingi pozycji uciekających goniącym co `RevealInterval` (online automatycznie — gotowe w `OnlineSessionCoordinator`;
+  offline ręczny ping z wpisaniem pozycji).
+- „Złapany”: czas i miejsce, zamiana ról i kolejna runda (online: zmiana roli urządzenia na serwerze), tabela wyników.
+- Wyzwania w JSON.

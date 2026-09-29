@@ -1,5 +1,10 @@
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using TransitGames.Core.Games;
 using TransitGames.Core.Sessions;
+using TransitGames.Core.Sync;
+using TransitGames.Games.HideAndSeek.Places;
+using TransitGames.Games.HideAndSeek.Sync;
 using TransitGames.Games.HideAndSeek.Resources;
 
 namespace TransitGames.Games.HideAndSeek;
@@ -29,6 +34,12 @@ public sealed class HideAndSeekModule : GameModule<HideAndSeekSettings, HideAndS
 
     protected override HideAndSeekSession RestoreSession(GameSessionSnapshot snapshot, HideAndSeekSettings settings) =>
         new(snapshot, settings);
+
+    public override void RegisterServices(IServiceCollection services)
+    {
+        services.AddSingleton<IGameMessageHandler, HideAndSeekMessageHandler>();
+        services.TryAddTransient<PlaceCatalog>();
+    }
 }
 
 public static class HideAndSeekRoles

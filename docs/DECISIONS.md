@@ -138,6 +138,49 @@
 - **Obecność** (kto jest połączony) jest trzymana w pamięci serwera; po restarcie kontenera wszyscy łączą się
   ponownie automatycznie.
 
+## Hide and Seek (etap 5)
+
+- **Jedna sesja = jedna runda ze stałymi rolami.** Zamiana ról wymagałaby zmiany roli urządzenia na serwerze
+  (token jest przypisany do roli) i odwrócenia udostępniania pozycji; kolejną rundę zaczyna się jako nową grę
+  z zamienionymi rolami. Wynik rundy (czas ukrycia + premie) jest w historii i na osi czasu.
+- **Obszar możliwy = funkcja listy pytań.** `EliminationEngine` liczy wszystko od obszaru gry przy każdej zmianie
+  (korekta/usunięcie odpowiedzi = przeliczenie), w tle i z pamięcią podręczną. „Możliwa kryjówka” to część obszaru
+  zostawiona przez odpowiedzi **wewnątrz stref ukrycia** stacji, które wciąż są możliwe; stacja jest wykluczona,
+  gdy jej strefa nie ma wspólnej części (> 1 m²) z obszarem.
+- **Geometria** w metrach lokalnej projekcji, operacje przez `OverlayNGRobust`. Komórki Woronoja z NTS są
+  przycinane własnym, odpornym overlayem (wbudowane przycinanie NTS rzucało `TopologyException` dla symetrycznych
+  punktów). Termometr: półpłaszczyzna od symetralnej odcinka start–koniec. Mierzenie: suma kół o promieniu
+  odległości szukających do ich najbliższego obiektu. Macki: koło ∩ komórka Woronoja wśród obiektów w promieniu;
+  odpowiedź „poza zasięgiem” odejmuje koło.
+- **Test własności:** dla losowych pozycji i pytań odpowiedź podpowiedziana z pozycji ukrywających nigdy tej pozycji
+  nie wyklucza — to gwarancja spójności `SuggestAnswer` z `Apply`.
+- **Miejsca do pytań** (muzea, parki, szpitale…, dzielnice) z Overpass w prostokącie obszaru powiększonym o 3 km
+  (najbliższe muzeum może leżeć poza obszarem), z pamięcią podręczną w SQLite. Stacje gry też są kategorią.
+  **Pytanie niesie ze sobą listę miejsc**, więc oba telefony liczą na tych samych danych, także offline, a
+  historia jest odtwarzalna. Dzielnice: `admin_level` 9 (w razie braku 10, potem 8), obrysy uproszczone do 25 m.
+  **Uproszczenie:** kategoria „linia metra” ze specyfikacji nie jest obsługiwana (wymaga geometrii linii i innej
+  definicji „najbliższej”); dopasowanie „ta sama dzielnica” zastępuje przykład „dzielnica administracyjna”.
+- **Podpowiedź odpowiedzi** liczona z GPS ukrywających (gdy brak – środek ich stacji); ukrywający zawsze
+  zatwierdzają ręcznie. Wybrana stacja ukrywających nigdy nie opuszcza telefonu; wiadomość „znalezieni” wysłana
+  przez ukrywających nie zawiera ich pozycji.
+- **Karty:** talia w JSON (`Cards/deck.json`, własne teksty pl/en; własną można podać w `HideAndSeekSettings.DeckJson`).
+  Za każdą (pierwszą) odpowiedź ukrywający dobierają N i zostawiają K kart wg `QuestionRule` typu pytania
+  (konfigurowalne, domyślne wartości własne). Premie czasowe i klątwy są jawne dla obu drużyn (wiadomość `hs.card`),
+  weto zagrywa się przy odpowiedzi (pytanie nic nie wyklucza i nie daje kart). Talia tasowana deterministycznie
+  wg id sesji.
+- **Czas:** gospodarz zapisuje moment startu w `GameSettings.StartedAt`, dołączający liczą czas ukrycia od niego
+  (bez tego telefon dołączający później dostawał dodatkowy czas — znalezione na emulatorze). Pytania są dostępne
+  po czasie na ukrycie; czas na odpowiedź jest pokazywany ukrywającym, ale nie jest wymuszany.
+- **Wiadomości gier:** `IGameMessageHandler` + `GameMessageDispatcher` w Core stosują wiadomości do sesji także
+  wtedy, gdy gra nie jest na ekranie (`GameSessionManager.MutateAsync`). Obsługa jest idempotentna (echo
+  i nadrabianie po ponownym połączeniu). Korekty szukających (wpisanie/zmiana odpowiedzi, usunięcie pytania) idą
+  tylko do ich drużyny.
+- **Offline:** szukający wpisują odpowiedzi ręcznie (dotknięcie pytania); ukrywający dodają otrzymane pytanie tym
+  samym formularzem, wskazując na mapie pozycję szukających — dostają podpowiedź i karty jak online.
+- **Kreator:** nowy ostatni krok „Ustawienia gry” z widokiem dostarczanym przez grę
+  (`IGameUiModule.CreateSettingsView`); przełącznik „Graj online” przeniesiony tutaj.
+- Powiadomienia systemowe (koniec czasu ukrycia, nowe pytanie) — w etapie dopracowania.
+
 ## Build
 
 - **TFM-y MAUI** ustawiane centralnie (`MauiTargetFrameworks` w `Directory.Build.props`): Android zawsze,

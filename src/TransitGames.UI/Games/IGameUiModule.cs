@@ -19,6 +19,12 @@ public interface IGameUiModule
     /// <summary>Route of the main in-game screen for the given role.</summary>
     string GetGameRoute(string roleId);
 
+    /// <summary>
+    /// Editor of the game's own settings, shown in the last step of the new-game wizard (it edits the given
+    /// settings object in place). Null when the game has nothing to configure.
+    /// </summary>
+    View? CreateSettingsView(GameSettings settings);
+
     /// <summary>Registers the logic module plus pages and view models.</summary>
     void RegisterServices(IServiceCollection services);
 }
@@ -32,6 +38,8 @@ public abstract class GameUiModule<TGameModule> : IGameUiModule
     public abstract IReadOnlyList<GameRoute> Routes { get; }
 
     public abstract string GetGameRoute(string roleId);
+
+    public virtual View? CreateSettingsView(GameSettings settings) => null;
 
     public void RegisterServices(IServiceCollection services)
     {

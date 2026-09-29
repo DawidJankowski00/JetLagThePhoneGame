@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.Games.HideAndSeek.Maui.ViewModels"
+             xmlns:res="clr-namespace:TransitGames.Games.HideAndSeek.Resources;assembly=TransitGames.Games.HideAndSeek"
+             x:Class="TransitGames.Games.HideAndSeek.Maui.Pages.QuestionsPage"
+             x:DataType="vm:QuestionsViewModel"
+             Title="{x:Static res:HideAndSeekStrings.QuestionsTitle}"
+             Style="{StaticResource PageBackground}">
+    <CollectionView ItemsSource="{Binding Items}" SelectionMode="None" Margin="16,0">
+        <CollectionView.Header>
+            <VerticalStackLayout Spacing="6" Padding="0,12,0,8">
+                <Label Text="{x:Static res:HideAndSeekStrings.QuestionsHintHider}" IsVisible="{Binding IsHider}" Style="{StaticResource Caption}" />
+                <Button Text="{x:Static res:HideAndSeekStrings.AddReceivedQuestion}" IsVisible="{Binding CanAddReceived}"
+                        Style="{StaticResource ToolButton}" HorizontalOptions="Start" Command="{Binding AddReceivedCommand}" />
+                <Label Text="{x:Static res:HideAndSeekStrings.QuestionsEmpty}" IsVisible="{Binding IsEmpty}" Style="{StaticResource Caption}" />
+            </VerticalStackLayout>
+        </CollectionView.Header>
+        <CollectionView.ItemsLayout>
+            <LinearItemsLayout Orientation="Vertical" ItemSpacing="8" />
+        </CollectionView.ItemsLayout>
+        <CollectionView.ItemTemplate>
+            <DataTemplate x:DataType="vm:QuestionItem">
+                <Border Style="{StaticResource Card}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding OpenCommand, Source={RelativeSource AncestorType={x:Type vm:QuestionsViewModel}}, x:DataType=vm:QuestionsViewModel}"
+                                              CommandParameter="{Binding .}" />
+                    </Border.GestureRecognizers>
+                    <VerticalStackLayout Spacing="4">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Label Text="{Binding Title}" FontAttributes="Bold" FontSize="16" />
+                            <Label Grid.Column="1" Text="{Binding TimeText}" Style="{StaticResource Caption}" FontSize="12" />
+                        </Grid>
+                        <Label Text="{Binding Text}" />
+                        <Label Text="{Binding AnswerText}" FontAttributes="Bold" TextColor="{StaticResource Primary}">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding IsPending}" Value="True">
+                                    <Setter Property="TextColor" Value="{StaticResource Warning}" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+                        <Label Text="{Binding Hint}" IsVisible="{Binding HasHint}" Style="{StaticResource Caption}" />
+                    </VerticalStackLayout>
+                </Border>
+            </DataTemplate>
+        </CollectionView.ItemTemplate>
+        <CollectionView.Footer>
+            <VerticalStackLayout Spacing="6" Padding="0,16" IsVisible="{Binding HasPlayedCards}">
+                <Label Text="{x:Static res:HideAndSeekStrings.PlayedCardsTitle}" FontAttributes="Bold" />
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding PlayedCards}" Spacing="6">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="vm:PlayedCardItem">
+                            <VerticalStackLayout>
+                                <Label>
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding TimeText}" />
+                                            <Span Text="  " />
+                                            <Span Text="{Binding Title}" FontAttributes="Bold" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Text="{Binding Text}" Style="{StaticResource Caption}" FontSize="12" />
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </CollectionView.Footer>
+    </CollectionView>
+</ContentPage>

@@ -76,15 +76,7 @@
             </CollectionView>
         </Grid>
 
-        <VerticalStackLayout Grid.Row="3" Padding="16,4,16,16" Spacing="4">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                <VerticalStackLayout VerticalOptions="Center">
-                    <Label Text="{x:Static res:UiStrings.StationsPlayOnline}" FontAttributes="Bold" />
-                    <Label Text="{x:Static res:UiStrings.StationsPlayOnlineHint}" Style="{StaticResource Caption}" FontSize="12" />
-                </VerticalStackLayout>
-                <Switch Grid.Column="1" IsToggled="{Binding PlayOnline}" VerticalOptions="Center" />
-            </Grid>
-            <Button Text="{x:Static res:UiStrings.StartGame}" Style="{StaticResource BigButton}" Command="{Binding StartCommand}" />
-        </VerticalStackLayout>
+        <Button Grid.Row="3" Margin="16,8,16,16" Text="{x:Static res:UiStrings.Next}"
+                Style="{StaticResource BigButton}" Command="{Binding NextCommand}" />
     </Grid>
 </ContentPage>

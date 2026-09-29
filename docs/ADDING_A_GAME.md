@@ -51,7 +51,9 @@ public sealed class XModule : GameModule<XSettings, XSession>
     protected override XSession CreateSession(XSettings s, string role, Guid sessionId) => new(sessionId, s, role);
     protected override XSession RestoreSession(GameSessionSnapshot snap, XSettings s) => new(snap, s);
 
-    // opcjonalnie: public override void RegisterServices(IServiceCollection services) { ... }
+    // Wiadomości gry między telefonami: handler stosuje je do sesji (idempotentnie).
+    public override void RegisterServices(IServiceCollection services) =>
+        services.AddSingleton<IGameMessageHandler, XMessageHandler>();
 }
 ```
 
@@ -61,10 +63,14 @@ Teksty: `Resources/XStrings.resx` (polski) + `Resources/XStrings.en.resx`. Klasa
 Zdarzenia na osi czasu: w sesji wywołaj `Raise(GameEvent.Create(...))` — trafią do `IGameEventLog`
 i (jeśli mają lokalizację) do eksportu GPX/GeoJSON jako waypointy.
 
+Ustawienia gry w kreatorze: nadpisz `CreateSettingsView(GameSettings)` w `XUiModule` i zwróć widok, który
+edytuje obiekt ustawień w miejscu (przykład: `HideAndSeekSettingsView`).
+
 Komunikacja między telefonami: wstrzyknij `IGameSyncService` i publikuj `SyncMessage` z własnym `Type`
 (np. `"x.question"`) i ładunkiem JSON. Ta sama usługa działa offline (wiadomość wraca lokalnie) i online (serwer
 przekazuje ją drużynom zgodnie z `Audience`). Własne wiadomości też przychodzą przez `MessageReceived`, więc stan
-gry zmieniaj w jednym miejscu — w obsłudze odebranej wiadomości (idempotentnie, po `SyncMessage.Id`).
+gry zmieniaj w jednym miejscu — w `IGameMessageHandler.Handle` (idempotentnie). Dyspozytor wywołuje go także dla
+sesji, która nie jest na ekranie. Przykład kompletnej gry: `TransitGames.Games.HideAndSeek` (`Sync/HideAndSeekMessages.cs`).
 Pozycji nie wysyłaj samodzielnie: robi to aplikacja zgodnie z `LocationSharing` i `GetLocationShareInterval`,
 a pozycje innych graczy są w `Header.Players`.
 

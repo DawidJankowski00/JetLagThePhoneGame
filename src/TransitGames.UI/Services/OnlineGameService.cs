@@ -37,6 +37,7 @@ public sealed class OnlineGameService
     {
         var serverUrl = RequireServer();
         var sessionId = Guid.NewGuid();
+        settings.StartedAt = DateTimeOffset.UtcNow;
         var request = new CreateLobbyRequest(
             sessionId,
             module.Id,

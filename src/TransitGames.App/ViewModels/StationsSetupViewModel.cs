@@ -4,16 +4,12 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
 using TransitGames.App.Services;
 using TransitGames.Core.Geography;
-using TransitGames.Core.Sessions;
 using TransitGames.Core.Stations;
 using TransitGames.Geo.Areas;
 using TransitGames.Geo.Overpass;
 using TransitGames.Geo.Stations;
-using TransitGames.Sync;
-using TransitGames.UI.Games;
 using TransitGames.UI.Resources;
 using TransitGames.UI.Services;
-using TransitGames.UI.Settings;
 
 namespace TransitGames.App.ViewModels;
 
@@ -57,38 +53,25 @@ public sealed partial class StationsSetupViewModel : ObservableObject
 {
     private readonly NewGameWizard _wizard;
     private readonly StationCatalog _catalog;
-    private readonly GameSessionManager _sessions;
-    private readonly GameUiRegistry _uiRegistry;
     private readonly ITextFilePicker _filePicker;
     private readonly IDialogService _dialogs;
     private readonly INavigationService _navigation;
-    private readonly OnlinePreferences _onlinePreferences;
-    private readonly OnlineGameService _onlineGames;
     private readonly ILogger<StationsSetupViewModel> _logger;
 
     public StationsSetupViewModel(
         NewGameWizard wizard,
         StationCatalog catalog,
-        GameSessionManager sessions,
-        GameUiRegistry uiRegistry,
         ITextFilePicker filePicker,
         IDialogService dialogs,
         INavigationService navigation,
-        OnlinePreferences onlinePreferences,
-        OnlineGameService onlineGames,
         ILogger<StationsSetupViewModel> logger)
     {
         _wizard = wizard;
         _catalog = catalog;
-        _sessions = sessions;
-        _uiRegistry = uiRegistry;
         _filePicker = filePicker;
         _dialogs = dialogs;
         _navigation = navigation;
-        _onlinePreferences = onlinePreferences;
-        _onlineGames = onlineGames;
         _logger = logger;
-        PlayOnline = onlinePreferences.IsConfigured;
     }
 
     public ObservableCollection<StationItem> Items { get; } = [];
@@ -112,24 +95,20 @@ public sealed partial class StationsSetupViewModel : ObservableObject
     [ObservableProperty]
     public partial bool UseBus { get; set; }
 
-    /// <summary>Create the game on the server so the other team can join with a code.</summary>
-    [ObservableProperty]
-    public partial bool PlayOnline { get; set; }
-
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Hint), nameof(HasHint))]
     public partial bool IsAddingCustom { get; set; }
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Hint), nameof(HasHint), nameof(IsIdle))]
-    [NotifyCanExecuteChangedFor(nameof(DownloadCommand), nameof(StartCommand))]
+    [NotifyCanExecuteChangedFor(nameof(DownloadCommand), nameof(NextCommand))]
     public partial string? BusyText { get; set; }
 
     [ObservableProperty]
     public partial string? Message { get; set; }
 
     [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(StartCommand))]
+    [NotifyCanExecuteChangedFor(nameof(NextCommand))]
     public partial string CountText { get; set; } = string.Empty;
 
     public bool IsIdle => BusyText is null;
@@ -281,62 +260,20 @@ public sealed partial class StationsSetupViewModel : ObservableObject
         }
     }
 
-    private bool CanStart() => BusyText is null && Items.Any(i => i.IsEnabled);
+    private bool CanNext() => BusyText is null && Items.Any(i => i.IsEnabled);
 
-    [RelayCommand(CanExecute = nameof(CanStart))]
-    private async Task StartAsync()
+    [RelayCommand(CanExecute = nameof(CanNext))]
+    private async Task NextAsync()
     {
-        var module = _wizard.RequireModule();
-        var area = _wizard.RequireArea();
         var enabled = Items.Where(i => i.IsEnabled).Select(i => i.Station).ToList();
-        if (enabled.Count == 0 || _wizard.Role is not { } role)
+        if (enabled.Count == 0)
         {
             await _dialogs.AlertAsync(UiStrings.Error, UiStrings.StationsNoneEnabled);
             return;
         }
 
-        var settings = module.CreateDefaultSettings();
-        settings.Area = area.ToDefinition();
-        settings.Stations = enabled;
-
-        string? code = null;
-        IGameSession session;
-        if (PlayOnline)
-        {
-            if (!_onlinePreferences.IsConfigured)
-            {
-                await _dialogs.AlertAsync(UiStrings.OnlineErrorTitle, UiStrings.OnlineServerMissing);
-                return;
-            }
-
-            try
-            {
-                BusyText = UiStrings.OnlineCreating;
-                (session, var ticket) = await _onlineGames.StartHostedAsync(module, settings, role.Id);
-                code = ticket.Code;
-            }
-            catch (OnlineException ex)
-            {
-                _logger.LogWarning(ex, "Creating the online game failed");
-                await _dialogs.ShowAsync(ex);
-                return;
-            }
-            finally
-            {
-                BusyText = null;
-            }
-        }
-        else
-        {
-            session = await _sessions.StartNewAsync(module.Id, settings, role.Id);
-        }
-
-        // Absolute route: the wizard pages are dropped and Back from the game returns to the start page.
-        await _navigation.GoToAsync($"//{Routes.Start}/{_uiRegistry.Get(session.GameId).GetGameRoute(session.LocalRoleId)}");
-        if (code is not null)
-        {
-            await _dialogs.AlertAsync(UiStrings.OnlineGameCreatedTitle, string.Format(UiStrings.OnlineGameCreatedFormat, code));
-        }
+        _wizard.Stations = enabled;
+        await _navigation.GoToAsync(Routes.NewGameSetup);
     }
 
     private async Task ReloadAsync()

@@ -31,6 +31,7 @@ public static class CoreServiceCollectionExtensions
         services.TryAddSingleton<IGameSyncService>(sp => sp.GetRequiredService<GameSyncRouter>());
         services.TryAddSingleton<GameRegistry>();
         services.TryAddSingleton<GameSessionManager>();
+        services.TryAddSingleton<GameMessageDispatcher>();
         return services;
     }
 }

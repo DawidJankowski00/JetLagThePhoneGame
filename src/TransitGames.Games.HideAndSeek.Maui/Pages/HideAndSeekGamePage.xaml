@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:TransitGames.Games.HideAndSeek.Maui.ViewModels"
              xmlns:controls="clr-namespace:TransitGames.UI.Controls;assembly=TransitGames.UI"
-             xmlns:ui="clr-namespace:TransitGames.UI.Resources;assembly=TransitGames.UI"
-             xmlns:res="clr-namespace:TransitGames.Games.HideAndSeek.Resources;assembly=TransitGames.Games.HideAndSeek"
+                          xmlns:res="clr-namespace:TransitGames.Games.HideAndSeek.Resources;assembly=TransitGames.Games.HideAndSeek"
              x:Class="TransitGames.Games.HideAndSeek.Maui.Pages.HideAndSeekGamePage"
              x:DataType="vm:HideAndSeekGameViewModel"
              Shell.NavBarIsVisible="False"
@@ -12,16 +11,69 @@
     <Grid RowDefinitions="Auto,*,Auto">
         <controls:SessionHeaderView BindingContext="{Binding Header}" />
 
-        <controls:GameMapView Grid.Row="1" Area="{Binding Header.Area}" Stations="{Binding Header.Stations}"
-                              OwnLocation="{Binding Header.OwnLocation}" Players="{Binding Header.Players}" />
+        <Grid Grid.Row="1">
+            <controls:GameMapView x:Name="Map" Area="{Binding Header.Area}" Stations="{Binding MapStations}"
+                                  OwnLocation="{Binding Header.OwnLocation}" Players="{Binding Header.Players}"
+                                  StationTapCommand="{Binding StationTappedCommand}" />
+            <!-- Legend: what the colours mean. -->
+            <Border VerticalOptions="Start" HorizontalOptions="Start" Margin="8" Padding="8,4"
+                    BackgroundColor="{AppThemeBinding Light=#E6FFFFFF, Dark=#E6212121}" StrokeThickness="0"
+                    StrokeShape="RoundRectangle 8">
+                <VerticalStackLayout Spacing="2">
+                    <HorizontalStackLayout Spacing="6">
+                        <BoxView WidthRequest="12" HeightRequest="12" Color="#FFD37F" />
+                        <Label Text="{x:Static res:HideAndSeekStrings.LegendPossible}" FontSize="11" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="6">
+                        <BoxView WidthRequest="12" HeightRequest="12" Color="{StaticResource MapEliminatedArea}" />
+                        <Label Text="{x:Static res:HideAndSeekStrings.LegendEliminated}" FontSize="11" />
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="6">
+                        <BoxView WidthRequest="12" HeightRequest="12" Color="{StaticResource MapStationExcluded}" CornerRadius="6" />
+                        <Label Text="{x:Static res:HideAndSeekStrings.LegendExcluded}" FontSize="11" />
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
 
-        <VerticalStackLayout Grid.Row="2" Padding="16,10" Spacing="8">
-            <Label Text="{x:Static res:HideAndSeekStrings.RoleSeekerDescription}" IsVisible="{Binding IsSeeker}" Style="{StaticResource Caption}" />
-            <Label Text="{x:Static res:HideAndSeekStrings.RoleHiderDescription}" IsVisible="{Binding IsHider}" Style="{StaticResource Caption}" />
-            <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
-                <Button Text="{x:Static ui:UiStrings.LeaveGame}" Style="{StaticResource BigSecondaryButton}" FontSize="15" Padding="4,0"
+        <VerticalStackLayout Grid.Row="2" Padding="16,8,16,12" Spacing="8">
+            <Label Text="{Binding PhaseText}" FontSize="18" FontAttributes="Bold" />
+            <Label Text="{Binding StatusText}" Style="{StaticResource Caption}" />
+            <Label Text="{Binding NoticeText}" IsVisible="{Binding HasNotice}" Style="{StaticResource HintBanner}" Margin="-16,0">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding QuestionsCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <!-- Hiders: choose the station first. -->
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" IsVisible="{Binding NeedsStation}">
+                <Label Text="{x:Static res:HideAndSeekStrings.StationHint}" VerticalOptions="Center" />
+                <Button Grid.Column="1" Text="{x:Static res:HideAndSeekStrings.StationRandom}" Style="{StaticResource ToolButton}"
+                        Command="{Binding RandomStationCommand}" />
+            </Grid>
+
+            <!-- Seekers -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding IsSeeker}">
+                <Button Text="{x:Static res:HideAndSeekStrings.ButtonAsk}" Style="{StaticResource BigButton}" FontSize="15" Padding="4,0"
+                        Command="{Binding AskCommand}" IsEnabled="{Binding CanAsk}" />
+                <Button Grid.Column="1" Text="{Binding QuestionsButtonText}" Style="{StaticResource BigSecondaryButton}" FontSize="15" Padding="4,0"
+                        Command="{Binding QuestionsCommand}" />
+            </Grid>
+
+            <!-- Hiders -->
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="8" IsVisible="{Binding IsHider}">
+                <Button Text="{Binding QuestionsButtonText}" Style="{StaticResource BigButton}" FontSize="15" Padding="4,0"
+                        Command="{Binding QuestionsCommand}" />
+                <Button Grid.Column="1" Text="{Binding CardsButtonText}" Style="{StaticResource BigSecondaryButton}" FontSize="15" Padding="4,0"
+                        Command="{Binding CardsCommand}" />
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                <Button Text="{x:Static res:HideAndSeekStrings.ButtonFound}" Style="{StaticResource BigSecondaryButton}" FontSize="14" Padding="2,0"
+                        Command="{Binding FoundCommand}" IsVisible="{Binding IsPlaying}" />
+                <Button Grid.Column="1" Text="{x:Static res:HideAndSeekStrings.ButtonLeave}" Style="{StaticResource BigSecondaryButton}" FontSize="14" Padding="2,0"
                         Command="{Binding Header.LeaveCommand}" />
-                <Button Grid.Column="1" Text="{x:Static ui:UiStrings.FinishGame}" Style="{StaticResource BigButton}" FontSize="15" Padding="4,0"
+                <Button Grid.Column="2" Text="{x:Static res:HideAndSeekStrings.ButtonFinish}" Style="{StaticResource BigButton}" FontSize="14" Padding="2,0"
                         Command="{Binding Header.FinishCommand}" />
             </Grid>
         </VerticalStackLayout>

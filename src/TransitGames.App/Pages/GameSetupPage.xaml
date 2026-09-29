@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:TransitGames.App.ViewModels"
+             xmlns:res="clr-namespace:TransitGames.UI.Resources;assembly=TransitGames.UI"
+             x:Class="TransitGames.App.Pages.GameSetupPage"
+             x:DataType="vm:GameSetupViewModel"
+             Title="{x:Static res:UiStrings.GameSetupTitle}"
+             Style="{StaticResource PageBackground}">
+    <Grid RowDefinitions="*,Auto">
+        <ScrollView>
+            <VerticalStackLayout Padding="16" Spacing="12">
+                <Label Text="{Binding Summary}" Style="{StaticResource Caption}" />
+                <!-- Filled in code-behind with the game's own settings view. -->
+                <ContentView x:Name="SettingsHost" />
+                <Border Style="{StaticResource Card}">
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                        <VerticalStackLayout VerticalOptions="Center">
+                            <Label Text="{x:Static res:UiStrings.StationsPlayOnline}" FontAttributes="Bold" />
+                            <Label Text="{x:Static res:UiStrings.StationsPlayOnlineHint}" Style="{StaticResource Caption}" FontSize="12" />
+                        </VerticalStackLayout>
+                        <Switch Grid.Column="1" IsToggled="{Binding PlayOnline}" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+        </ScrollView>
+        <VerticalStackLayout Grid.Row="1" Padding="16,8,16,16" Spacing="6">
+            <HorizontalStackLayout Spacing="8" IsVisible="{Binding IsBusy}">
+                <ActivityIndicator IsRunning="{Binding IsBusy}" HeightRequest="20" WidthRequest="20" />
+                <Label Text="{Binding BusyText}" VerticalOptions="Center" />
+            </HorizontalStackLayout>
+            <Button Text="{x:Static res:UiStrings.StartGame}" Style="{StaticResource BigButton}" Command="{Binding StartCommand}" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

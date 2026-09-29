@@ -10,6 +10,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Built-in hiders' deck (own texts), configurable JSON. -->
+    <EmbeddedResource Include="Cards\deck.json" LogicalName="deck.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="TransitGames.Games.HideAndSeek.Tests" />
   </ItemGroup>
 

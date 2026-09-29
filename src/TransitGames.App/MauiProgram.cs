@@ -58,6 +58,7 @@ public static class MauiProgram
         services.AddTransient<NewGamePage>().AddTransient<NewGameViewModel>();
         services.AddTransient<AreaSetupPage>().AddTransient<AreaSetupViewModel>();
         services.AddTransient<StationsSetupPage>().AddTransient<StationsSetupViewModel>();
+        services.AddTransient<GameSetupPage>().AddTransient<GameSetupViewModel>();
         services.AddTransient<HistoryPage>().AddTransient<HistoryViewModel>();
         services.AddTransient<TracksPage>().AddTransient<TracksViewModel>();
         services.AddTransient<TrackPreviewPage>().AddTransient<TrackPreviewViewModel>();
@@ -73,6 +74,7 @@ public static class MauiProgram
         // Created eagerly: they must observe the session manager before the first game is resumed.
         app.Services.GetRequiredService<TrackingCoordinator>();
         app.Services.GetRequiredService<OnlineSessionCoordinator>();
+        app.Services.GetRequiredService<TransitGames.Core.Sync.GameMessageDispatcher>();
         return app;
     }
 }
