@@ -1,5 +1,39 @@
 # Transit Games
 
+A mobile app (.NET MAUI, Android + iOS) for real-world public-transport games inspired by the "Jet Lag: The Game" series.
+Two game modes are included: **Hide and Seek** and **Tag**. Games are modules, so a new one can be added without touching
+the existing ones. The UI is Polish by default with English translations (`*.en.resx`). The detailed documentation below is in Polish.
+
+## Features
+- Map with game area and stations (OpenStreetMap data via Overpass)
+- **Hide and Seek**: hiders and seekers with a location-sharing policy (hiders see seekers, never the reverse)
+- **Tag**: one runner heads for a goal while chasers pursue; coins pay for transport, cards add challenges and curses
+- Online mode: game server (ASP.NET Core + SignalR + SQLite) in Docker, with an offline message queue on the client
+- GPS track recording with GPX / GeoJSON export
+- Pluggable game modules (`GameModule` / `GameUiModule`)
+
+## Stack
+.NET 10, .NET MAUI, ASP.NET Core, SignalR, SQLite, NetTopologySuite, xUnit, Docker
+
+## How to run
+Requirements: .NET SDK 10 (see `global.json`), MAUI workloads (`dotnet workload install maui-android maui-ios`), Android SDK (API 36). Building for iOS needs macOS.
+
+```bash
+# libraries and tests (no MAUI needed)
+dotnet test TransitGames.Libraries.slnf
+
+# build and run the Android app
+dotnet build src/TransitGames.App/TransitGames.App.csproj -f net10.0-android -t:Run
+
+# online game server
+cd deploy && docker compose up -d --build
+```
+
+---
+
+## Dokumentacja (po polsku)
+
+
 Aplikacja mobilna (.NET MAUI, Android + iOS) do terenowych gier komunikacyjnych inspirowanych serią
 „Jet Lag: The Game”. Na start: **Chowany (Hide and Seek)** i **Berek (Tag)**. Gry są modułami —
 dodanie kolejnej nie wymaga zmian w istniejących grach.
