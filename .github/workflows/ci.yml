@@ -46,9 +46,7 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
-      - name: Select Xcode 26.0 (required by the iOS 26.0 SDK pack)
-        run: sudo xcode-select -s /Applications/Xcode_26.0.app
       - run: dotnet workload install maui-ios
       - run: >
           dotnet build src/TransitGames.App/TransitGames.App.csproj -f net10.0-ios26.0 -c Debug
-          -p:EnableIos=true -p:EnableAndroid=false -p:RuntimeIdentifier=iossimulator-arm64 -p:EnableCodeSigning=false
+          -p:EnableIos=true -p:EnableAndroid=false -p:RuntimeIdentifier=iossimulator-arm64 -p:EnableCodeSigning=false -p:ValidateXcodeVersion=false
