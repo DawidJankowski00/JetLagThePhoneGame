@@ -46,12 +46,7 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
-      - name: Select the newest installed Xcode
-        run: |
-          ls -d /Applications/Xcode_*.app
-          sudo xcode-select -s "$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)"
-          xcodebuild -version
       - run: dotnet workload install maui-ios
       - run: >
-          dotnet build src/TransitGames.App/TransitGames.App.csproj -f net10.0-ios -c Debug
+          dotnet build src/TransitGames.App/TransitGames.App.csproj -f net10.0-ios26.0 -c Debug
           -p:EnableIos=true -p:EnableAndroid=false -p:RuntimeIdentifier=iossimulator-arm64 -p:EnableCodeSigning=false
