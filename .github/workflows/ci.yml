@@ -49,4 +49,4 @@ jobs:
       - run: dotnet workload install maui-ios
       - run: >
           dotnet build src/TransitGames.App/TransitGames.App.csproj -f net10.0-ios -c Debug
-          -p:EnableIos=true -p:RuntimeIdentifier=iossimulator-arm64 -p:EnableCodeSigning=false
+          -p:EnableIos=true -p:EnableAndroid=false -p:RuntimeIdentifier=iossimulator-arm64 -p:EnableCodeSigning=false

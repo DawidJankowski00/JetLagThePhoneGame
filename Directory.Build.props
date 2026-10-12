@@ -12,5 +12,7 @@
          (iOS cannot be fully built on Windows without a paired Mac). -->
     <MauiTargetFrameworks>net10.0-android</MauiTargetFrameworks>
     <MauiTargetFrameworks Condition="'$(EnableIos)' == 'true' Or $([MSBuild]::IsOSPlatform('osx'))">$(MauiTargetFrameworks);net10.0-ios</MauiTargetFrameworks>
+    <!-- -p:EnableAndroid=false keeps only iOS (CI iOS job has no Android workload). -->
+    <MauiTargetFrameworks Condition="'$(EnableAndroid)' == 'false'">net10.0-ios</MauiTargetFrameworks>
   </PropertyGroup>
 </Project>
