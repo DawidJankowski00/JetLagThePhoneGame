@@ -122,16 +122,19 @@ public sealed class GameSessionManager
             }
 
             var session = module.RestoreSession(snapshot);
-            session.EventRaised += OnEventRaised;
+            var raised = new List<GameEvent>();
+            void Collect(object? _, GameEvent e) => raised.Add(e);
+            session.EventRaised += Collect;
             try
             {
                 change(session);
             }
             finally
             {
-                session.EventRaised -= OnEventRaised;
+                session.EventRaised -= Collect;
             }
 
+            await AppendEventsAsync(raised).ConfigureAwait(false);
             await _store.SaveAsync(session.CreateSnapshot(_clock.UtcNow)).ConfigureAwait(false);
             return true;
         }
@@ -160,9 +163,12 @@ public sealed class GameSessionManager
         }
 
         var session = module.RestoreSession(snapshot);
-        session.EventRaised += OnEventRaised;
+        var raised = new List<GameEvent>();
+        void Collect(object? _, GameEvent e) => raised.Add(e);
+        session.EventRaised += Collect;
         session.Finish(_clock.UtcNow);
-        session.EventRaised -= OnEventRaised;
+        session.EventRaised -= Collect;
+        await AppendEventsAsync(raised).ConfigureAwait(false);
         await _store.SaveAsync(session.CreateSnapshot(_clock.UtcNow)).ConfigureAwait(false);
         SessionFinished?.Invoke(this, session);
     }
@@ -217,6 +223,22 @@ public sealed class GameSessionManager
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to persist session state");
+        }
+    }
+
+    // Events of sessions that are not on screen are written before the call returns (no fire-and-forget).
+    private async Task AppendEventsAsync(IEnumerable<GameEvent> events)
+    {
+        foreach (var gameEvent in events)
+        {
+            try
+            {
+                await _eventLog.AppendAsync(gameEvent).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to append game event {Type}", gameEvent.Type);
+            }
         }
     }
 

@@ -11,6 +11,9 @@
          Android always; iOS on macOS or when explicitly requested with -p:EnableIos=true
          (iOS cannot be fully built on Windows without a paired Mac). -->
     <MauiTargetFrameworks>net10.0-android</MauiTargetFrameworks>
-    <MauiTargetFrameworks Condition="'$(EnableIos)' == 'true' Or $([MSBuild]::IsOSPlatform('osx'))">$(MauiTargetFrameworks);net10.0-ios</MauiTargetFrameworks>
+    <MauiTargetFrameworks Condition="'$(EnableIos)' == 'true' Or $([MSBuild]::IsOSPlatform('osx'))">$(MauiTargetFrameworks);net10.0-ios26.0</MauiTargetFrameworks>
+    <!-- -p:EnableAndroid=false keeps only iOS (CI iOS job has no Android workload).
+         ios26.0 pins the iOS 26 SDK pack: the newest pack needs Xcode 27, which CI runners do not have yet. -->
+    <MauiTargetFrameworks Condition="'$(EnableAndroid)' == 'false'">net10.0-ios26.0</MauiTargetFrameworks>
   </PropertyGroup>
 </Project>
